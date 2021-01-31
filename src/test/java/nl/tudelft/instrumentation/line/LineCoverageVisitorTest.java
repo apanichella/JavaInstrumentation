@@ -1,8 +1,9 @@
-package nl.tudelft.instrumentation;
+package nl.tudelft.instrumentation.line;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ast.CompilationUnit;
+import nl.tudelft.instrumentation.line.LineCoverageVisitor;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
@@ -10,7 +11,7 @@ import java.io.StringReader;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CoverageVisitorTest {
+class LineCoverageVisitorTest {
 
     @Test
     public void testIfInstrumentation(){
@@ -44,11 +45,11 @@ class CoverageVisitorTest {
         CompilationUnit unit = results.getResult().get();
         System.out.println(unit.toString());
 
-        unit.accept(new CoverageVisitor("Triangle.java"), null);
+        unit.accept(new LineCoverageVisitor("Triangle.java"), null);
         System.out.println(unit.toString());
 
-        int count = StringUtils.countMatches(unit.toString(), "nl.tudelft.instrumentation.LineCoverageTracker.updateCoverage");
-        assertTrue(unit.toString().contains("nl.tudelft.instrumentation.LineCoverageTracker.updateCoverage"));
+        int count = StringUtils.countMatches(unit.toString(), "nl.tudelft.instrumentation.line.LineCoverageTracker.updateCoverage");
+        assertTrue(unit.toString().contains("nl.tudelft.instrumentation.line.LineCoverageTracker.updateCoverage"));
         assertEquals(9, count);
     }
 
@@ -78,11 +79,36 @@ class CoverageVisitorTest {
         ParseResult<CompilationUnit> results = parser.parse(new StringReader(code));
         CompilationUnit unit = results.getResult().get();
 
-        unit.accept(new CoverageVisitor("ForExample.java"), null);
+        unit.accept(new LineCoverageVisitor("ForExample.java"), null);
         System.out.println(unit.toString());
 
-        int count = StringUtils.countMatches(unit.toString(), "nl.tudelft.instrumentation.LineCoverageTracker.updateCoverage");
-        assertTrue(unit.toString().contains("nl.tudelft.instrumentation.LineCoverageTracker.updateCoverage"));
+        int count = StringUtils.countMatches(unit.toString(), "nl.tudelft.instrumentation.line.LineCoverageTracker.updateCoverage");
+        assertTrue(unit.toString().contains("nl.tudelft.instrumentation.line.LineCoverageTracker.updateCoverage"));
         assertEquals(7, count);
+    }
+
+    @Test
+    public void testIf2(){
+        // a1542365894 += (a1542365894 + 20) > a1542365894 ? 1 : 0;
+        StringBuilder builder = new StringBuilder();
+        builder.append("public class ForExample {\n")
+                .append("    public void example(int a1542365894, int iterations){\n")
+                .append("        for (int i=0; i<iterations; i++){ \n")
+                .append("            a1542365894 += (a1542365894 + 20) > a1542365894 ? 1 : 0; \n")
+                .append("        } ")
+                .append("    }\n")
+                .append("}");
+        String code = builder.toString();
+
+        JavaParser parser = new JavaParser();
+        ParseResult<CompilationUnit> results = parser.parse(new StringReader(code));
+        CompilationUnit unit = results.getResult().get();
+
+        unit.accept(new LineCoverageVisitor("ForExample.java"), null);
+        System.out.println(unit.toString());
+
+        int count = StringUtils.countMatches(unit.toString(), "nl.tudelft.instrumentation.line.LineCoverageTracker.updateCoverage");
+        assertTrue(unit.toString().contains("nl.tudelft.instrumentation.line.LineCoverageTracker.updateCoverage"));
+        //assertEquals(7, count);
     }
 }

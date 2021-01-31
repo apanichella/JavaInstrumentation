@@ -1,4 +1,4 @@
-package nl.tudelft.instrumentation;
+package nl.tudelft.instrumentation.line;
 
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
@@ -14,12 +14,12 @@ import com.github.javaparser.ast.visitor.ModifierVisitor;
  *
  * @author Annibale Panichella
  */
-public class CoverageVisitor extends ModifierVisitor<Object> {
+public class LineCoverageVisitor extends ModifierVisitor<Object> {
 
     /** Name of the source file to instrument */
     private String filename;
 
-    public CoverageVisitor(String filename) {
+    public LineCoverageVisitor(String filename) {
         this.filename = filename;
     }
 
@@ -144,7 +144,7 @@ public class CoverageVisitor extends ModifierVisitor<Object> {
         LineCoverageTracker.registerLine(filename, line);
 
         // create a method call to LineCoverageTracker
-        NameExpr coverageTracker = new NameExpr("nl.tudelft.instrumentation.LineCoverageTracker");
+        NameExpr coverageTracker = new NameExpr("nl.tudelft.instrumentation.line.LineCoverageTracker");
         MethodCallExpr call = new MethodCallExpr(coverageTracker, "updateCoverage");
         call.addArgument(new StringLiteralExpr(filename));
         call.addArgument(new IntegerLiteralExpr(String.valueOf(line)));
