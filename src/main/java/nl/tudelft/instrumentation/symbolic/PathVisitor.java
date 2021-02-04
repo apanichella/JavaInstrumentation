@@ -307,7 +307,7 @@ public class PathVisitor extends ModifierVisitor<Object> {
     /**
      * Method that specifies what should be done when we have encountered an expression statement
      * in the AST.
-     * @param node the node that represents the expression statment.
+     * @param node the node that represents the expression statement.
      * @param arg additional arguments that were given to the JavaParser.
      * @return a node that contains our instrument code.
      */
