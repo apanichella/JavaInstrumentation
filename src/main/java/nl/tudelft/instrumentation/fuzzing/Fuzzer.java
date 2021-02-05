@@ -12,6 +12,7 @@ public class Fuzzer {
     private List<String> currentTrace;
     private Random random;
     private int traceLength = 10;
+    private String currentTraceSymbol;
 
     /**
      * Constructor
@@ -35,11 +36,13 @@ public class Fuzzer {
         if (currentTrace.isEmpty() && !traces.isEmpty()) {
             currentTrace = traces.poll();
             nextInput = currentTrace.remove(0);
+            currentTraceSymbol = nextInput;
         }
         // If we are not done running on the current trace,
         // grab the next input from the current trace.
         else if (!currentTrace.isEmpty()) {
             nextInput = currentTrace.remove(0);
+            currentTraceSymbol = nextInput;
         }
         return nextInput;
     }
@@ -62,8 +65,8 @@ public class Fuzzer {
     public List<String> getCurrentTrace() {
         return currentTrace;
     }
-
     public int getTraceLength() {
         return traceLength;
     }
+    public String getCurrentTraceSymbol() {return currentTraceSymbol;}
 }

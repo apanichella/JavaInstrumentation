@@ -37,4 +37,10 @@ public class FuzzerTest {
         }
         assertNull(nextInput);
     }
+    @Test
+    public void testFuzzShouldChangeCurrentTraceSymbol() {
+        Fuzzer f = new Fuzzer(new String[]{"A", "B", "C", "D"});
+        String symbol = f.fuzz();
+        assertEquals(symbol, f.getCurrentTraceSymbol());
+    }
 }
