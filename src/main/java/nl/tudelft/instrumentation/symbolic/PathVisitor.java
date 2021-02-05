@@ -25,8 +25,9 @@ public class PathVisitor extends ModifierVisitor<Object> {
 
     /** Name of the source file to instrument */
     private String filename;
-    
     private String pathFile = "nl.tudelft.instrumentation.PathTracker";
+
+    private String class_name = "";
 
     /**
      * Constructor
@@ -68,8 +69,8 @@ public class PathVisitor extends ModifierVisitor<Object> {
     }
 
     /**
-     * This method is used to insert a statement after a given statement. Used to insert additional statement in the main method
-     * (right after "String input = stdin.readLine();"
+     * This method is used to insert a statement after a given statement. Used to insert additional statement
+     * in the main method (right after "String input = stdin.readLine();"
      * @param node the node that represents the statement for which we want to add a statement after.
      * @param new_statement the new statement that needs to be inserted
      * @param args additional arguments that were given to the JavaParser
@@ -269,7 +270,7 @@ public class PathVisitor extends ModifierVisitor<Object> {
      * in the AST.
      * @param node the node that represents the field declaration.
      * @param arg additional arguments that were given to the JavaParser.
-     * @return a node that contains our instrument code.
+     * @return a node that contains our instrumented code.
      */
     @Override
     public Node visit(FieldDeclaration node, Object arg){
@@ -290,7 +291,7 @@ public class PathVisitor extends ModifierVisitor<Object> {
      * in the AST.
      * @param node the node that represents the Method Declaration.
      * @param arg additional arguments that were given to the JavaParser.
-     * @return a node that contains our instrument code.
+     * @return a node that contains our instrumented code.
      */
     @Override
     public Node visit(MethodDeclaration node, Object arg){
@@ -305,11 +306,24 @@ public class PathVisitor extends ModifierVisitor<Object> {
     }
 
     /**
+     * Method that specifies what should be done when we have encountered a class or interface
+     * declaration in the AST.
+     * @param node the node that represents a class or interface declaration.
+     * @param arg the additional arguments that were given to the JavaParser.
+     * @return a node containing the instrumented code.
+     */
+    @Override
+    public Node visit(ClassOrInterfaceDeclaration node, Object arg){
+        this.class_name = node.getName().toString();
+        return (Node) super.visit(node, arg);
+    }
+
+    /**
      * Method that specifies what should be done when we have encountered an expression statement
      * in the AST.
      * @param node the node that represents the expression statement.
      * @param arg additional arguments that were given to the JavaParser.
-     * @return a node that contains our instrument code.
+     * @return a node that contains our instrumented code.
      */
     @Override
     public Node visit(ExpressionStmt node, Object arg) {

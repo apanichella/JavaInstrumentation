@@ -5,6 +5,7 @@ import java.util.Random;
 import java.io.FileWriter;
 import java.io.IOException;
 
+
 /**
  * This class is used to wrap the primitive types and expressions
  * in an object. This way we can keep track of values and operators
@@ -74,6 +75,29 @@ public class MyVar {
         this.left = l;
         this.right = r;
         this.operator = o;
+    }
+
+    /**
+     * Generate the string representation of a MyVar object.
+     * @return the MyVar object represented as MyVar object.
+     */
+    public String toString(){
+        if(type == 1){
+            return "(" + String.valueOf(value) + ")";
+        }
+        if(type == 2){
+            return "(" + String.valueOf(int_value) + ")";
+        }
+        if(type == 3){
+            return "(" + str_value + ")";
+        }
+        if(type == 4){
+            return "(" + operator + left.toString() + ")";
+        }
+        if(type == 5){
+            return "(" + left.toString() + " " +  operator + " " + right.toString() + ")";
+        }
+        return "";
     }
 
 }

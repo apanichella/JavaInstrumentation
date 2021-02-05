@@ -29,13 +29,13 @@ public class FuzzerTest {
     }
 
     @Test
-    public void testFuzzingFromWholeTraceShouldReturnNull() {
+    public void testFuzzingFromWholeTraceShouldNotReturnNull() {
         Fuzzer f = new Fuzzer(new String[]{"A", "B", "C", "D"});
         String nextInput = "";
         for (int i = 0; i < f.getTraceLength()+2; i++) {
             nextInput = f.fuzz();
         }
-        assertNull(nextInput);
+        assertNotNull(nextInput);
     }
     @Test
     public void testFuzzShouldChangeCurrentTraceSymbol() {

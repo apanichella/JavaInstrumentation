@@ -44,6 +44,12 @@ public class Fuzzer {
             nextInput = currentTrace.remove(0);
             currentTraceSymbol = nextInput;
         }
+        // If we have tried everything, generate a new random trace.
+        else {
+            currentTrace = generateRandomTrace(inputSymbols);
+            nextInput = currentTrace.remove(0);
+        }
+
         return nextInput;
     }
 
@@ -69,4 +75,5 @@ public class Fuzzer {
         return traceLength;
     }
     public String getCurrentTraceSymbol() {return currentTraceSymbol;}
+    public void setTraceLength(int length) {traceLength = length;}
 }
