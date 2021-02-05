@@ -50,7 +50,7 @@ public class Fuzzer {
      * @param symbols the symbols from which a trace should be generated from.
      * @return a random trace that is generated from the given symbols.
      */
-    private List<String> generateRandomTrace(String[] symbols) {
+    public List<String> generateRandomTrace(String[] symbols) {
         ArrayList<String> trace = new ArrayList<>();
         for (int i = 0; i < traceLength; i++) {
             trace.add(symbols[random.nextInt(symbols.length)]);
@@ -59,4 +59,11 @@ public class Fuzzer {
         return trace;
     }
 
+    public List<String> getCurrentTrace() {
+        return currentTrace;
+    }
+
+    public int getTraceLength() {
+        return traceLength;
+    }
 }
