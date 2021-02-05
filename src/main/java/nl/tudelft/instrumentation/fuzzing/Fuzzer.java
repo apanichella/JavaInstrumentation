@@ -21,8 +21,7 @@ public class Fuzzer {
         this.inputSymbols = inputSymbols;
         random = new Random();
         traces = new LinkedList<>();
-        currentTrace = generateRandomTrace();
-
+        currentTrace = generateRandomTrace(this.inputSymbols);
     }
 
     /**
@@ -42,41 +41,22 @@ public class Fuzzer {
         else if (!currentTrace.isEmpty()) {
             nextInput = currentTrace.remove(0);
         }
-        // If the current is empty and we don't have anymore
-        // traces in the list of traces, then we generate a new random trace.
-        else {
-            currentTrace = generateRandomTrace();
-            nextInput = currentTrace.remove(0);
-        }
         return nextInput;
     }
 
 
     /**
-     * Generate a random trace from the input symbols that were givent to
-     * the fuzzer.
-     * @return a trace generated from the input symbols.
+     * Generate a random trace from an array of symbols.
+     * @param symbols the symbols from which a trace should be generated from.
+     * @return a random trace that is generated from the given symbols.
      */
-    private List<String> generateRandomTrace() {
+    private List<String> generateRandomTrace(String[] symbols) {
         ArrayList<String> trace = new ArrayList<>();
         for (int i = 0; i < traceLength; i++) {
-            trace.add(inputSymbols[random.nextInt(inputSymbols.length)]);
+            trace.add(symbols[random.nextInt(symbols.length)]);
         }
+        trace.add("R"); // Reset symbol that marks that we have arrived at the end of a trace.
         return trace;
-    }
-
-
-    /**
-     * Mutate a given input trace with given probabilities.
-     * @param inputTrace the input trace to mutate.
-     * @return the mutated input trace.
-     */
-    public List<String> mutate(List<String> inputTrace){
-        /**
-         * Insert code here to do mutation on an input trace.
-         */
-        return inputTrace;
-
     }
 
 }
