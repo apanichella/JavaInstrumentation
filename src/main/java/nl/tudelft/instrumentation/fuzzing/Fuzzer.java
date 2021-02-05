@@ -29,7 +29,7 @@ public class Fuzzer {
      * @return an input
      */
     public String fuzz() {
-        String nextInput;
+        String nextInput = null;
         // Check if the current trace is empty and if it is
         // then we grab a new trace from the list of traces.
         if (currentTrace.isEmpty() && !traces.isEmpty()) {
