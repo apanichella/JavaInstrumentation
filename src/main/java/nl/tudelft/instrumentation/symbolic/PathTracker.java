@@ -2,9 +2,7 @@ package nl.tudelft.instrumentation.symbolic;
 
 import java.util.*;
 import com.microsoft.z3.*;
-import java.util.Random;
-import java.io.FileWriter;
-import java.io.IOException;
+import nl.tudelft.instrumentation.fuzzing.FuzzingLab;
 
 public class PathTracker {
     public static HashMap<String, String> cfg = new HashMap<String, String>() {{ put("model","true"); }};
@@ -180,11 +178,33 @@ public class PathTracker {
         }
     }
 
+    /**
+     * Converts an if-statement into a custom myIf-statement. This method is used to
+     * call the encounteredNewBranch method which contains the logic for computing
+     * the branch distance when a new branch has been found.
+     * @param condition the condition of the if-statement.
+     * @param value the value of the condition.
+     * @param line_nr the line number of the if-statement.
+     */
     public static void myIf(MyVar condition, boolean value, int line_nr){
         SymbolicExecutionLab.encounteredNewBranch(condition, value, line_nr);
     }
 
-    public static String fuzz(String[] inputs){
-        return SymbolicExecutionLab.fuzz(inputs);
+    /**
+     * Method for fuzzing a new input.
+     * @param inputSymbols the input symbols from which the fuzzer should fuzz from.
+     * @return an input.
+     */
+    public static String fuzz(String[] inputSymbols){
+        return SymbolicExecutionLab.fuzz(inputSymbols);
     }
+
+    /**
+     * Used to catch output from the standard out.
+     * @param out the string that has been outputted in the standard out.
+     */
+    public static void output(String out){
+        SymbolicExecutionLab.output(out);
+    }
+
 }

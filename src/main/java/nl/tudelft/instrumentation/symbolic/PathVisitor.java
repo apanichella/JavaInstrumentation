@@ -44,7 +44,7 @@ public class PathVisitor extends ModifierVisitor<Object> {
      * @return {@code BlockStmt} that includes the {@code node} (statement in input) and the instrumented
      *         code for symbolic execution.
      */
-    public Node addPathCode(Statement node, Statement new_statement, Object args){
+    public Node addCode(Statement node, Statement new_statement, Object args){
         if (node.getParentNode().isPresent()){
         
             Node parent = node.getParentNode().get();
@@ -76,7 +76,7 @@ public class PathVisitor extends ModifierVisitor<Object> {
      * @param args additional arguments that were given to the JavaParser
      * @return a node containing our instrumented code.
      */
-    public Node addPathCodeAfter(Statement node, Statement new_statement, Object args){
+    public Node addCodeAfter(Statement node, Statement new_statement, Object args){
         if (node.getParentNode().isPresent()){
         
             Node parent = node.getParentNode().get();
@@ -329,9 +329,14 @@ public class PathVisitor extends ModifierVisitor<Object> {
     public Node visit(ExpressionStmt node, Object arg) {
         // What should be done when it is a variable declaration.
         if(node.getExpression() instanceof VariableDeclarationExpr){
+            //System.out.println(node.toString());
             if(node.toString().contains("String input = stdin")){
-                Statement staticStatement = StaticJavaParser.parseStatement("MyVar my_input = " + pathFile + ".myInputVar(input, \"input\");");
-                this.addPathCodeAfter(node, staticStatement, arg);
+                Statement staticStatement = StaticJavaParser.parseStatement("if(input.equals(\"R\")){ eca = new " + class_name + "(); continue; }");
+                this.addCodeAfter(node, staticStatement, arg);
+                staticStatement = StaticJavaParser.parseStatement("MyVar my_input = " + pathFile + ".myInputVar(input, \"input\");");
+                this.addCodeAfter(node, staticStatement, arg);
+                staticStatement = StaticJavaParser.parseStatement("String input = " + pathFile + ".fuzz(eca.inputs);");
+                node.replace(staticStatement);
             }
         }
 
@@ -339,7 +344,7 @@ public class PathVisitor extends ModifierVisitor<Object> {
         if(node.getExpression() instanceof AssignExpr){
             // Convert it to the corresponding Z3 expression.
             ExpressionStmt myassign = this.createMyAssign((AssignExpr)node.getExpression().clone(), arg);
-            this.addPathCode(node, myassign, arg);
+            this.addCode(node, myassign, arg);
         }
 
         // What should be done when it is a method call expresion.
@@ -350,6 +355,14 @@ public class PathVisitor extends ModifierVisitor<Object> {
                     // We basically add an extra argument to a method if its name starts with "calculate"
                     ((MethodCallExpr)node.getExpression()).addArgument(addOwnExpressionCode(expr, arg));
                 }
+            }
+        }
+
+        // Catch the out from in the standard out.
+        if (node.getExpression() instanceof MethodCallExpr) {
+            MethodCallExpr mce = (MethodCallExpr)node.getExpression();
+            if (node.toString().contains("System.out")) {
+                this.addCode(node, new ExpressionStmt(new MethodCallExpr(new NameExpr(pathFile),"output",mce.getArguments())), arg);
             }
         }
         return node;
@@ -365,7 +378,7 @@ public class PathVisitor extends ModifierVisitor<Object> {
     @Override
     public Node visit(IfStmt node, Object arg) {
         ExpressionStmt myif = this.createMyIf(node.clone(), arg);
-        this.addPathCode(node, myif, arg);
+        this.addCode(node, myif, arg);
         return (Node) super.visit(node, arg);
     }
 
@@ -377,7 +390,7 @@ public class PathVisitor extends ModifierVisitor<Object> {
      */
     @Override
     public Node visit(CompilationUnit node, Object arg) {
-        node.addImport("nl.tudelft.instrumentation.*");
+        node.addImport("nl.tudelft.instrumentation.symbolic.*");
         return (Node) super.visit(node, arg);
     }
 }

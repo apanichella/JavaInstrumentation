@@ -27,6 +27,8 @@ public class DistanceVisitor extends ModifierVisitor<Object> {
     
     private String pathFile = "nl.tudelft.instrumentation.fuzzing.DistanceTracker";
 
+    private String class_name = "";
+
     public DistanceVisitor(String filename) {
         this.filename = filename;
     }
@@ -56,6 +58,38 @@ public class DistanceVisitor extends ModifierVisitor<Object> {
                 BlockStmt block = new BlockStmt();
                 block.addStatement(new_statement);
                 block.addStatement(node);
+                return block;
+            }
+        }
+        return node;
+    }
+
+    /**
+     * This method is used to insert a statement after a given statement. Used to insert additional statement
+     * in the main method (right after "String input = stdin.readLine();"
+     * @param node the node that represents the statement for which we want to add a statement after.
+     * @param new_statement the new statement that needs to be inserted
+     * @param args additional arguments that were given to the JavaParser
+     * @return a node containing our instrumented code.
+     */
+    public Node addCodeAfter(Statement node, Statement new_statement, Object args){
+        if (node.getParentNode().isPresent()){
+
+            Node parent = node.getParentNode().get();
+
+            if (parent instanceof BlockStmt) {
+                // if {@code node} is within a BlockStmt (i.e., withing a block with
+                // open-close curly brackets), we just add the new line for coverage tracking
+                BlockStmt block = (BlockStmt) parent;
+                int line = node.getBegin().get().line;
+                int position = block.getStatements().indexOf(node) + 1;
+                block.addStatement(position, new_statement);
+            } else {
+                // if {@code node} is not within a BlockStmt (e.g., true branch of an if condition
+                // with no curly brackets), we need to create a BlockStmt first
+                BlockStmt block = new BlockStmt();
+                block.addStatement(node);
+                block.addStatement(new_statement);
                 return block;
             }
         }
@@ -178,6 +212,15 @@ public class DistanceVisitor extends ModifierVisitor<Object> {
      */
     @Override
     public Node visit(ExpressionStmt node, Object arg) {
+        // This is to insert a line main method.
+        if (node.getExpression() instanceof VariableDeclarationExpr) {
+            if (node.toString().contains("String input = stdin")) {
+                Statement staticStatement = StaticJavaParser.parseStatement("if(input.equals(\"R\")){ eca = new " + class_name + "(); continue; }");
+                this.addCodeAfter(node, staticStatement, arg);
+                staticStatement = StaticJavaParser.parseStatement("String input = " + pathFile + ".fuzz(eca.inputs);");
+                node.replace(staticStatement);
+            }
+        }
         // What we should do when we encountered a assign expression.
         if(node.getExpression() instanceof AssignExpr){
             AssignExpr ae = (AssignExpr)node.getExpression();
@@ -188,7 +231,29 @@ public class DistanceVisitor extends ModifierVisitor<Object> {
             }
             this.addOwnConditionalCode(ae.getValue(),node,arg);
         }
+
+        // Catch the out from in the standard out.
+        if (node.getExpression() instanceof MethodCallExpr) {
+            MethodCallExpr mce = (MethodCallExpr)node.getExpression();
+            if (node.toString().contains("System.out")) {
+                this.addCode(node, new ExpressionStmt(new MethodCallExpr(new NameExpr(pathFile),"output",mce.getArguments())), arg);
+            }
+        }
+
         return node;
+    }
+
+    /**
+     * What to do when we have encountered a Class of Interface declaration.
+     * In this case, we try to grab the name of class.
+     * @param node the node that represents a class or interface declaration.
+     * @param arg additional arugments that were given to the JavaParser.
+     * @return node original node.
+     */
+    @Override
+    public Node visit(ClassOrInterfaceDeclaration node, Object arg){
+        this.class_name = node.getName().toString();
+        return (Node) super.visit(node, arg);
     }
 
     /**

@@ -75,4 +75,8 @@ public class SymbolicExecutionLab {
         return inputs[r.nextInt(inputs.length)];
     }
 
+    static void output(String out){
+        System.out.println(out);
+    }
+
 }
