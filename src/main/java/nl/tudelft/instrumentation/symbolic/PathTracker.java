@@ -2,7 +2,6 @@ package nl.tudelft.instrumentation.symbolic;
 
 import java.util.*;
 import com.microsoft.z3.*;
-import nl.tudelft.instrumentation.fuzzing.FuzzingLab;
 
 public class PathTracker {
     public static HashMap<String, String> cfg = new HashMap<String, String>() {{ put("model","true"); }};
