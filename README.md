@@ -32,9 +32,7 @@ To build the project, make sure you have navigated to the root of this project a
 
 To instrument a given Java file, use the following command:
 
-`java -cp target/JavaInstrumentation-1.0-SNAPSHOT-jar-with-dependencies.jar  \`
-`nl.tudelft.instrumentation.Main --file=*JavaFile*`
-`--type=branch > *TargetFile* `
+`java -cp target/aistr.jar nl.tudelft.instrumentation.Main --type=distance --file=*JavaFile* > *TargetFile`
 
 Where `*JavaFile*` is the path to the Java file to instrument, `*TargetFile*` is the file (file name and path) where you want to save the instrumented code.
 Note that the flags `--file` and `--type` are required for instrumenting a Java file. 
@@ -43,21 +41,21 @@ The flag `--file` is used to specify the path to the Java file and the `--type` 
 # Compiling and Running the Instrumented Java File
 To compile the instrumented Java file, you would need to run the following command:
 
-`javac -cp target/JavaInstrumentation-1.0-SNAPSHOT-jar-with-dependencies.jar:.  *InstrumentedJavaFile*`
+`javac -cp target/aistr.jar:.  *InstrumentedJavaFile*`
 
 Where `*InstrumentedJavaFile*` is path to the instrumented Java file. When compiling the instrumented Java file for symbolic execution, a different command is needed:
 
-`javac -cp target/JavaInstrumentation-1.0-SNAPSHOT-jar-with-dependencies.jar:lib/com.microsoft.z3.jar:.  *InstrumentedJavaFile*`
+`javac -cp target/aistr.jar:lib/com.microsoft.z3.jar:.  *InstrumentedJavaFile*`
 
 Notice that we have added an extra Jar file to the command as we need Z3 to do the symbolic execution. 
 
 To run the instrumented Java file, you would need to run the following command:
 
-`java -cp target/JavaInstrumentation-1.0-SNAPSHOT-jar-with-dependencies.jar:.  *InstrumentedJavaFile*`
+`java -cp target/aistr.jar:.  *InstrumentedJavaFile*`
 
 Again, if when runnning the instrumented Java file for symbolic execution, we would need to add the Z3 Jar file to the command:
 
-`java -cp target/JavaInstrumentation-1.0-SNAPSHOT-jar-with-dependencies.jar:lib/com.microsoft.z3.jar:.  *InstrumentedJavaFile*`
+`java -cp target/aistr:lib/com.microsoft.z3.jar:.  *InstrumentedJavaFile*`
 
 # Setting
 

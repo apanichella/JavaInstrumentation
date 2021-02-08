@@ -72,9 +72,11 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <finalName>aistr</finalName>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
+                    <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
             </plugin>
         </plugins>
