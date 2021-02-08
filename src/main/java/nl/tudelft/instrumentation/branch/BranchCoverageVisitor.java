@@ -13,7 +13,6 @@ import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
-import jdk.nashorn.internal.ir.BlockStatement;
 import nl.tudelft.instrumentation.line.LineCoverageTracker;
 
 import java.util.EnumSet;

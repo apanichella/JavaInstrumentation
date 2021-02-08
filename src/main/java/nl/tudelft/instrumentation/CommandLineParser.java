@@ -3,6 +3,8 @@ package nl.tudelft.instrumentation;
 import com.github.javaparser.ast.visitor.GenericVisitor;
 import nl.tudelft.instrumentation.branch.BranchCoverageVisitor;
 import nl.tudelft.instrumentation.line.LineCoverageVisitor;
+import nl.tudelft.instrumentation.symbolic.PathVisitor;
+import nl.tudelft.instrumentation.fuzzing.DistanceVisitor;
 import org.apache.commons.cli.*;
 
 import java.io.File;
@@ -47,6 +49,12 @@ public class CommandLineParser {
         return options;
     }
 
+    /**
+     * Parses the arguments from a given command.
+     * @param args the arguments.
+     * @throws FileNotFoundException throws a FileNotFoundException if we cannot find the file that was given
+     *                               as an argument.
+     */
     public void parseCommandLine(String[] args) throws FileNotFoundException {
         CommandLine line = parseArguments(args);
 
@@ -63,9 +71,9 @@ public class CommandLineParser {
             this.javaFile = file;
         }
 
-        System.out.println(line.getOptionValue("type"));
         String type = line.getOptionValue("type");
 
+        // Parses which type of instrumentation we should be doing.
         switch(type){
             case "line":
                 visitor = new LineCoverageVisitor(file.getAbsolutePath());
@@ -73,8 +81,14 @@ public class CommandLineParser {
             case "branch":
                 visitor = new BranchCoverageVisitor(file.getAbsolutePath());
                 break;
+            case "distance":
+                visitor = new DistanceVisitor(file.getAbsolutePath());
+                break;
+            case "symbolic":
+                visitor = new PathVisitor(file.getAbsolutePath());
+                break;
             default:
-                throw new IllegalArgumentException("Only two available types: \"branch\" and \"line\"");
+                throw new IllegalArgumentException("Only four available types: \"branch\" , \"line\" , \"distance\" , \"symbolic\"");
         }
     }
 

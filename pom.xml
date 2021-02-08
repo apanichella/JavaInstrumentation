@@ -48,6 +48,14 @@
             <artifactId>commons-cli</artifactId>
             <version>1.4</version>
         </dependency>
+        <!-- Z3 -->
+        <dependency>
+            <groupId>com.microsoft.z3</groupId>
+            <artifactId>libz3.osx</artifactId>
+            <version>4.8.8</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/com.microsoft.z3.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <build>
@@ -64,9 +72,11 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <finalName>aistr</finalName>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
+                    <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
             </plugin>
         </plugins>
