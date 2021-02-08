@@ -1,5 +1,7 @@
 package nl.tudelft.instrumentation.patching;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.*;
 import java.io.IOException;
@@ -130,7 +132,9 @@ public class OperatorTracker {
      * from "tests.txt"
      */
     public static void readTests(){
-        try (Stream<String> stream = Files.lines( Paths.get("tests.txt")))
+        try (Stream<String> stream = new BufferedReader(
+                new InputStreamReader(OperatorTracker.class.getResourceAsStream("/tests.txt"))).lines()
+            )
         {
             stream.forEach(s -> {
                 tests.add(s.split("->"));
@@ -141,7 +145,7 @@ public class OperatorTracker {
                 System.out.println();
             }
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             e.printStackTrace();
         }
