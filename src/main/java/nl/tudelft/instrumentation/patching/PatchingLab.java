@@ -7,6 +7,10 @@ public class PatchingLab {
 
         static Random r = new Random();
 
+        static void initialize(){
+                // initialize the population based on OperatorTracker.operators
+        }
+
         static boolean encounteredOperator(String operator, int left, int right, int operator_nr){
                 // do something useful
                 if(OperatorTracker.testing){
