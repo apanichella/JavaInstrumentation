@@ -3,6 +3,7 @@ package nl.tudelft.instrumentation;
 import com.github.javaparser.ast.visitor.GenericVisitor;
 import nl.tudelft.instrumentation.branch.BranchCoverageVisitor;
 import nl.tudelft.instrumentation.line.LineCoverageVisitor;
+import nl.tudelft.instrumentation.patching.OperatorVisitor;
 import nl.tudelft.instrumentation.symbolic.PathVisitor;
 import nl.tudelft.instrumentation.fuzzing.DistanceVisitor;
 import org.apache.commons.cli.*;
@@ -86,6 +87,9 @@ public class CommandLineParser {
                 break;
             case "symbolic":
                 visitor = new PathVisitor(file.getAbsolutePath());
+                break;
+            case "patch":
+                visitor = new OperatorVisitor(file.getAbsolutePath());
                 break;
             default:
                 throw new IllegalArgumentException("Only four available types: \"branch\" , \"line\" , \"distance\" , \"symbolic\"");
