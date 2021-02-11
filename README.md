@@ -32,28 +32,49 @@ To build the project, make sure you have navigated to the root of this project a
 
 To instrument a given Java file, use the following command:
 
-`java -cp target/aistr.jar nl.tudelft.instrumentation.Main --type=distance --file=*JavaFile* > *TargetFile`
+`java -cp target/aistr.jar nl.tudelft.instrumentation.Main --type=distance --file=*JavaFile* > *TargetFile*`
 
 Where `*JavaFile*` is the path to the Java file to instrument, `*TargetFile*` is the file (file name and path) where you want to save the instrumented code.
 Note that the flags `--file` and `--type` are required for instrumenting a Java file. 
 The flag `--file` is used to specify the path to the Java file and the `--type` flag is used to specify what kind of instrumentation should be done on the Java file.
 
-# Compiling and Running the Instrumented Java File
+# Compiling the Instrumented Java File
 To compile the instrumented Java file, you would need to run the following command:
 
 `javac -cp target/aistr.jar:.  *InstrumentedJavaFile*`
 
-Where `*InstrumentedJavaFile*` is path to the instrumented Java file. When compiling the instrumented Java file for symbolic execution, a different command is needed:
+Where `*InstrumentedJavaFile*` is path to the instrumented Java file. 
+
+## Compiling for the second lab
+The commands here **should only be used** when you are compiling the instrumented Java file for symbolic execution with Z3! 
+When compiling the instrumented Java file for symbolic execution, a different command is needed:
 
 `javac -cp target/aistr.jar:lib/com.microsoft.z3.jar:.  *InstrumentedJavaFile*`
 
 Notice that we have added an extra Jar file to the command as we need Z3 to do the symbolic execution. 
 
+# Running the Instrumented Java File
+
 To run the instrumented Java file, you would need to run the following command:
 
 `java -cp target/aistr.jar:.  *InstrumentedJavaFile*`
 
-Again, if when runnning the instrumented Java file for symbolic execution, we would need to add the Z3 Jar file to the command:
+As an example, if your Java file is called `Example.java` then you should run the following command: 
+
+`java -cp target/aistr.jar:.  Example`
+
+If you have saved your instrumented Java file in another folder, make sure you add the folder to the classpath:
+
+`java -cp target/aistr.jar:PATH/TO/FOLDER:.  *InstrumentedJavaFile*`
+
+For example if your instrumented Java file is located in `/home/instrumented/`, then your command would be:
+
+`java -cp target/aistr.jar:/home/instrumented:.  *InstrumentedJavaFile*`
+
+
+## Running the instrumented Java file for the second lab
+The commands here **should only be used** when you are compiling the instrumented Java file for symbolic execution with Z3!
+Again, when runnning the instrumented Java file for symbolic execution, we would need to add the Z3 Jar file to the command:
 
 `java -cp target/aistr:lib/com.microsoft.z3.jar:.  *InstrumentedJavaFile*`
 
