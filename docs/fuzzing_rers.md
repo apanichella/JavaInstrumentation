@@ -608,11 +608,11 @@ Now we are ready to fuzz.
 
 First compile the file you edited (for example Problem11.c) using the afl-gcc compiler or in my case afl-clang:
 
-path_to_afl/afl-clang Problem11.c -o Problem11
+`path_to_afl/afl-clang Problem11.c -o Problem11`
 
 Then run afl on the obtained binary:
 
-path_to_afl/afl-fuzz -i path_to_test_dir -o path_to_findings_dir path_to_binary/Problem11
+`path_to_afl/afl-fuzz -i path_to_test_dir -o path_to_findings_dir path_to_binary/Problem11`
 
 You should see AFL starting, perhaps with some warnings due to useless input files, you can simply ignore these.
 
@@ -620,8 +620,10 @@ Keep on fuzzing.
 
 Then after some time, you can investigate the findings directory. You will find for instance the crashes found in the crashes directory, and interesting test cases (which it uses to trigger new paths) in queue. You can run the crashes found in the fuzzed program in order to answer the reachability problems:
 
+```C++
 cd findings/crashes
 cat id:000000,sig:06,src:000001,op:havoc,rep:4 | ../../Problem11
+```
 
 Gives in my case:
 
