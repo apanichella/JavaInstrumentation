@@ -16,7 +16,7 @@ import java.io.IOException;
  */
 public class MyVar {
 
-    int type = -1; // the type of the variable
+    TypeEnum type = TypeEnum.UNKNOWN; // the type of the variable
 
     public boolean value = false; // the boolean value of the variable (if it's a boolean).
     public int int_value = 0; // the integer value of the variable (if it's an integer).
@@ -31,7 +31,7 @@ public class MyVar {
      * @param b the boolean value.
      */
     MyVar(boolean b){
-        this.type = 1;
+        this.type = TypeEnum.BOOL;
         this.value = b;
     }
 
@@ -40,7 +40,7 @@ public class MyVar {
      * @param i the integer value.
      */
     MyVar(int i){
-        this.type = 2;
+        this.type = TypeEnum.INT;
         this.int_value = i;
     }
 
@@ -49,7 +49,7 @@ public class MyVar {
      * @param s the string value.
      */
     MyVar(String s){
-        this.type = 3;
+        this.type = TypeEnum.STRING;
         this.str_value = s;
     }
 
@@ -59,7 +59,7 @@ public class MyVar {
      * @param o  the operator of the unary expression.
      */
     MyVar(MyVar l, String o){
-        this.type = 4;
+        this.type = TypeEnum.UNARY;
         this.left = l;
         this.operator = o;
     }
@@ -71,7 +71,7 @@ public class MyVar {
      * @param o the operator of the binary expression.
      */
     MyVar(MyVar l, MyVar r, String o){
-        this.type = 5;
+        this.type = TypeEnum.BINARY;
         this.left = l;
         this.right = r;
         this.operator = o;
@@ -82,22 +82,19 @@ public class MyVar {
      * @return the MyVar object represented as MyVar object.
      */
     public String toString(){
-        if(type == 1){
-            return "(" + String.valueOf(value) + ")";
+        switch (this.type) {
+            case BOOL:
+                return "(" + value + ")";
+            case INT:
+                return "(" + int_value + ")";
+            case STRING:
+                return "(" + str_value + ")";
+            case UNARY:
+                return "(" + operator + left.toString() + ")";
+            case BINARY:
+                return "(" + left.toString() + " " +  operator + " " + right.toString() + ")";
+            default:
+                return "";
         }
-        if(type == 2){
-            return "(" + String.valueOf(int_value) + ")";
-        }
-        if(type == 3){
-            return "(" + str_value + ")";
-        }
-        if(type == 4){
-            return "(" + operator + left.toString() + ")";
-        }
-        if(type == 5){
-            return "(" + left.toString() + " " +  operator + " " + right.toString() + ")";
-        }
-        return "";
     }
-
 }
