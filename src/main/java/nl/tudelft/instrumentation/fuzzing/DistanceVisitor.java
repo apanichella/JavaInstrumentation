@@ -110,7 +110,7 @@ public class DistanceVisitor extends ModifierVisitor<Object> {
             BinaryExpr bine = (BinaryExpr) node;
             String operator = bine.getOperator().asString();
             if(operator.equals("|") || operator.equals("||") || operator.equals("&") || operator.equals("&&") ||
-                    operator.equals("<") || operator.equals(">") || operator.equals("<=") || operator.equals("<=") ||
+                    operator.equals("<") || operator.equals(">") || operator.equals("<=") || operator.equals(">=") ||
                     operator.equals("==")){
                 Expression left = addOwnExpressionCode(bine.getLeft(), args);
                 Expression right = addOwnExpressionCode(bine.getRight(), args);
