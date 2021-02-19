@@ -155,7 +155,7 @@ public class PathTracker {
         if(operator == "-=") new_value = ctx.mkSub((IntExpr)target.z3var,(IntExpr)value.z3var);
         if(operator == "+=") new_value = ctx.mkAdd((IntExpr)target.z3var,(IntExpr)value.z3var);
 
-        SymbolicExecutionLab.assign(target.z3var, target.name, value.z3var, target.z3var.getSort());
+        SymbolicExecutionLab.assign(target, target.name, new_value, target.z3var.getSort());
     }
 
     // we handle arrays, again using if-then-else and call standard variable assignment for all indices
@@ -166,7 +166,7 @@ public class PathTracker {
             if(operator == "-=") new_value = ctx.mkSub((IntExpr)old_expr,(IntExpr)value.z3var);
             if(operator == "+=") new_value = ctx.mkAdd((IntExpr)old_expr,(IntExpr)value.z3var);
 
-            SymbolicExecutionLab.assign(name[i].z3var, name[i].name, ctx.mkITE(ctx.mkEq(ctx.mkInt(i),index.z3var), new_value, old_expr), name[i].z3var.getSort());
+            SymbolicExecutionLab.assign(name[i], name[i].name, ctx.mkITE(ctx.mkEq(ctx.mkInt(i),index.z3var), new_value, old_expr), name[i].z3var.getSort());
         }
     }
 
