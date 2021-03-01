@@ -57,7 +57,7 @@ public class SymbolicExecutionLab {
         return new MyVar(PathTracker.ctx.mkFalse());
     }
 
-    static void assign(Expr var, String name, Expr value, Sort s){
+    static void assign(MyVar var, String name, Expr value, Sort s){
         // all variable assignments, use single static assignment
     }
 
