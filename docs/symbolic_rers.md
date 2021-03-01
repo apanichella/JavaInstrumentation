@@ -178,7 +178,7 @@ error_37 error_65 23
 The results were written to `klee-out-1` folder on my machine. The results are in binary form, you can inspect them using the ktest tool:
 
 ```
-./path/to/ktest-tool --write-ints klee-out-1/test000001.ktest
+./path/to/ktest-tool klee-out-1/test000001.ktest
 ```
 
 (again, all binaries of KLEE are located in `/home/str/klee/build/bin/`)
@@ -224,8 +224,8 @@ With klee run test you can replay inputs, the following works on my system:
 
 ```
 export LD_LIBRARY_PATH=/home/str/klee/build/lib/:$LD_LIBRARY_PATH
-clang-6.0 -I /home/str/klee/include -L /home/klee/build/lib Problem10.c -o Problem10.bc -lkleeRuntest
-KTEST_FILE=klee-out-1/test000001.test ./Problem10.bc
+clang-6.0 -I /home/str/klee/include -L /home/str/klee/build/lib Problem10.c -o Problem10.bc -lkleeRuntest
+KTEST_FILE=klee-out-1/test000001.ktest ./Problem10.bc
 ```
 
 which gives nothing, as expected with an input of all 0s. A more interesting cases:
@@ -279,7 +279,7 @@ array program[80] : w32 -> w8 = symbolic
 compare this with the generated input (which seems to satisfy all the constraints, of which some seem not very optimized...e.g.: (N1=2 and N1 != 5 and N1 != 4 and N1 != 3 and N1 != 1):
 
 ```
-ktest-tool --write-ints klee-out-1/test000227.ktest
+ktest-tool klee-out-1/test000227.ktest
 ktest file : 'klee-out-1/test000227.ktest'
 args       : ['Problem10.bc']
 num objects: 1
