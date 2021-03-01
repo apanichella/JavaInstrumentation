@@ -1,12 +1,7 @@
 # Symbolic Execution
-Download and unpack the RERS challenge programs:
-
-http://rers-challenge.org/2020/problems/sequential/SeqReachabilityRers2020.zip
-
-The archives contain highly obfuscated c and java code.
+In this tutorial, I show how I ran KLEE on a RERS problem.
 
 The c code will not compile as given, we need to make a few changes, and some more to run KLEE on it.
-
 
 **NOTE**: The following example was done on Problem10 from RERS Challenge 2017 but the same modifications can also be made on the RERS 2020 problems. The output that you see here may not reflect the output of the RERS 2020 problems.
 
@@ -77,13 +72,15 @@ You can compile the obtained .c file using:
 clang-6.0 -I /path/to/klee/source/include -emit-llvm -g -c /path/to/Problem/10/Problem10.c -o /path/to/output/folder/Problem10.bc
 ```
 
-(obtain llvm, and make sure to include klee)
+(the source files of klee are located oin `/home/str/klee/`)
 
 You can run the obtained llvm code using:
 
 ```
 ./path/to/klee/binary/klee /path/to/instrumented/Problem10.bc
 ```
+
+(all binaries of KLEE are located in `/home/str/klee/build/bin/`)
 
 This generated the following output:
 
@@ -184,6 +181,8 @@ The results were written to `klee-out-1` folder on my machine. The results are i
 ./path/to/ktest-tool --write-ints klee-out-1/test000001.ktest
 ```
 
+(again, all binaries of KLEE are located in `/home/str/klee/build/bin/`)
+
 gives:
 
 ```
@@ -209,6 +208,8 @@ Running
 ./path/to/klee-stats ./klee-out-1/
 ```
 
+(again, all binaries of KLEE are located in `/home/str/klee/build/bin/`)
+
 gives some coverage information:
 
 ```
@@ -222,8 +223,8 @@ gives some coverage information:
 With klee run test you can replay inputs, the following works on my system:
 
 ```
-export LD_LIBRARY_PATH=/home/klee/klee_build/klee/lib/:$LD_LIBRARY_PATH
-clang-6.0 -I /home/klee/klee_src/include -L /home/klee/klee_build/klee/lib Problem10.c -o Problem10.bc -lkleeRuntest
+export LD_LIBRARY_PATH=/home/str/klee/build/lib/:$LD_LIBRARY_PATH
+clang-6.0 -I /home/str/klee/include -L /home/klee/build/lib Problem10.c -o Problem10.bc -lkleeRuntest
 KTEST_FILE=klee-out-1/test000001.test ./Problem10.bc
 ```
 
@@ -293,6 +294,7 @@ and send it to the SMT solver, although I am not yet sure on how to get the outp
 ./path/to/kleaver klee-out-1/test000227.kquery
 ```
 
+(again, all binaries of KLEE are located in `/home/str/klee/build/bin/`)
 
 
 Read more on the features of KLEE at: http://klee.github.io/docs/. Happy bug hunting.
