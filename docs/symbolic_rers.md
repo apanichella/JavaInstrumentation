@@ -1,60 +1,9 @@
 # Symbolic Execution
-
-We are going to run concolic execution on programs from the RERS Reachability challenges. The first step is to download and install KLEE. To make it easier for you,
-we have already downloaded and built KLEE for you in the docker image (located in `/home/str/klee`). But if you want to install it yourself, you can do the following:
-
-https://klee.github.io/
-
-This can be quite troublesome from scratch. The easiest way to install is via Docker:
-
-https://www.docker.com/
-
-Docker is a container, you can think of it as a small virtual machine. Use any of the standard installers for Docker, then run:
-
-```
-docker pull klee/klee
-```
-
-to get KLEE, and run:
-
-```
-docker run --rm -ti --ulimit='stack=-1:-1' klee/klee
-```
-
-to start a small VM containing KLEE, more details can be found at: http://klee.github.io/docker/. Run
-
-```
-exit
-```
-
-to exit. Another important command is to make Docker mount a local directory:
-
-```
-sudo docker run -v [PATH IN THE HOST MACHINE]:[PATH IN THE CONTAINER] -ti --name=[NAME OF THE CONTAINER] --ulimit='stack=-1:-1' klee/klee
-```
-
-which will load the host path and a path in the Docker container. I simply give it my home_dir:
-
-```
-sudo docker run -v /Users/sicco/:/home/klee/sicco -ti --name=dock_klee --ulimit='stack=-1:-1' klee/klee
-```
-
-You can remove an old contained using rm:
-
-```
-docker rm dock_klee
-```
-
-Then download and unpack the RERS challenge programs:
-
-http://rers-challenge.org/2020/problems/sequential/SeqReachabilityRers2020.zip
-
-The archives contain highly obfuscated c and java code.
+In this tutorial, I show how I ran KLEE on a RERS problem.
 
 The c code will not compile as given, we need to make a few changes, and some more to run KLEE on it.
 
-
-**NOTE**: The following example was done on Problem10 from RERS Challenge 2017 but the same modifications can also be made on the RERS 2020 problems.
+**NOTE**: The following example was done on Problem10 from RERS Challenge 2017 but the same modifications can also be made on the RERS 2020 problems. The output that you see here may not reflect the output of the RERS 2020 problems.
 
 First, replace:
 
@@ -120,18 +69,20 @@ This makes all input symbolic, for up to length 20 inputs. KLEE will try to trig
 You can compile the obtained .c file using:
 
 ```
-clang -I /home/klee/klee_src/include -emit-llvm -g -c Problem10.c -o Problem10.bc
+clang-6.0 -I /path/to/klee/source/include -emit-llvm -g -c /path/to/Problem/10/Problem10.c -o /path/to/output/folder/Problem10.bc
 ```
 
-(obtain llvm, and make sure to include klee)
+(the source files of klee are located oin `/home/str/klee/`)
 
 You can run the obtained llvm code using:
 
 ```
-klee Problem10.bc
+./path/to/klee/binary/klee /path/to/instrumented/Problem10.bc
 ```
 
-This will generate output such as:
+(all binaries of KLEE are located in `/home/str/klee/build/bin/`)
+
+This generated the following output:
 
 ```
 KLEE: output directory is "/home/klee/sicco/ReachabilityRERS2017/Problem10/klee-out-1"
@@ -224,11 +175,13 @@ error_37 error_65 23
 ...
 ```
 
-You can find all results in the klee-out-1 directory. The results are in binary form, you can inspect them using the ktest tool:
+The results were written to `klee-out-1` folder on my machine. The results are in binary form, you can inspect them using the ktest tool:
 
 ```
-ktest-tool --write-ints klee-out-1/test000001.ktest
+./path/to/ktest-tool klee-out-1/test000001.ktest
 ```
+
+(again, all binaries of KLEE are located in `/home/str/klee/build/bin/`)
 
 gives:
 
@@ -252,8 +205,10 @@ etc.
 Running
 
 ```
-klee-stats ./klee-out-1/
+./path/to/klee-stats ./klee-out-1/
 ```
+
+(again, all binaries of KLEE are located in `/home/str/klee/build/bin/`)
 
 gives some coverage information:
 
@@ -268,9 +223,9 @@ gives some coverage information:
 With klee run test you can replay inputs, the following works on my system:
 
 ```
-export LD_LIBRARY_PATH=/home/klee/klee_build/klee/lib/:$LD_LIBRARY_PATH
-clang -I /home/klee/klee_src/include -L /home/klee/klee_build/klee/lib Problem10.c -o Problem10.bc -lkleeRuntest
-KTEST_FILE=klee-out-1/test000001.test ./Problem10.bc
+export LD_LIBRARY_PATH=/home/str/klee/build/lib/:$LD_LIBRARY_PATH
+clang-6.0 -I /home/str/klee/include -L /home/str/klee/build/lib Problem10.c -o Problem10.bc -lkleeRuntest
+KTEST_FILE=klee-out-1/test000001.ktest ./Problem10.bc
 ```
 
 which gives nothing, as expected with an input of all 0s. A more interesting cases:
@@ -324,7 +279,7 @@ array program[80] : w32 -> w8 = symbolic
 compare this with the generated input (which seems to satisfy all the constraints, of which some seem not very optimized...e.g.: (N1=2 and N1 != 5 and N1 != 4 and N1 != 3 and N1 != 1):
 
 ```
-ktest-tool --write-ints klee-out-1/test000227.ktest
+ktest-tool klee-out-1/test000227.ktest
 ktest file : 'klee-out-1/test000227.ktest'
 args       : ['Problem10.bc']
 num objects: 1
@@ -336,9 +291,10 @@ object    0: data: b'\x05\x00\x00\x00\x01\x00\x00\x00\x02\x00\x00\x00\x03\x00\x0
 and send it to the SMT solver, although I am not yet sure on how to get the output from the solver..(anyone can figure it out from the very brief documentation? http://klee.github.io/docs/kleaver-options/ and http://klee.github.io/docs/kquery/)
 
 ```
-kleaver klee-out-1/test000227.kquery
+./path/to/kleaver klee-out-1/test000227.kquery
 ```
 
+(again, all binaries of KLEE are located in `/home/str/klee/build/bin/`)
 
 
 Read more on the features of KLEE at: http://klee.github.io/docs/. Happy bug hunting.

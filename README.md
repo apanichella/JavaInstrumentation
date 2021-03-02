@@ -45,6 +45,8 @@ To compile the instrumented Java file, you would need to run the following comma
 
 Where `*InstrumentedJavaFile*` is path to the instrumented Java file. 
 
+**Note**: If you are compiling a Reachability problem (Problem 11 - 19), make sure you compile `Errors.java` class at the same time (`Errors.java` can be found [here](http://rers-challenge.org/2020/index.php?page=java-code#)).
+
 ## Compiling for the second lab
 The commands here **should only be used** when you are compiling the instrumented Java file for symbolic execution with Z3! 
 When compiling the instrumented Java file for symbolic execution, a different command is needed:

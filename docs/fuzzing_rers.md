@@ -14,6 +14,9 @@ http://rers-challenge.org/2020/problems/sequential/SeqReachabilityRers2020.zip.
 
 Again, to make it easier for you, we have already downloaded the challenge programs for you (located in `/home/str/RERS`).
 
+The following example was generated using older RERS problems and may not reflect the same results as the newer version but the same (code) changes that are shown in the 
+example can still be used on the newer RERS problems.
+
 The archives contain highly obfuscated c and java code, e.g., :
 
 In `Problem11/Problem11.c`:
@@ -634,7 +637,7 @@ error_51 Assertion failed: (0), function __VERIFIER_error, file Problem11.c, lin
 Abort trap: 6
 ```
 
-Implying that error 6 is reachable.
+**Note**: In the newer version of RERS problems, you will not see `Abort trap: 6` but you will see `Aborted` instead.
 
 In this way, and some extra tricks, we obtained third place in the reachability category of the RERS 2016 challenge: http://rers-challenge.org/2016/index.php?page=results. We are team Radboud (together with PhD students from Radboud university), for some reason they still did not update the names. We wrote a paper describing our approach (including learning which you will learn later in this course), which is available at https://arxiv.org/pdf/1611.02429.pdf. Please take a look if you are interested.
 AFL can reach quite some errors, but to compete in the 2020 challenge we expect combinations will be required with learning, mutation, tainting, and concolic execution.
