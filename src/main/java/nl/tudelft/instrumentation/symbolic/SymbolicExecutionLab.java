@@ -40,14 +40,14 @@ public class SymbolicExecutionLab {
 
     static MyVar createIntExpr(IntExpr var, String operator){
         // any unary expression (+, -)
-        if(operator == "+" || operator == "-")
+        if(operator.equals("+") || operator.equals("-"))
             return new MyVar(PathTracker.ctx.mkInt(0));
         return new MyVar(PathTracker.ctx.mkFalse());
     }
 
     static MyVar createIntExpr(IntExpr left_var, IntExpr right_var, String operator){
         // any binary expression (+, -, /, etc)
-        if(operator == "+" || operator == "-" || operator == "/" || operator == "*" || operator == "%" || operator == "^")
+        if(operator.equals("+") || operator.equals("-") || operator.equals("/") || operator.equals("*") || operator.equals("%") || operator.equals("^"))
             return new MyVar(PathTracker.ctx.mkInt(0));
         return new MyVar(PathTracker.ctx.mkFalse());
     }
