@@ -78,7 +78,7 @@ For example if your instrumented Java file is located in `/home/instrumented/`, 
 The commands here **should only be used** when you are compiling the instrumented Java file for symbolic execution with Z3!
 Again, when runnning the instrumented Java file for symbolic execution, we would need to add the Z3 Jar file to the command:
 
-`java -cp target/aistr:lib/com.microsoft.z3.jar:.  *InstrumentedJavaFile*`
+`java -cp target/aistr.jar:lib/com.microsoft.z3.jar:.  *InstrumentedJavaFile*`
 
 # Setting
 
