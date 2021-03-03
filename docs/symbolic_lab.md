@@ -39,7 +39,7 @@ You will need to fill in the rest of the methods in a similar way.
 ### PathTracker
 The pathtracker class is there to help you build your path constraints and call the solver.
 It contains two sets of constraints, the z3model and z3branches. Do not forget to add the branches you
-encounter to z3branches! A good place to do this would be in the encounteredNewBranch method in SymbolicFuzzingLab.
+encounter to z3branches! A good place to do this would be in the encounteredNewBranch method in SymbolicExecutionLab.
 
 When you call solve, z3 will try to solve for the inputs considering your current path constraint. If successful,
 it will tell you the inputs needed to satisfy the constraint. You should use this to augment your fuzzer by trying to solve
