@@ -62,7 +62,7 @@ public class OperatorTracker {
             if(!next_test.isEmpty()) return next_test.pop();
             checkOutput();
             addTest();
-            return "R";
+            return "#";
         }
         return PatchingLab.fuzz(inputSymbols);
     }

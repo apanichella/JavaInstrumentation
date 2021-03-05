@@ -215,7 +215,7 @@ public class DistanceVisitor extends ModifierVisitor<Object> {
         // This is to insert a line main method.
         if (node.getExpression() instanceof VariableDeclarationExpr) {
             if (node.toString().contains("String input = stdin")) {
-                Statement staticStatement = StaticJavaParser.parseStatement("if(input.equals(\"R\")){ eca = new " + class_name + "(); continue; }");
+                Statement staticStatement = StaticJavaParser.parseStatement("if(input.equals(\"#\")){ eca = new " + class_name + "(); continue; }");
                 this.addCodeAfter(node, staticStatement, arg);
                 staticStatement = StaticJavaParser.parseStatement("String input = " + pathFile + ".fuzz(eca.inputs);");
                 node.replace(staticStatement);
