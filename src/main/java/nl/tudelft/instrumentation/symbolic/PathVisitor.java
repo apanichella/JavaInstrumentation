@@ -46,7 +46,7 @@ public class PathVisitor extends ModifierVisitor<Object> {
      */
     public Node addCode(Statement node, Statement new_statement, Object args){
         if (node.getParentNode().isPresent()){
-        
+
             Node parent = node.getParentNode().get();
 
             if (parent instanceof BlockStmt) {
@@ -78,7 +78,7 @@ public class PathVisitor extends ModifierVisitor<Object> {
      */
     public Node addCodeAfter(Statement node, Statement new_statement, Object args){
         if (node.getParentNode().isPresent()){
-        
+
             Node parent = node.getParentNode().get();
 
             if (parent instanceof BlockStmt) {
