@@ -92,7 +92,7 @@ public class CommandLineParser {
                 visitor = new OperatorVisitor(file.getAbsolutePath());
                 break;
             default:
-                throw new IllegalArgumentException("Only five available types: \"branch\" , \"line\" , \"distance\" , \"symbolic\", \"patche\"");
+                throw new IllegalArgumentException("Only five available types: \"branch\" , \"line\" , \"distance\" , \"symbolic\", \"patch\"");
         }
     }
 
