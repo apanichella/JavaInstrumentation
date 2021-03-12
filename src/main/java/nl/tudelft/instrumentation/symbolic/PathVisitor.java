@@ -46,7 +46,7 @@ public class PathVisitor extends ModifierVisitor<Object> {
      */
     public Node addCode(Statement node, Statement new_statement, Object args){
         if (node.getParentNode().isPresent()){
-        
+
             Node parent = node.getParentNode().get();
 
             if (parent instanceof BlockStmt) {
@@ -78,7 +78,7 @@ public class PathVisitor extends ModifierVisitor<Object> {
      */
     public Node addCodeAfter(Statement node, Statement new_statement, Object args){
         if (node.getParentNode().isPresent()){
-        
+
             Node parent = node.getParentNode().get();
 
             if (parent instanceof BlockStmt) {
@@ -331,7 +331,7 @@ public class PathVisitor extends ModifierVisitor<Object> {
         if(node.getExpression() instanceof VariableDeclarationExpr){
             //System.out.println(node.toString());
             if(node.toString().contains("String input = stdin")){
-                Statement staticStatement = StaticJavaParser.parseStatement("if(input.equals(\"R\")){ eca = new " + class_name + "(); continue; }");
+                Statement staticStatement = StaticJavaParser.parseStatement("if(input.equals(\"#\")){ eca = new " + class_name + "(); continue; }");
                 this.addCodeAfter(node, staticStatement, arg);
                 staticStatement = StaticJavaParser.parseStatement("MyVar my_input = " + pathFile + ".myInputVar(input, \"input\");");
                 this.addCodeAfter(node, staticStatement, arg);

@@ -71,7 +71,7 @@ public class SymbolicExecutionLab {
 
     static String fuzz(String[] inputs){
         // do something useful
-        if(r.nextDouble() < 0.01) return "R";
+        if(r.nextDouble() < 0.01) return "#";
         return inputs[r.nextInt(inputs.length)];
     }
 

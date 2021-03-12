@@ -69,7 +69,7 @@ public class PatchingLab {
                 }
                 System.out.println();
                 OperatorTracker.startTesting();
-                return "R";
+                return "#";
         }
 
         static void output(String out){

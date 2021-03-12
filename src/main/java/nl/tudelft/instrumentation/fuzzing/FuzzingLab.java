@@ -61,7 +61,7 @@ public class FuzzingLab {
                 for (int i = 0; i < traceLength; i++) {
                         trace.add(symbols[r.nextInt(symbols.length)]);
                 }
-                trace.add("R"); // Reset symbol that marks that we have arrived at the end of a trace.
+                trace.add("#"); // Reset symbol that marks that we have arrived at the end of a trace.
                 return trace;
         }
 
