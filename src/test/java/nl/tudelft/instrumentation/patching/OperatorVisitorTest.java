@@ -3,7 +3,6 @@ package nl.tudelft.instrumentation.patching;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ast.CompilationUnit;
-import nl.tudelft.instrumentation.patching.OperatorVisitor;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
@@ -46,6 +45,90 @@ public class OperatorVisitorTest {
 
         int count = StringUtils.countMatches(unit.toString(), imprt);
         assertTrue(unit.toString().contains(imprt));
+        assertEquals(1, count);
+    }
+
+    @Test
+    public void testInstrumentationShouldCreatCallMethod(){
+        String call = "public Void call()";
+        StringBuilder builder = new StringBuilder();
+        builder.append("public class Test {\n")
+                .append("    public static void main(String[] args) {\n")
+                .append("        if (a.equals(b))\n")
+                .append("           return \"INVALID\";\n" )
+                .append("    }\n")
+                .append("\n")
+                .append("}");
+
+        String code = builder.toString();
+        CompilationUnit unit = instrument(code);
+        System.out.println(unit.toString());
+
+        int count = StringUtils.countMatches(unit.toString(), call);
+        assertTrue(unit.toString().contains(call));
+        assertEquals(1, count);
+    }
+
+    @Test
+    public void testInstrumentationShouldInsertImplements(){
+        String implement = "public class Test implements CallableTraceRunner<Void>";
+        StringBuilder builder = new StringBuilder();
+        builder.append("public class Test {\n")
+                .append("    public static void main(String[] args) {\n")
+                .append("        if (a.equals(b))\n")
+                .append("           return \"INVALID\";\n" )
+                .append("    }\n")
+                .append("\n")
+                .append("}");
+
+        String code = builder.toString();
+        CompilationUnit unit = instrument(code);
+        System.out.println(unit.toString());
+
+        int count = StringUtils.countMatches(unit.toString(), implement);
+        assertTrue(unit.toString().contains(implement));
+        assertEquals(1, count);
+    }
+
+    @Test
+    public void testInstrumentationShouldAddSequence(){
+        String sequence = "public String[] sequence";
+        StringBuilder builder = new StringBuilder();
+        builder.append("public class Test {\n")
+                .append("    public static void main(String[] args) {\n")
+                .append("        if (a.equals(b))\n")
+                .append("           return \"INVALID\";\n" )
+                .append("    }\n")
+                .append("\n")
+                .append("}");
+
+        String code = builder.toString();
+        CompilationUnit unit = instrument(code);
+        System.out.println(unit.toString());
+
+        int count = StringUtils.countMatches(unit.toString(), sequence);
+        assertTrue(unit.toString().contains(sequence));
+        assertEquals(1, count);
+    }
+
+    @Test
+    public void testInstrumentationShouldAddSetSequence(){
+        String setSequence = "public void setSequence(String[] trace)";
+        StringBuilder builder = new StringBuilder();
+        builder.append("public class Test {\n")
+                .append("    public static void main(String[] args) {\n")
+                .append("        if (a.equals(b))\n")
+                .append("           return \"INVALID\";\n" )
+                .append("    }\n")
+                .append("\n")
+                .append("}");
+
+        String code = builder.toString();
+        CompilationUnit unit = instrument(code);
+        System.out.println(unit.toString());
+
+        int count = StringUtils.countMatches(unit.toString(), setSequence);
+        assertTrue(unit.toString().contains(setSequence));
         assertEquals(1, count);
     }
 
