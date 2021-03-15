@@ -1,78 +1,63 @@
 package nl.tudelft.instrumentation.patching;
-
 import java.util.*;
-import java.util.Random;
 
 public class PatchingLab {
 
         static Random r = new Random();
+        static boolean isFinished = false;
 
         static void initialize(){
                 // initialize the population based on OperatorTracker.operators
         }
 
+        // encounteredOperator gets called for each operator encountered while running tests
         static boolean encounteredOperator(String operator, int left, int right, int operator_nr){
-                // do something useful
-                if(OperatorTracker.testing){
-                        // these operators are executed in test OperatorTracker.current_test:
-                        System.out.print(String.valueOf(OperatorTracker.current_test) + ":" + String.valueOf(operator_nr) + " ");
-                }
-                String replacememt = OperatorTracker.operators[operator_nr];
-                if(replacememt.equals("!=")) return left != right;
-                if(replacememt.equals("==")) return left == right;
-                if(replacememt.equals("<")) return left < right;
-                if(replacememt.equals(">")) return left > right;
-                if(replacememt.equals("<=")) return left <= right;
-                if(replacememt.equals(">=")) return left >= right;
+                // Do something useful
+
+                String replacement = OperatorTracker.operators[operator_nr];
+                if(replacement.equals("!=")) return left != right;
+                if(replacement.equals("==")) return left == right;
+                if(replacement.equals("<")) return left < right;
+                if(replacement.equals(">")) return left > right;
+                if(replacement.equals("<=")) return left <= right;
+                if(replacement.equals(">=")) return left >= right;
                 return false;
         }
 
         static boolean encounteredOperator(String operator, boolean left, boolean right, int operator_nr){
-                // do something useful
-                if(OperatorTracker.testing){
-                        // these operators are executed in test OperatorTracker.current_test:
-                        System.out.print(String.valueOf(OperatorTracker.current_test) + ":" + String.valueOf(operator_nr) + " ");
-                }
-                String replacememt = OperatorTracker.operators[operator_nr];
-                if(replacememt.equals("!=")) return left != right;
-                if(replacememt.equals("==")) return left == right;
+                // Do something useful
+
+                String replacement = OperatorTracker.operators[operator_nr];
+                if(replacement.equals("!=")) return left != right;
+                if(replacement.equals("==")) return left == right;
                 return false;
         }
 
-        static String fuzz(String[] inputSymbols){
-                // do something useful
-                LinkedList<Boolean> test_result = OperatorTracker.test_result;
-                System.out.println("test result:");
-                for(Boolean b : test_result){
-                        if(b.booleanValue()) System.out.print(1);
-                        else System.out.print("0");
-                }
-                System.out.println();
-                // use test_result to update the operators, currently random
-                for(int i = 0; i < 10; ++i){
-                        int index = r.nextInt(OperatorTracker.operators.length);
-                        String op = OperatorTracker.operators[index];
-                        if(op.equals("<") || op.equals(">") || op.equals(">=") || op.equals("<=") ){
-                                int value = r.nextInt(4);
-                                if(value == 0) OperatorTracker.operators[index] = "<";
-                                if(value == 1) OperatorTracker.operators[index] = ">";
-                                if(value == 2) OperatorTracker.operators[index] = "<=";
-                                if(value == 3) OperatorTracker.operators[index] = ">=";
-                        } else {
-                                if(op.equals("==")) OperatorTracker.operators[index] = "!=";
-                                if(op.equals("!=")) OperatorTracker.operators[index] = "==";
+        static void run() {
+                initialize();
+
+                // Place the code here you want to run once:
+                // You want to change this of course, this is just an example
+                // Tests are loaded from resources/tests.txt, make sure you put in the right tests for the right problem!
+                OperatorTracker.runAllTests();
+                System.out.println("Entered run");
+
+                // Loop here, running your genetic algorithm until you think it is done
+                while (!isFinished) {
+                      // Do things!
+                        try {
+                                System.out.println("Woohoo, looping!");
+                                Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                                e.printStackTrace();
                         }
                 }
-                System.out.println("Testing new operators");
-                for(String s : OperatorTracker.operators){
-                        System.out.print(s + " ");
-                }
-                System.out.println();
-                OperatorTracker.startTesting();
-                return "#";
         }
 
-        static void output(String out){
-                System.out.println(out);
+        public static void output(String out){
+                // This will get called when the problem code tries to print things,
+                // the prints in the original code have been removed for your convenience
+
+                // System.out.println(out);
         }
 }

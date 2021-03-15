@@ -165,6 +165,13 @@ public class OperatorVisitor extends ModifierVisitor<Object> {
     @Override
     public Node visit(ClassOrInterfaceDeclaration node, Object arg){
         this.class_name = node.getName().toString();
+        BodyDeclaration bd1 = StaticJavaParser.parseBodyDeclaration("public Void call(){ " + class_name + " cp = new " + class_name + "(); for(String s : sequence){ try { cp.calculateOutput(s); } catch (Exception e) { nl.tudelft.instrumentation.patching.PatchingLab.output(\"Invalid input: \" + e.getMessage()); } } return null;}");
+        BodyDeclaration bd2 = StaticJavaParser.parseBodyDeclaration(" public void setSequence(String[] trace){ sequence = trace; } ");
+        BodyDeclaration fd = StaticJavaParser.parseBodyDeclaration("public String[] sequence;");
+        node.getMembers().add(fd);
+        node.getMembers().add(bd1);
+        node.getMembers().add(bd2);
+        node.addImplementedType("CallableTraceRunner<Void>");
         return (Node) super.visit(node, arg);
     }
 
@@ -179,28 +186,26 @@ public class OperatorVisitor extends ModifierVisitor<Object> {
     public Node visit(ExpressionStmt node, Object arg) {
         if (node.getExpression() instanceof VariableDeclarationExpr) {
             //System.out.println(node.toString());
-            if (node.toString().contains("String input = stdin")) {
-                Statement staticStatement = StaticJavaParser.parseStatement("if(input.equals(\"#\")){ eca = new " + class_name + "(); continue; }");
-                this.addCodeAfter(node, staticStatement, arg);
-                staticStatement = StaticJavaParser.parseStatement("String input = " + pathFile + ".fuzz(eca.inputs);");
-                node.replace(staticStatement);
-            }
             if (node.toString().contains("eca =") && !operators.isEmpty()) {
                 String operator_string = "{ \"" + operators.pop() + "\"";
                 for(String op : operators){
                     operator_string = operator_string + ", \"" + op + "\"";
                 }
                 operator_string = operator_string + "}";
-                Statement staticStatement = StaticJavaParser.parseStatement("String[] operators = "+ operator_string + ";");
-                this.addCode(node, staticStatement, arg);
-                staticStatement = StaticJavaParser.parseStatement(pathFile + ".initialize(operators);");
-                this.addCode(node, staticStatement, arg);
+                Statement staticStatement = StaticJavaParser.parseStatement(pathFile + ".run(operators, eca);");
+                this.addCodeAfter(node, staticStatement, arg);
+                staticStatement = StaticJavaParser.parseStatement("String[] operators = "+ operator_string + ";");
+                this.addCodeAfter(node, staticStatement, arg);
             }
         }
         if (node.getExpression() instanceof MethodCallExpr) {
             MethodCallExpr mce = (MethodCallExpr)node.getExpression();
             if (node.toString().contains("System.out")) {
-                this.addCode(node, new ExpressionStmt(new MethodCallExpr(new NameExpr(pathFile),"output",mce.getArguments())), arg);
+                node.setExpression(
+                        new MethodCallExpr(
+                                new NameExpr(pathFile),"output",mce.getArguments()
+                        )
+                );
             }
         }
         return (Node) super.visit(node, arg);
@@ -228,7 +233,16 @@ public class OperatorVisitor extends ModifierVisitor<Object> {
      */
     @Override
     public Node visit(CompilationUnit node, Object arg) {
+
         node.addImport("nl.tudelft.instrumentation.patching.*");
+
         return (Node) super.visit(node, arg);
+    }
+
+    @Override
+    public Node visit(WhileStmt node, Object arg) {
+        Node parent = node.getParentNode().get();
+        parent.remove(node);
+        return node;
     }
 }

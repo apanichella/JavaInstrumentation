@@ -3,10 +3,8 @@ package nl.tudelft.instrumentation.patching;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.stream.*;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 /**
  * This class is used to start and run the tests for the algorithm that you
@@ -20,11 +18,15 @@ public class OperatorTracker {
     static Vector<String[]> tests = new Vector< String[] >();
     static boolean testing = false;
 
-    static LinkedList< String > next_test = new LinkedList< String >();
-    static String outputs = new String();
+    static String outputs = "";
     static LinkedList<Boolean> test_result = new LinkedList<Boolean>();
     static int current_test = 0;
 
+    static ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
+    static CallableTraceRunner<Void> problem;
+
+    // Longest a single testcase is allowed to run
+    static final int timeoutMS = 1000;
 
     /**
      * This method is used to call the encounteredOperator method from the FuzzingLab class.
@@ -53,21 +55,6 @@ public class OperatorTracker {
     }
 
     /**
-     * Fuzz input from a given list of input symbols.
-     * @param inputSymbols the input symbols
-     * @return a fuzzed input.
-     */
-    public static String fuzz(String[] inputSymbols){
-        if(testing){
-            if(!next_test.isEmpty()) return next_test.pop();
-            checkOutput();
-            addTest();
-            return "#";
-        }
-        return PatchingLab.fuzz(inputSymbols);
-    }
-
-    /**
      * Append the output of the program to a list containing all outputs.
      * @param out
      */
@@ -77,45 +64,19 @@ public class OperatorTracker {
     }
 
     /**
-     * Start running the tests.
-     */
-    public static void startTesting(){
-        test_result.clear();
-        next_test.clear();
-        outputs = "";
-        current_test = -1;
-        testing = true;
-    }
-
-    /**
-     * Add a test case to the list of tests.
-     */
-    public static void addTest(){
-        if(current_test >= tests.size()){
-            current_test = 0;
-            testing = false;
-        } else {
-            outputs = "";
-            next_test.clear();
-            for(String s : tests.elementAt(current_test)[0].split(",")) next_test.add(s);
-        }
-    }
-
-    /**
      * Check the output of the program with the expected output from
      * the a test case and see if they match. Thus this method is used to
      * assess how well you algorithm is working.
      */
-    public static void checkOutput() {
-        if (current_test != -1){
-            System.out.println(current_test);
-            if (outputs.equals(tests.elementAt(current_test)[1])) {
-                test_result.add(new Boolean(true));
-            } else {
-                test_result.add(new Boolean(false));
-            }
+    public static boolean checkOutput(int current_test) {
+        if (outputs.equals(tests.elementAt(current_test)[1])) {
+            return true;
+        } else {
+//            System.out.println("Test " + (current_test + 1) + " failed"); // +1 to match line number
+//            System.out.println("Actual  : " + outputs);
+//            System.out.println("Expected: " + tests.elementAt(current_test)[1]);
+            return false;
         }
-        current_test++;
     }
 
     /**
@@ -134,7 +95,7 @@ public class OperatorTracker {
     public static void readTests(){
         try (Stream<String> stream = new BufferedReader(
                 new InputStreamReader(OperatorTracker.class.getResourceAsStream("/tests.txt"))).lines()
-            )
+        )
         {
             stream.forEach(s -> {
                 tests.add(s.split("->"));
@@ -149,5 +110,68 @@ public class OperatorTracker {
         {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Initialize and hand over control to PatchingLab
+     * @param operators The operators used in the current problem
+     * @param eca The current problem instance
+     */
+    public static void run(String[] operators, CallableTraceRunner<Void> eca) {
+        problem = eca;
+        initialize(operators);
+
+        PatchingLab.run();
+    }
+
+    /**
+     * Runs the test with the given index,
+     * returning true if it passes, false if it fails.
+     * We also apply a timeout in case a test accidentally
+     * enters an infinite loop
+     * @param testIndex index of the test to run
+     * @return whether the test passed or not
+     */
+    public static boolean runTest(int testIndex) {
+        current_test = testIndex;
+
+        // Pass the test input to the problem
+        String[] test = tests.get(testIndex);
+        String[] testInput = test[0].split(",");
+        problem.setSequence(testInput);
+
+        // Reset the output tracking
+        outputs = "";
+
+        // Schedule the trace to be ran, and cancel after timeout
+        final Future handler = executor.submit(problem);
+        executor.schedule(() -> {
+            handler.cancel(true);
+        }, timeoutMS, TimeUnit.MILLISECONDS);
+
+        // Wait for it to be completed
+        boolean wasCancelled = false;
+        try {
+            handler.get();
+        } catch (CancellationException e) {
+            wasCancelled = true;
+            System.out.println("TIMEOUT!");
+            System.exit(-1);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+
+        // Return the result
+        if (wasCancelled) {
+            return false;
+        }
+        return checkOutput(testIndex);
+    }
+
+    static List<Boolean> runAllTests() {
+        return IntStream.range(0, tests.size())
+                .mapToObj(OperatorTracker::runTest)
+                .collect(Collectors.toList());
     }
 }
