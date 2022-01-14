@@ -212,27 +212,13 @@ public class DistanceVisitor extends ModifierVisitor<Object> {
      */
     @Override
     public Node visit(ExpressionStmt node, Object arg) {
-        // This is to insert a line main method.
-        if (node.getExpression() instanceof VariableDeclarationExpr) {
-            if (node.toString().contains("String input = stdin")) {
-                Statement staticStatement = StaticJavaParser.parseStatement("if(input.equals(\"R\")){ eca = new " + class_name + "(); continue; }");
-                this.addCodeAfter(node, staticStatement, arg);
-                staticStatement = StaticJavaParser.parseStatement("String input = " + pathFile + ".fuzz(eca.inputs);");
-                node.replace(staticStatement);
-            }
-        }
-        // What we should do when we encountered a assign expression.
-        if(node.getExpression() instanceof AssignExpr){
-            AssignExpr ae = (AssignExpr)node.getExpression();
-            // Check if the assigment expression involves an array.
-            if(ae.getTarget() instanceof ArrayAccessExpr){
-                ArrayAccessExpr aae = (ArrayAccessExpr)ae.getTarget();
-                this.addOwnConditionalCode(aae.getIndex(),node,arg);
-            }
-            this.addOwnConditionalCode(ae.getValue(),node,arg);
+        // This is to modify the line in the main method.
+        if (node.toString().contains("eca =")) {
+            Statement staticStatement = StaticJavaParser.parseStatement(pathFile + ".run(eca.inputs, eca);");
+            this.addCodeAfter(node, staticStatement, arg);
         }
 
-        // Catch the out from in the standard out.
+        // Catch the output from the standard out.
         if (node.getExpression() instanceof MethodCallExpr) {
             MethodCallExpr mce = (MethodCallExpr)node.getExpression();
             if (node.toString().contains("System.out")) {
@@ -253,6 +239,13 @@ public class DistanceVisitor extends ModifierVisitor<Object> {
     @Override
     public Node visit(ClassOrInterfaceDeclaration node, Object arg){
         this.class_name = node.getName().toString();
+        BodyDeclaration bd1 = StaticJavaParser.parseBodyDeclaration("public Void call(){ " + class_name + " cp = new " + class_name + "(); for(String s : sequence){ try { cp.calculateOutput(s); } catch (Exception e) { nl.tudelft.instrumentation.fuzzing.FuzzingLab.output(\"Invalid input: \" + e.getMessage()); } } return null;}");
+        BodyDeclaration bd2 = StaticJavaParser.parseBodyDeclaration(" public void setSequence(String[] trace){ sequence = trace; } ");
+        BodyDeclaration fd = StaticJavaParser.parseBodyDeclaration("public String[] sequence;");
+        node.getMembers().add(fd);
+        node.getMembers().add(bd1);
+        node.getMembers().add(bd2);
+        node.addImplementedType("CallableTraceRunner<Void>");
         return (Node) super.visit(node, arg);
     }
 
@@ -265,8 +258,8 @@ public class DistanceVisitor extends ModifierVisitor<Object> {
      */
     @Override
     public Node visit(IfStmt node, Object arg) {
-        ExpressionStmt myif = this.createMyIf(node.clone(), arg);
-        this.addCode(node, myif, arg);
+        ExpressionStmt myIf = this.createMyIf(node.clone(), arg);
+        this.addCode(node, myIf, arg);
         return (Node) super.visit(node, arg);
     }
 

@@ -1,4 +1,6 @@
 package nl.tudelft.instrumentation.patching;
+import nl.tudelft.instrumentation.runner.CallableTraceRunner;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.*;
@@ -108,7 +110,6 @@ public class OperatorTracker {
     public static void run(String[] operators, CallableTraceRunner<Void> eca) {
         problem = eca;
         initialize(operators);
-
         PatchingLab.run();
     }
 

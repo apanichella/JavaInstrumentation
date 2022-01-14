@@ -10,45 +10,34 @@ public class FuzzingLab {
         static Random r = new Random();
         static List<String> currentTrace;
         static int traceLength = 10;
-        static String currentTraceSymbol;
+        static boolean isFinished = false;
 
+        static void initialize(String[] inputSymbols){
+                // Initialise a random trace from the input symbols of the problem.
+                currentTrace = generateRandomTrace(inputSymbols);
+        }
 
         /**
          * Write your solution that specifies what should happen when a new branch has been found.
          */
-        static void encounteredNewBranch(MyVar condition, boolean value, int line_nr){
+        static void encounteredNewBranch(MyVar condition, boolean value, int line_nr) {
                 // do something useful
                 System.out.println(condition.toString());
         }
 
         /**
          * Method for fuzzing new inputs for a program.
-         * @param inputSymbols the inputSymbols
-         * @return a fuzzed input
+         * @param inputSymbols the inputSymbols to fuzz from.
+         * @return a fuzzed sequence
          */
-        static String fuzz(String[] inputSymbols){
-
-                String nextInput = null;
-                // If the current trace does not exist,
-                // then generate a random one.
-                if (currentTrace == null) {
-                        currentTrace = generateRandomTrace(inputSymbols);
-                        nextInput = currentTrace.remove(0);
-                }
-                // Check if the current trace is empty and if it is
-                // then generate a new random trace.
-                else if (currentTrace.isEmpty()) {
-                        currentTrace = generateRandomTrace(inputSymbols);
-                        nextInput = currentTrace.remove(0);
-                }
-                // If we are not done running on the current trace,
-                // grab the next input from the current trace.
-                else {
-                        nextInput = currentTrace.remove(0);
-                        currentTraceSymbol = nextInput;
-                }
-
-                return nextInput;
+        static List<String> fuzz(String[] inputSymbols){
+                /*
+                 * Add here your code for fuzzing a new sequence for the RERS problem.
+                 * You can guide your fuzzer to fuzz "smart" input sequences to cover
+                 * more branches. Right now we just generate a complete random sequence
+                 * using the given input symbols. Please change it to your own code.
+                 */
+                return generateRandomTrace(inputSymbols);
         }
 
         /**
@@ -61,8 +50,23 @@ public class FuzzingLab {
                 for (int i = 0; i < traceLength; i++) {
                         trace.add(symbols[r.nextInt(symbols.length)]);
                 }
-                trace.add("R"); // Reset symbol that marks that we have arrived at the end of a trace.
                 return trace;
+        }
+
+        static void run() {
+                initialize(DistanceTracker.inputSymbols);
+                DistanceTracker.runNextFuzzedSequence(currentTrace.toArray(new String[0]));
+
+                // Place here your code to guide your fuzzer with its search.
+                while(!isFinished) {
+                        // Do things!
+                        try {
+                                System.out.println("Woohoo, looping!");
+                                Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                                e.printStackTrace();
+                        }
+                }
         }
 
         /**

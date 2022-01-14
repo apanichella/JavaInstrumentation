@@ -1,4 +1,4 @@
-package nl.tudelft.instrumentation.patching;
+package nl.tudelft.instrumentation.runner;
 
 import java.util.concurrent.Callable;
 
