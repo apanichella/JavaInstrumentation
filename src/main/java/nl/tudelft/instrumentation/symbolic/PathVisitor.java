@@ -327,17 +327,10 @@ public class PathVisitor extends ModifierVisitor<Object> {
      */
     @Override
     public Node visit(ExpressionStmt node, Object arg) {
-        // What should be done when it is a variable declaration.
-        if(node.getExpression() instanceof VariableDeclarationExpr){
-            //System.out.println(node.toString());
-            if(node.toString().contains("String input = stdin")){
-                Statement staticStatement = StaticJavaParser.parseStatement("if(input.equals(\"R\")){ eca = new " + class_name + "(); continue; }");
-                this.addCodeAfter(node, staticStatement, arg);
-                staticStatement = StaticJavaParser.parseStatement("MyVar my_input = " + pathFile + ".myInputVar(input, \"input\");");
-                this.addCodeAfter(node, staticStatement, arg);
-                staticStatement = StaticJavaParser.parseStatement("String input = " + pathFile + ".fuzz(eca.inputs);");
-                node.replace(staticStatement);
-            }
+        // This is to modify the main method to follow a particular structure.
+        if (node.toString().contains("eca =")) {
+            Statement staticStatement = StaticJavaParser.parseStatement(pathFile + ".run(eca.inputs, eca);");
+            this.addCodeAfter(node, staticStatement, arg);
         }
 
         // What should be done when it is an assign expression.

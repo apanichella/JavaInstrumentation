@@ -1,7 +1,11 @@
 package nl.tudelft.instrumentation.symbolic;
 
 import java.util.*;
+import java.util.concurrent.*;
+
 import com.microsoft.z3.*;
+import nl.tudelft.instrumentation.fuzzing.FuzzingLab;
+import nl.tudelft.instrumentation.runner.CallableTraceRunner;
 
 public class PathTracker {
     public static HashMap<String, String> cfg = new HashMap<String, String>() {{ put("model","true"); }};
@@ -12,7 +16,15 @@ public class PathTracker {
     public static BoolExpr z3branches = ctx.mkTrue();
 
     public static LinkedList<MyVar> inputs = new LinkedList<MyVar>();
+    static ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
+    static CallableTraceRunner<Void> problem;
+    static String[] inputSymbols;
+    // Longest a single testcase is allowed to run
+    static final int timeoutMS = 1000;
 
+    /**
+     * Used to reset the constraints and everything else of z3 before running the next sequence.
+     */
     public static void reset(){
         z3counter  = 1;
         z3model    = ctx.mkTrue();
@@ -22,19 +34,21 @@ public class PathTracker {
 
     /**
      * This method contains code that calls the Z3 solver and check whether it solve the path
-     * constraint that is constructed for the new branch. The solver will try to inputs that can
-     * satify the path contraint. We can use these inputs to reach this newly discovered branch.
+     * constraint that is constructed for the new branch. The solver will try to find inputs
+     * that can satisfy the path constraint. We can use these inputs to reach this newly
+     * discovered branch.
      * @param new_branch the branch that we have discovered and want to visit.
-     * @param printmodel boolean value that specifies whether the path constraint should be printed in the terminal or not.
+     * @param printModel boolean value that specifies whether the path constraint should
+     *                   be printed in the terminal or not.
      */
-    public static void solve(BoolExpr new_branch, boolean printmodel){
+    public static void solve(BoolExpr new_branch, boolean printModel){
         Solver s = PathTracker.ctx.mkSolver();
 
         s.add(PathTracker.z3model);
         s.add(PathTracker.z3branches);
         s.add(new_branch);
 
-        if(printmodel){
+        if(printModel){
             System.out.print("Model: ");
             System.out.println(PathTracker.z3model);
             System.out.print("Branches: ");
@@ -56,7 +70,7 @@ public class PathTracker {
         }
     }
 
-    // making temporary variables, i.e., within if-conditions
+    // Making temporary variables, i.e., within if-conditions
     public static MyVar tempVar(boolean value){
         return new MyVar(ctx.mkBool(value));
     }
@@ -67,7 +81,7 @@ public class PathTracker {
         return new MyVar(ctx.mkString(value));
     }
 
-    // making new stored variables
+    // Making new stored variables
     public static MyVar myVar(boolean value, String name){
         return SymbolicExecutionLab.createVar(name, ctx.mkBool(value), ctx.getBoolSort());
     }
@@ -81,7 +95,7 @@ public class PathTracker {
         return SymbolicExecutionLab.createVar(name, value.z3var, value.z3var.getSort());
     }
 
-    // making a new input variable
+    // Making a new input variable
     public static MyVar myInputVar(String value, String name){
         return SymbolicExecutionLab.createInput(name, ctx.mkString(value), ctx.getStringSort());
     }
@@ -95,8 +109,10 @@ public class PathTracker {
         return vars;
     }
 
-    // arrays are tricky, we deal with those
-    // this assignment creates a reference and does not need new variables
+    /**
+     * Arrays are tricky, this is how we deal with them.
+     * this assignment creates a reference and does not need new variables
+     */
     public static MyVar[] myVar(MyVar[] value){
         MyVar[] vars = new MyVar[value.length];
         for(int i = 0; i < value.length; i++){
@@ -105,8 +121,10 @@ public class PathTracker {
         return vars;
     }
 
-    // main construction for creating the path constraint
-    // handling arithmetic and boolean logic
+    /**
+     * Main construction for creating the path constraint.
+     * This part is for handling arithmetic and boolean logic.
+     */
     public static MyVar unaryExpr(MyVar i, String operator){
         if(i.z3var instanceof BoolExpr){
             return SymbolicExecutionLab.createBoolExpr((BoolExpr)i.z3var, operator);
@@ -129,7 +147,7 @@ public class PathTracker {
         return SymbolicExecutionLab.createStringExpr((SeqExpr)i.z3var, (SeqExpr)j.z3var, "==");
     }
 
-    // we handle arrays, which needs an iterated if-then-else
+    // We handle arrays, which needs an iterated if-then-else.
     public static MyVar arrayInd(MyVar[] name, MyVar index){
         Expr ite_expr = name[0].z3var;
         for(int i = 1; i < name.length; i++){
@@ -138,7 +156,7 @@ public class PathTracker {
         return new MyVar(ite_expr);
     }
 
-    // we handle increments, forwarded to assignments
+    // We handle increments, forwarded to assignments.
     public static MyVar increment(MyVar i, String operator, boolean prefix){
         if(prefix){
             if(operator.equals("++")) myAssign(i, new MyVar(ctx.mkAdd((IntExpr)i.z3var,ctx.mkInt(1))), "=");
@@ -152,34 +170,34 @@ public class PathTracker {
         }
     }
 
-    // we handle conditionals, which is an if-then-else
+    // We handle conditionals, which is an if-then-else.
     public static MyVar conditional(MyVar b, MyVar t, MyVar e){
         return new MyVar(ctx.mkITE((BoolExpr)b.z3var, t.z3var, e.z3var));
     }
 
-    // assignment changes the z3var in a MyVar variable
+    // Assignment changes the z3var in a MyVar variable.
     public static void myAssign(MyVar target, MyVar value, String operator){
         // first add or subtract if necessary
         Expr new_value = value.z3var;
-        if(operator == "-=") new_value = ctx.mkSub((IntExpr)target.z3var,(IntExpr)value.z3var);
-        if(operator == "+=") new_value = ctx.mkAdd((IntExpr)target.z3var,(IntExpr)value.z3var);
+        if(operator.equals("-=")) new_value = ctx.mkSub((IntExpr)target.z3var,(IntExpr)value.z3var);
+        if(operator.equals("+=")) new_value = ctx.mkAdd((IntExpr)target.z3var,(IntExpr)value.z3var);
 
         SymbolicExecutionLab.assign(target, target.name, new_value, target.z3var.getSort());
     }
 
-    // we handle arrays, again using if-then-else and call standard variable assignment for all indices
+    // We handle arrays, again using if-then-else and call standard variable assignment for all indices.
     public static void myAssign(MyVar[] name, MyVar index, MyVar value, String operator){
         for(int i = 0; i < name.length; i++){
             Expr old_expr = name[i].z3var;
             Expr new_value = value.z3var;
-            if(operator == "-=") new_value = ctx.mkSub((IntExpr)old_expr,(IntExpr)value.z3var);
-            if(operator == "+=") new_value = ctx.mkAdd((IntExpr)old_expr,(IntExpr)value.z3var);
+            if(operator.equals("-=")) new_value = ctx.mkSub((IntExpr)old_expr,(IntExpr)value.z3var);
+            if(operator.equals("+=")) new_value = ctx.mkAdd((IntExpr)old_expr,(IntExpr)value.z3var);
 
             SymbolicExecutionLab.assign(name[i], name[i].name, ctx.mkITE(ctx.mkEq(ctx.mkInt(i),index.z3var), new_value, old_expr), name[i].z3var.getSort());
         }
     }
 
-    // direct assign for array references
+    // Direct assign for array references
     public static void myAssign(MyVar[] name1, MyVar[] name2, String operator){
         for(int i = 0; i < name1.length; i++){
             name1[i] = name2[i];
@@ -199,20 +217,48 @@ public class PathTracker {
     }
 
     /**
-     * Method for fuzzing a new input.
-     * @param inputSymbols the input symbols from which the fuzzer should fuzz from.
-     * @return an input.
-     */
-    public static String fuzz(String[] inputSymbols){
-        return SymbolicExecutionLab.fuzz(inputSymbols);
-    }
-
-    /**
      * Used to catch output from the standard out.
      * @param out the string that has been outputted in the standard out.
      */
     public static void output(String out){
         SymbolicExecutionLab.output(out);
+    }
+
+    /**
+     * Initialize and hand over control to FuzzingLab
+     * @param eca The current problem instance
+     * @param s the input symbols of the problem
+     */
+    public static void run(String[] s, CallableTraceRunner<Void> eca) {
+        problem = eca;
+        inputSymbols = s;
+        SymbolicExecutionLab.run();
+    }
+
+    /**
+     * This method is used for running the fuzzed input. It first assigns the
+     * fuzzed sequence that needs to be run and then user a handler to
+     * start running the sequence through the problem.
+     * @param sequence the fuzzed sequence that needs top be run.
+     */
+    public static void runNextFuzzedSequence(String[] sequence) {
+        problem.setSequence(sequence);
+        final Future handler = executor.submit(problem);
+        executor.schedule(() -> {
+            handler.cancel(true);
+        }, timeoutMS, TimeUnit.MILLISECONDS);
+
+        // Wait for it to be completed
+        try {
+            handler.get();
+        } catch (CancellationException e) {
+            System.out.println("TIMEOUT!");
+            System.exit(-1);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+
     }
 
 }

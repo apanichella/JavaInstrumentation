@@ -112,7 +112,7 @@ public class DistanceTracker {
     }
 
     /**
-     * This method is used for running the fuzzed input. It first assigns the
+`     * This method is used for running the fuzzed input. It first assigns the
      * fuzzed sequence that needs to be run and then user a handler to
      * start running the sequence through the problem.
      * @param sequence the fuzzed sequence that needs top be run.
