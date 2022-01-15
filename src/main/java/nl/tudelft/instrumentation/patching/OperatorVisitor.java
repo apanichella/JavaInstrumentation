@@ -10,9 +10,6 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
 import com.github.javaparser.ast.body.*;
-import com.github.javaparser.ast.type.*;
-
-import java.util.concurrent.Callable;
 
 import java.util.LinkedList;
 
@@ -164,6 +161,7 @@ public class OperatorVisitor extends ModifierVisitor<Object> {
                 this.addCodeAfter(node, staticStatement, arg);
             }
         }
+
         if (node.getExpression() instanceof MethodCallExpr) {
             MethodCallExpr mce = (MethodCallExpr)node.getExpression();
             if (node.toString().contains("System.out")) {
@@ -174,12 +172,7 @@ public class OperatorVisitor extends ModifierVisitor<Object> {
                 );
             }
         }
-//        if (node.getExpression() instanceof MethodCallExpr) {
-//            MethodCallExpr mce = (MethodCallExpr)node.getExpression();
-//            if (node.toString().contains("System.out")) {
-//                this.addCode(node, new ExpressionStmt(new MethodCallExpr(new NameExpr(pathFile),"output",mce.getArguments())), arg);
-//            }
-//        }
+
         return (Node) super.visit(node, arg);
     }
 
@@ -198,9 +191,8 @@ public class OperatorVisitor extends ModifierVisitor<Object> {
      */
     @Override
     public Node visit(CompilationUnit node, Object arg) {
-
         node.addImport("nl.tudelft.instrumentation.patching.*");
-
+        node.addImport("nl.tudelft.instrumentation.runner.CallableTraceRunner");
         return (Node) super.visit(node, arg);
     }
 

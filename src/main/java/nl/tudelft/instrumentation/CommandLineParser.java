@@ -82,17 +82,17 @@ public class CommandLineParser {
             case "branch":
                 visitor = new BranchCoverageVisitor(file.getAbsolutePath());
                 break;
-            case "distance":
+            case "fuzzing":
                 visitor = new DistanceVisitor(file.getAbsolutePath());
                 break;
             case "symbolic":
                 visitor = new PathVisitor(file.getAbsolutePath());
                 break;
-            case "patch":
+            case "patching":
                 visitor = new OperatorVisitor(file.getAbsolutePath());
                 break;
             default:
-                throw new IllegalArgumentException("Only five available types: \"branch\" , \"line\" , \"distance\" , \"symbolic\", \"patch\"");
+                throw new IllegalArgumentException("Only five available types: \"branch\" , \"line\" , \"fuzzing\" , \"symbolic\", \"patching\"");
         }
     }
 

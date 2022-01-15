@@ -306,15 +306,22 @@ public class PathVisitor extends ModifierVisitor<Object> {
     }
 
     /**
-     * Method that specifies what should be done when we have encountered a class or interface
-     * declaration in the AST.
+     * What to do when we have encountered a Class of Interface declaration.
+     * In this case, we try to grab the name of class.
      * @param node the node that represents a class or interface declaration.
-     * @param arg the additional arguments that were given to the JavaParser.
-     * @return a node containing the instrumented code.
+     * @param arg additional arguments that were given to the JavaParser.
+     * @return node containing extra code that we added.
      */
     @Override
     public Node visit(ClassOrInterfaceDeclaration node, Object arg){
         this.class_name = node.getName().toString();
+        BodyDeclaration bd1 = StaticJavaParser.parseBodyDeclaration("public Void call(){ " + class_name + " cp = new " + class_name + "(); for(String s : sequence){ try { MyVar my_s = nl.tudelft.instrumentation.symbolic.PathTracker.myInputVar(s, \"input\"); cp.calculateOutput(s); } catch (Exception e) { nl.tudelft.instrumentation.symbolic.SymbolicExecutionLab.output(\"Invalid input: \" + e.getMessage()); } } return null;}");
+        BodyDeclaration bd2 = StaticJavaParser.parseBodyDeclaration(" public void setSequence(String[] trace){ sequence = trace; } ");
+        BodyDeclaration fd = StaticJavaParser.parseBodyDeclaration("public String[] sequence;");
+        node.getMembers().add(fd);
+        node.getMembers().add(bd1);
+        node.getMembers().add(bd2);
+        node.addImplementedType("CallableTraceRunner<Void>");
         return (Node) super.visit(node, arg);
     }
 
@@ -334,10 +341,10 @@ public class PathVisitor extends ModifierVisitor<Object> {
         }
 
         // What should be done when it is an assign expression.
-        if(node.getExpression() instanceof AssignExpr){
+        if(node.getExpression() instanceof AssignExpr && !node.toString().contains("sequence")){
             // Convert it to the corresponding Z3 expression.
-            ExpressionStmt myassign = this.createMyAssign((AssignExpr)node.getExpression().clone(), arg);
-            this.addCode(node, myassign, arg);
+            ExpressionStmt myAssign = this.createMyAssign((AssignExpr)node.getExpression().clone(), arg);
+            this.addCode(node, myAssign, arg);
         }
 
         // What should be done when it is a method call expresion.
@@ -351,13 +358,18 @@ public class PathVisitor extends ModifierVisitor<Object> {
             }
         }
 
-        // Catch the out from in the standard out.
+        // Catch the output from the standard out.
         if (node.getExpression() instanceof MethodCallExpr) {
             MethodCallExpr mce = (MethodCallExpr)node.getExpression();
             if (node.toString().contains("System.out")) {
-                this.addCode(node, new ExpressionStmt(new MethodCallExpr(new NameExpr(pathFile),"output",mce.getArguments())), arg);
+                node.setExpression(
+                        new MethodCallExpr(
+                                new NameExpr(pathFile),"output",mce.getArguments()
+                        )
+                );
             }
         }
+
         return node;
     }
 
@@ -384,6 +396,21 @@ public class PathVisitor extends ModifierVisitor<Object> {
     @Override
     public Node visit(CompilationUnit node, Object arg) {
         node.addImport("nl.tudelft.instrumentation.symbolic.*");
+        node.addImport("nl.tudelft.instrumentation.runner.CallableTraceRunner");
         return (Node) super.visit(node, arg);
+    }
+
+    /**
+     * Remove a while statement in the file. This is used to remove
+     * the while statement in the problem file.
+     * @param node the node that defines the while statement in the file.
+     * @param arg the arguments that were given to the JavaParser.
+     * @return the parent node after removing the while statement.
+     */
+    @Override
+    public Node visit(WhileStmt node, Object arg) {
+        Node parent = node.getParentNode().get();
+        parent.remove(node);
+        return node;
     }
 }

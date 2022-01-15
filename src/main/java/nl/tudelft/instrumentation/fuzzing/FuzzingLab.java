@@ -74,7 +74,7 @@ public class FuzzingLab {
          * You should write your own logic here.
          * @param out the string that has been outputted in the standard out.
          */
-        static void output(String out){
+        public static void output(String out){
                 System.out.println(out);
         }
 }

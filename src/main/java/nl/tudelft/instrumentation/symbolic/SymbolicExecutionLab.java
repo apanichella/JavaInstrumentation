@@ -126,7 +126,7 @@ public class SymbolicExecutionLab {
         }
     }
 
-    static void output(String out){
+    public static void output(String out){
         System.out.println(out);
     }
 

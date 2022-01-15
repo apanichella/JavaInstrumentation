@@ -10,7 +10,6 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
 import com.github.javaparser.ast.body.*;
-import com.github.javaparser.ast.type.*;
 
 /**
  * This class is used to instrument the code by converting the expressions and statements
@@ -24,7 +23,7 @@ public class DistanceVisitor extends ModifierVisitor<Object> {
 
     /** Name of the source file to instrument */
     private String filename;
-    
+
     private String pathFile = "nl.tudelft.instrumentation.fuzzing.DistanceTracker";
 
     private String class_name = "";
@@ -212,17 +211,21 @@ public class DistanceVisitor extends ModifierVisitor<Object> {
      */
     @Override
     public Node visit(ExpressionStmt node, Object arg) {
-        // This is to modify the line in the main method.
+        // This is to modify the lines in the main method.
         if (node.toString().contains("eca =")) {
             Statement staticStatement = StaticJavaParser.parseStatement(pathFile + ".run(eca.inputs, eca);");
             this.addCodeAfter(node, staticStatement, arg);
         }
 
-        // Catch the output from the standard out.
+       // Catch the output from the standard out.
         if (node.getExpression() instanceof MethodCallExpr) {
             MethodCallExpr mce = (MethodCallExpr)node.getExpression();
             if (node.toString().contains("System.out")) {
-                this.addCode(node, new ExpressionStmt(new MethodCallExpr(new NameExpr(pathFile),"output",mce.getArguments())), arg);
+                node.setExpression(
+                        new MethodCallExpr(
+                                new NameExpr(pathFile),"output",mce.getArguments()
+                        )
+                );
             }
         }
 
@@ -233,8 +236,8 @@ public class DistanceVisitor extends ModifierVisitor<Object> {
      * What to do when we have encountered a Class of Interface declaration.
      * In this case, we try to grab the name of class.
      * @param node the node that represents a class or interface declaration.
-     * @param arg additional arugments that were given to the JavaParser.
-     * @return node original node.
+     * @param arg additional arguments that were given to the JavaParser.
+     * @return node containing extra code that we added.
      */
     @Override
     public Node visit(ClassOrInterfaceDeclaration node, Object arg){
@@ -250,7 +253,7 @@ public class DistanceVisitor extends ModifierVisitor<Object> {
     }
 
     /**
-     * Method that specifies what should we done when we have encountered
+     * Method that specifies what should we have done when we have encountered
      * an if-statement in the AST.
      * @param node the node that represents the if-statement.
      * @param arg additional arguments that were given to the JavaParser.
@@ -272,6 +275,21 @@ public class DistanceVisitor extends ModifierVisitor<Object> {
     @Override
     public Node visit(CompilationUnit node, Object arg) {
         node.addImport("nl.tudelft.instrumentation.fuzzing.*");
+        node.addImport("nl.tudelft.instrumentation.runner.CallableTraceRunner");
         return (Node) super.visit(node, arg);
+    }
+
+    /**
+     * Remove a while statement in the file. This is used to remove
+     * the while statement in the problem file.
+     * @param node the node that defines the while statement in the file.
+     * @param arg the arguments that were given to the JavaParser.
+     * @return the parent node after removing the while statement.
+     */
+    @Override
+    public Node visit(WhileStmt node, Object arg) {
+        Node parent = node.getParentNode().get();
+        parent.remove(node);
+        return node;
     }
 }
