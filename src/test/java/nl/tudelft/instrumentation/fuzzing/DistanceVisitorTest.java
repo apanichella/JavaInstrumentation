@@ -197,4 +197,145 @@ public class DistanceVisitorTest {
         assertEquals(3, count);
     }
 
+    @Test
+    public void testInstrumentationShouldAddImplementToClass(){
+        String implementsExpr = "implements CallableTraceRunner<Void>";
+        StringBuilder builder = new StringBuilder();
+        builder.append("public class Test {\n")
+                .append("    public static void main(String[] args) {\n")
+                .append("        if (a.equals(b) && a.equals(b) && a.equals(b) && a.equals(b))\n")
+                .append("           return \"INVALID\";\n" )
+                .append("    }\n")
+                .append("\n")
+                .append("}");
+
+        String code = builder.toString();
+        CompilationUnit unit = instrument(code);
+        System.out.println(unit.toString());
+
+        int count = StringUtils.countMatches(unit.toString(), implementsExpr);
+        assertTrue(unit.toString().contains(implementsExpr));
+        assertEquals(1, count);
+    }
+
+    @Test
+    public void testInstrumentationShouldAddImportForCallable(){
+        String importCallable = "import nl.tudelft.instrumentation.runner.CallableTraceRunner;";
+        StringBuilder builder = new StringBuilder();
+        builder.append("public class Test {\n")
+                .append("    public static void main(String[] args) {\n")
+                .append("        if (a.equals(b) && a.equals(b) && a.equals(b) && a.equals(b))\n")
+                .append("           return \"INVALID\";\n" )
+                .append("    }\n")
+                .append("\n")
+                .append("}");
+
+        String code = builder.toString();
+        CompilationUnit unit = instrument(code);
+        System.out.println(unit.toString());
+
+        int count = StringUtils.countMatches(unit.toString(), importCallable);
+        assertTrue(unit.toString().contains(importCallable));
+        assertEquals(1, count);
+    }
+
+    @Test
+    public void testInstrumentationShouldCreateCallMethod(){
+        String callMethod = "public Void call() {\n" +
+                "        Test cp = new Test();\n" +
+                "        for (String s : sequence) {\n" +
+                "            try {\n" +
+                "                cp.calculateOutput(s);\n" +
+                "            } catch (Exception e) {\n" +
+                "                nl.tudelft.instrumentation.fuzzing.FuzzingLab.output(\"Invalid input: \" + e.getMessage());\n" +
+                "            }\n" +
+                "        }\n" +
+                "        return null;\n" +
+                "    }";
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("public class Test {\n")
+                .append("    public static void main(String[] args) {\n")
+                .append("        if (a.equals(b) && a.equals(b) && a.equals(b) && a.equals(b))\n")
+                .append("           return \"INVALID\";\n" )
+                .append("    }\n")
+                .append("\n")
+                .append("}");
+
+        String code = builder.toString();
+        CompilationUnit unit = instrument(code);
+        System.out.println(unit.toString());
+
+        int count = StringUtils.countMatches(unit.toString(), callMethod);
+        assertTrue(unit.toString().contains(callMethod));
+        assertEquals(1, count);
+    }
+
+    @Test
+    public void testInstrumentationShouldCreateSetSequenceMethod(){
+        String setSequenceMethod = "public void setSequence(String[] trace) {\n" +
+                "        sequence = trace;\n" +
+                "    }";
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("public class Test {\n")
+                .append("    public static void main(String[] args) {\n")
+                .append("        if (a.equals(b) && a.equals(b) && a.equals(b) && a.equals(b))\n")
+                .append("           return \"INVALID\";\n" )
+                .append("    }\n")
+                .append("\n")
+                .append("}");
+
+        String code = builder.toString();
+        CompilationUnit unit = instrument(code);
+        System.out.println(unit.toString());
+
+        int count = StringUtils.countMatches(unit.toString(), setSequenceMethod);
+        assertTrue(unit.toString().contains(setSequenceMethod));
+        assertEquals(1, count);
+    }
+
+    @Test
+    public void testInstrumentationShouldCreateSequenceAttribute(){
+        String sequenceAttribute = "public String[] sequence;";
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("public class Test {\n")
+                .append("    public static void main(String[] args) {\n")
+                .append("        if (a.equals(b) && a.equals(b) && a.equals(b) && a.equals(b))\n")
+                .append("           return \"INVALID\";\n" )
+                .append("    }\n")
+                .append("\n")
+                .append("}");
+
+        String code = builder.toString();
+        CompilationUnit unit = instrument(code);
+        System.out.println(unit.toString());
+
+        int count = StringUtils.countMatches(unit.toString(), sequenceAttribute);
+        assertTrue(unit.toString().contains(sequenceAttribute));
+        assertEquals(1, count);
+    }
+
+    @Test
+    public void testInstrumentationShouldCreateRunCall(){
+        String runCall = "nl.tudelft.instrumentation.fuzzing.DistanceTracker.run(eca.inputs, eca);";
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("public class Test {\n")
+                .append("    public static void main(String[] args) {\n")
+                .append("        Test eca = new Test();\n")
+                .append("    }\n")
+                .append("\n")
+                .append("}");
+
+        String code = builder.toString();
+        CompilationUnit unit = instrument(code);
+        System.out.println(unit.toString());
+
+        int count = StringUtils.countMatches(unit.toString(), runCall);
+        assertTrue(unit.toString().contains(runCall));
+        assertEquals(1, count);
+    }
+
 }
