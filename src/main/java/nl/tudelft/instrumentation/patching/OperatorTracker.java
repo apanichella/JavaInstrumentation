@@ -10,7 +10,7 @@ import java.util.stream.*;
  * This class is used to start and run the tests for the algorithm that you
  * will build to do automated code patching.
  *
- * @ Sicco Verwer.
+ * @author Clinton Cao, Sicco Verwer
  */
 public class OperatorTracker {
     static String[] operators;

@@ -17,7 +17,7 @@ import java.util.LinkedList;
  * This class implements a small line-coverage instrumentation tool. It relies on {@code JavaParser} for parsing Java
  * source code files and to visit the corresponding AST.
  *
- * @author Sicco Verwer
+ * @author Clinton Cao, Sicco Verwer
  */
 public class OperatorVisitor extends ModifierVisitor<Object> {
     /** Name of the source file to instrument */

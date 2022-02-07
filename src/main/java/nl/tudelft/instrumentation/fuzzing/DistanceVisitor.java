@@ -15,7 +15,7 @@ import com.github.javaparser.ast.body.*;
  * This class is used to instrument the code by converting the expressions and statements
  * into the MyVar objects.
  *
- * @author Sicco Verwer
+ * @author Clinton Cao, Sicco Verwer
  */
 public class DistanceVisitor extends ModifierVisitor<Object> {
 

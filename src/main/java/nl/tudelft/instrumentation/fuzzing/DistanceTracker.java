@@ -7,7 +7,7 @@ import java.util.concurrent.*;
  * into a MyVar object. The MyVar objects makes it easier for the computation
  * of the branch distance when the myIf method is called.
  *
- * @author Sicco Verwer
+ * @author Clinton Cao, Sicco Verwer
  */
 public class DistanceTracker {
     static ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);

@@ -4,9 +4,12 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import com.microsoft.z3.*;
-import nl.tudelft.instrumentation.fuzzing.FuzzingLab;
 import nl.tudelft.instrumentation.runner.CallableTraceRunner;
 
+/**
+ * This class is used for the symbolic execution lab.
+ * @author Clinton Cao, Sicco Verwer
+ */
 public class PathTracker {
     public static HashMap<String, String> cfg = new HashMap<String, String>() {{ put("model","true"); }};
     public static Context ctx = new Context(cfg);

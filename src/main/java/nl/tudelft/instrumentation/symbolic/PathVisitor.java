@@ -16,7 +16,7 @@ import com.github.javaparser.ast.type.*;
  * This class is used to parse the RERS problem and instrument the problem file with our own object types
  * and method calls.
  *
- * @author Sicco Verwer
+ * @author Clinton Cao, Sicco Verwer
  */
 public class PathVisitor extends ModifierVisitor<Object> {
 
