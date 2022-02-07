@@ -1,19 +1,20 @@
 package nl.tudelft.instrumentation.fuzzing;
-
-import java.util.*;
-import com.microsoft.z3.*;
-import java.util.Random;
-import java.io.FileWriter;
-import java.io.IOException;
+import nl.tudelft.instrumentation.runner.CallableTraceRunner;
+import java.util.concurrent.*;
 
 /**
  * This class is used to convert each Java primitive type (or an expression)
  * into a MyVar object. The MyVar objects makes it easier for the computation
  * of the branch distance when the myIf method is called.
  *
- * @author Sicco Verwer
+ * @author Clinton Cao, Sicco Verwer
  */
 public class DistanceTracker {
+    static ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
+    static CallableTraceRunner<Void> problem;
+    static String[] inputSymbols;
+    // Longest a single testcase is allowed to run
+    static final int timeoutMS = 1000;
 
     /**
      * Converts a boolean to a MyVar object
@@ -92,19 +93,48 @@ public class DistanceTracker {
     }
 
     /**
-     * Method for fuzzing a new input.
-     * @param inputSymbols the input symbols from which the fuzzer should fuzz from.
-     * @return an input.
-     */
-    public static String fuzz(String[] inputSymbols){
-        return FuzzingLab.fuzz(inputSymbols);
-    }
-
-    /**
      * Used to catch output from the standard out.
      * @param out the string that has been outputted in the standard out.
      */
     public static void output(String out){
         FuzzingLab.output(out);
     }
+
+    /**
+     * Initialize and hand over control to FuzzingLab
+     * @param eca The current problem instance
+     * @param s the input symbols of the problem
+     */
+    public static void run(String[] s, CallableTraceRunner<Void> eca) {
+        problem = eca;
+        inputSymbols = s;
+        FuzzingLab.run();
+    }
+
+    /**
+`     * This method is used for running the fuzzed input. It first assigns the
+     * fuzzed sequence that needs to be run and then user a handler to
+     * start running the sequence through the problem.
+     * @param sequence the fuzzed sequence that needs top be run.
+     */
+    public static void runNextFuzzedSequence(String[] sequence) {
+        problem.setSequence(sequence);
+        final Future handler = executor.submit(problem);
+        executor.schedule(() -> {
+            handler.cancel(true);
+        }, timeoutMS, TimeUnit.MILLISECONDS);
+
+        // Wait for it to be completed
+        try {
+            handler.get();
+        } catch (CancellationException e) {
+            System.out.println("TIMEOUT!");
+            System.exit(-1);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+
+    }
+
 }

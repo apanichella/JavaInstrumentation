@@ -12,7 +12,7 @@ import java.io.IOException;
  * that were used. It also makes it easier for us to compute the branch
  * distance.
  *
- * @author Sicco Verwer
+ * @author Clinton Cao, Sicco Verwer
  */
 public class MyVar {
 

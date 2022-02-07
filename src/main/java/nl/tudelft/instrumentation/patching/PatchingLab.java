@@ -44,7 +44,7 @@ public class PatchingLab {
 
                 // Loop here, running your genetic algorithm until you think it is done
                 while (!isFinished) {
-                      // Do things!
+                        // Do things!
                         try {
                                 System.out.println("Woohoo, looping!");
                                 Thread.sleep(1000);

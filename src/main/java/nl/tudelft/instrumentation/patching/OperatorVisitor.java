@@ -14,10 +14,10 @@ import com.github.javaparser.ast.body.*;
 import java.util.LinkedList;
 
 /**
- * This class is used to parse a RERS problem and instrument the code with our object
- * types and method calls.
+ * This class implements a small line-coverage instrumentation tool. It relies on {@code JavaParser} for parsing Java
+ * source code files and to visit the corresponding AST.
  *
- * @author Sicco Verwer
+ * @author Clinton Cao, Sicco Verwer
  */
 public class OperatorVisitor extends ModifierVisitor<Object> {
     /** Name of the source file to instrument */
@@ -35,13 +35,6 @@ public class OperatorVisitor extends ModifierVisitor<Object> {
         this.filename = filename;
     }
 
-    /**
-     * This method is used to insert a statement above a given statement.
-     * @param node the statement for which we want to insert statement above.
-     * @param new_statement the statement that we want to insert.
-     * @param args the additional arguments that were given to the JavaParser.
-     * @return a node containing the instrumented code.
-     */
     public Node addCode(Statement node, Statement new_statement, Object args){
         if (node.getParentNode().isPresent()){
 
@@ -66,14 +59,6 @@ public class OperatorVisitor extends ModifierVisitor<Object> {
         return node;
     }
 
-    /**
-     * This method is used to insert a statement after a given statement. Used to insert additional statement
-     * in the main method (right after "String input = stdin.readLine();"
-     * @param node the node that represents the statement for which we want to add a statement after.
-     * @param new_statement the new statement that needs to be inserted
-     * @param args additional arguments that were given to the JavaParser
-     * @return a node containing our instrumented code.
-     */
     public Node addCodeAfter(Statement node, Statement new_statement, Object args){
         if (node.getParentNode().isPresent()){
 
@@ -98,12 +83,6 @@ public class OperatorVisitor extends ModifierVisitor<Object> {
         return node;
     }
 
-    /**
-     * This method converts set of given operators into a myOperator method call.
-     * @param node the node that represents an expression.
-     * @param stat the expression but represented as a statement.
-     * @param args the additional arguments that were given to the JavaParser.
-     */
     public void setOperatorList(Expression node, Statement stat, Object args){
         while(node instanceof EnclosedExpr) node = ((EnclosedExpr)node).getInner();
 
@@ -143,11 +122,9 @@ public class OperatorVisitor extends ModifierVisitor<Object> {
     }
 
     /**
-     * Method that specifies what should we done when we have encountered
-     * an if-statement in the AST.
-     * @param node the node that represents the if-statement.
-     * @param arg additional arguments that were given to the JavaParser.
-     * @return a node that contains our instrumented code.
+     * We need to keep track of coverage for the overall {@code IfStmt} but also
+     * for all statements in its body: {@code thenStmt}, {@code elseStmt},
+     * and {@code Expression}
      */
     @Override
     public Node visit(IfStmt node, Object arg) {
@@ -155,13 +132,6 @@ public class OperatorVisitor extends ModifierVisitor<Object> {
         return (Node) super.visit(node, arg);
     }
 
-    /**
-     * Method that specifies what should be done when we have encountered a class or interface
-     * declaration in the AST.
-     * @param node the node that represents a class or interface declaration.
-     * @param arg the additional arguments that were given to the JavaParser.
-     * @return a node containing the instrumented code.
-     */
     @Override
     public Node visit(ClassOrInterfaceDeclaration node, Object arg){
         this.class_name = node.getName().toString();
@@ -175,13 +145,6 @@ public class OperatorVisitor extends ModifierVisitor<Object> {
         return (Node) super.visit(node, arg);
     }
 
-    /**
-     * Method that specifies what should be done when we have encountered an expression statement
-     * in the AST.
-     * @param node the node that represents the expression statement.
-     * @param arg additional arguments that were given to the JavaParser.
-     * @return a node that contains our instrumented code.
-     */
     @Override
     public Node visit(ExpressionStmt node, Object arg) {
         if (node.getExpression() instanceof VariableDeclarationExpr) {
@@ -198,6 +161,7 @@ public class OperatorVisitor extends ModifierVisitor<Object> {
                 this.addCodeAfter(node, staticStatement, arg);
             }
         }
+
         if (node.getExpression() instanceof MethodCallExpr) {
             MethodCallExpr mce = (MethodCallExpr)node.getExpression();
             if (node.toString().contains("System.out")) {
@@ -208,16 +172,10 @@ public class OperatorVisitor extends ModifierVisitor<Object> {
                 );
             }
         }
+
         return (Node) super.visit(node, arg);
     }
 
-    /**
-     * Specifies what should happen when we encounter a catch clause
-     * in the AST.
-     * @param node the node that represents a catch clause.
-     * @param arg additional arguments given to the JavaParser.
-     * @return node containing our instrumented code.
-     */
     @Override
     public Node visit(CatchClause node, Object arg){
         Parameter staticParam = StaticJavaParser.parseParameter("Exception e");
@@ -233,9 +191,8 @@ public class OperatorVisitor extends ModifierVisitor<Object> {
      */
     @Override
     public Node visit(CompilationUnit node, Object arg) {
-
         node.addImport("nl.tudelft.instrumentation.patching.*");
-
+        node.addImport("nl.tudelft.instrumentation.runner.CallableTraceRunner");
         return (Node) super.visit(node, arg);
     }
 
@@ -246,3 +203,4 @@ public class OperatorVisitor extends ModifierVisitor<Object> {
         return node;
     }
 }
+

@@ -1,27 +1,23 @@
 package nl.tudelft.instrumentation.patching;
+import nl.tudelft.instrumentation.runner.CallableTraceRunner;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.*;
-
 /**
  * This class is used to start and run the tests for the algorithm that you
  * will build to do automated code patching.
  *
- * @ Sicco Verwer.
+ * @author Clinton Cao, Sicco Verwer
  */
 public class OperatorTracker {
-
     static String[] operators;
     static Vector<String[]> tests = new Vector< String[] >();
     static boolean testing = false;
-
     static String outputs = "";
-    static LinkedList<Boolean> test_result = new LinkedList<Boolean>();
     static int current_test = 0;
-
     static ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
     static CallableTraceRunner<Void> problem;
 
@@ -40,7 +36,6 @@ public class OperatorTracker {
     public static boolean myOperator(String operator, int left, int right, int operator_nr){
         return PatchingLab.encounteredOperator(operator, left, right, operator_nr);
     }
-
     /**
      * This method is used to call the encounteredOperator method from the FuzzingLab class.
      * This methods handles operators for booleans.
@@ -72,13 +67,9 @@ public class OperatorTracker {
         if (outputs.equals(tests.elementAt(current_test)[1])) {
             return true;
         } else {
-//            System.out.println("Test " + (current_test + 1) + " failed"); // +1 to match line number
-//            System.out.println("Actual  : " + outputs);
-//            System.out.println("Expected: " + tests.elementAt(current_test)[1]);
             return false;
         }
     }
-
     /**
      * Initialize some of the fields in this class.
      * @param o the list of operators.
@@ -87,7 +78,6 @@ public class OperatorTracker {
         operators = o;
         readTests();
     }
-
     /**
      * Read the test cases from a file. In this case we are reading the test cases
      * from "tests.txt"
@@ -100,11 +90,11 @@ public class OperatorTracker {
             stream.forEach(s -> {
                 tests.add(s.split("->"));
             });
-            System.out.println("Read tests:");
-            for(String[] s : tests){
-                for(String st : s) System.out.print(st + " ");
-                System.out.println();
-            }
+//            System.out.println("Read tests:");
+//            for(String[] s : tests){
+//                for(String st : s) System.out.print(st + " ");
+//                System.out.println();
+//            }
         }
         catch (Exception e)
         {
@@ -120,7 +110,6 @@ public class OperatorTracker {
     public static void run(String[] operators, CallableTraceRunner<Void> eca) {
         problem = eca;
         initialize(operators);
-
         PatchingLab.run();
     }
 
