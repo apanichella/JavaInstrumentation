@@ -3,6 +3,9 @@ package nl.tudelft.instrumentation.fuzzing;
 import java.util.*;
 import java.util.Random;
 
+
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * You should write your own solution using this class.
  */
@@ -12,9 +15,113 @@ public class FuzzingLab {
         static int traceLength = 10;
         static boolean isFinished = false;
 
+        // constants
+        static int K = 1;
+
         static void initialize(String[] inputSymbols){
                 // Initialise a random trace from the input symbols of the problem.
                 currentTrace = generateRandomTrace(inputSymbols);
+        }
+
+        @SuppressWarnings("deprecation")
+        static int getLevenshteinDistance(String s1, String s2) {
+                return StringUtils.getLevenshteinDistance(s1, s2);
+        }
+
+        static double normalize(double distance) {
+                return distance / (distance + 1.0);
+        }
+
+        static double branchDistance(MyVar condition) {
+                MyVar left = condition.left;
+                MyVar right = condition.right;
+
+
+               if(condition.type == TypeEnum.BOOL){
+                        // reverse the binary
+                        if(condition.value){
+                                return 0;
+                        }
+                        return 1;
+
+               } else if (condition.type == TypeEnum.BINARY){
+                       switch (condition.operator){
+                                case "<":
+                                        if(right.type == TypeEnum.INT && left.type == TypeEnum.INT)
+                                                if (right.int_value < left.int_value){
+                                                        return 0;
+                                                }
+                                                else {
+                                                        return - right.int_value + left.int_value + K;
+                                                }
+                                        System.out.println("Error - Condition type: " + condition.type.toString() + ", Operator: " + condition.operator);
+                                
+                                case "<=":
+                                        if(right.type == TypeEnum.INT && left.type == TypeEnum.INT)
+                                                if (right.int_value <= left.int_value){
+                                                        return 0;
+                                                }
+                                                else {
+                                                        return - right.int_value + left.int_value;
+                                                }
+                                        System.out.println("Error - Condition type: " + condition.type.toString() + ", Operator: " + condition.operator);
+                                
+                                case ">":
+                                        if(right.type == TypeEnum.INT && left.type == TypeEnum.INT)
+                                                if (right.int_value > left.int_value){
+                                                        return 0;
+                                                }
+                                                else {
+                                                        return right.int_value - left.int_value + K;
+                                                }
+                                        System.out.println("Error - Condition type: " + condition.type.toString() + ", Operator: " + condition.operator);
+                        
+                                case "=>":
+                                        if(right.type == TypeEnum.INT && left.type == TypeEnum.INT)
+                                                if (right.int_value >= left.int_value){
+                                                        return 0;
+                                                }
+                                                else {
+                                                        return right.int_value - left.int_value;
+                                                }
+                                        System.out.println("Error - Condition type: " + condition.type.toString() + ", Operator: " + condition.operator);
+                
+                
+                                case "&&":
+                                        return normalize(branchDistance(left)) + normalize(branchDistance(right));
+
+                                case "||":
+                                        return Math.min(normalize(branchDistance(left)), normalize(branchDistance(right)));
+
+                                case "==":
+                                        if(right.type == TypeEnum.INT && left.type == TypeEnum.INT){
+                                                return Math.abs(left.int_value - right.int_value);
+                                        }
+                                        else if(right.type == TypeEnum.BOOL && left.type == TypeEnum.BOOL){
+                                                return right.value != left.value ? 1 : 0;
+                                        }
+                                        else if(right.type == TypeEnum.STRING && left.type == TypeEnum.STRING){
+                                                return getLevenshteinDistance(right.str_value, left.str_value);
+                                        }
+                                        System.out.println("Error - Condition type: " + condition.type.toString() + ", Operator: " + condition.operator);
+
+                                case "!=":
+                                        if(right.type == TypeEnum.INT && left.type == TypeEnum.INT){
+                                                return right.int_value != left.int_value ? 1 : 0;
+                                        }
+                                        else if(right.type == TypeEnum.BOOL && left.type == TypeEnum.BOOL){
+                                                return right.value != left.value ? 1 : 0;
+                                        }
+                                        System.out.println("Error - Condition type: " + condition.type.toString() + ", Operator: " + condition.operator);
+
+                                default:
+                                        System.out.println("Error - Condition type: " + condition.type.toString() + ", Operator: " + condition.operator);
+                               
+                       }
+               }
+
+                System.out.println("Error - Condition type: " + condition.type.toString() + ", Operator: " + condition.operator);
+                return 0;
         }
 
         /**
@@ -23,6 +130,10 @@ public class FuzzingLab {
         static void encounteredNewBranch(MyVar condition, boolean value, int line_nr) {
                 // do something useful
                 System.out.println(condition.toString());
+                System.out.println(value);
+                System.out.println(line_nr);
+                System.out.println("Distance" + branchDistance(condition));
+                System.out.println("---------------");
         }
 
         /**
