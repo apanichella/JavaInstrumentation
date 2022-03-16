@@ -136,7 +136,7 @@ Finally, we also need to add the Z3 library to the classpath when running an ins
 ## Lab 3 - Automated Patching with Genetic Algorithms
 For Lab 3, it is almost identical to the steps shown for Lab 1. The only change is to use the `patching` type when instrumenting the file:
 
-`java -cp target/aistr.jar nl.tudelft.instrumentation.Main --type=Patching --file=Problem1.java > instrumented/Problem1.java`
+`java -cp target/aistr.jar nl.tudelft.instrumentation.Main --type=patching --file=Problem1.java > instrumented/Problem1.java`
 
 
 # Setting
