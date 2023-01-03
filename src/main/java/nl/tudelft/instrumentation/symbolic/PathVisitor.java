@@ -358,6 +358,12 @@ public class PathVisitor extends ModifierVisitor<Object> {
             }
         }
 
+        // Handle unary expression (eg ++) if it is the only expression on a line.
+        if(node.getExpression() instanceof UnaryExpr) {
+            ExpressionStmt s = new ExpressionStmt(addOwnExpressionCode(node.getExpression().clone(), arg));
+            this.addCode(node, s, arg);
+        }
+
         // Catch the output from the standard out.
         if (node.getExpression() instanceof MethodCallExpr) {
             MethodCallExpr mce = (MethodCallExpr)node.getExpression();

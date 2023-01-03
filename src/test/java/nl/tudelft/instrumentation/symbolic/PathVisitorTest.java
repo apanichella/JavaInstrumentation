@@ -350,7 +350,6 @@ public class PathVisitorTest {
         assertEquals(1, count);
     }
 
-
     @Test
     public void testConditionalShoudlCreateMyAssignAndConditionalCall(){
         String conditional = "nl.tudelft.instrumentation.symbolic.PathTracker.conditional";
