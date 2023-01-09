@@ -450,7 +450,7 @@ public class PathVisitorTest {
                 "            try {\n" +
                 "                MyVar my_s = nl.tudelft.instrumentation.symbolic.PathTracker.myInputVar(s, \"input\");\n" +
                 "                cp.calculateOutput(s, my_s);\n" +
-                "            } catch (Exception e) {\n" +
+                "            } catch (IllegalArgumentException | IllegalStateException e) {\n" +
                 "                nl.tudelft.instrumentation.symbolic.SymbolicExecutionLab.output(\"Invalid input: \" + e.getMessage());\n" +
                 "            }\n" +
                 "        }\n" +
