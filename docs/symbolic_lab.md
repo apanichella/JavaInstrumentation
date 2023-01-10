@@ -15,7 +15,7 @@ static MyVar createVar(String name, Expr value, Sort s){
         // we show how to do it for creating new symbols
         // please add similar steps to the functions below in order to obtain a path constraint
         Expr z3var = c.mkConst(c.mkSymbol(name + "_" + PathTracker.z3counter++), s);
-        PathTracker.z3model = c.mkAnd(c.mkEq(z3var, value), PathTracker.z3model);
+        PathTracker.addToModel(c.mkEq(z3var, value));
         return new MyVar(z3var, name);
     }
 ```
@@ -29,8 +29,7 @@ You just need to pass it on to the appropriate method.
 First, we obtain the pathtracker context, which we can use to create new z3 constraints.
 
 Then, we define a new z3 constant using the name of the variable and the conveniently built in counter to give it a number, this will come in handy for single static assignment later.
-In the next line we append a rule using this z3 constant to the current z3 model in the path tracker. We do this using an and clause, with on one side an equality constraint
-specifying the value of our variable, and on the other side the current z3model.
+In the next line we append a rule using this z3 constant to the current z3 model in the PathTracker. Before it is appended to the model, we need to make sure that we specify that `z3var` must equal be equal to the `value` expression that is given to the `createVar` (this can be seen as the instantiation of a variable e.g. `a = 5`) 
 
 Finally, we return a MyVar containing the corresponding z3var and its name.
 
@@ -38,8 +37,8 @@ You will need to fill in the rest of the methods in a similar way.
 
 ### PathTracker
 The pathtracker class is there to help you build your path constraints and call the solver.
-It contains two sets of constraints, the z3model and z3branches. Do not forget to add the branches you
-encounter to z3branches! A good place to do this would be in the encounteredNewBranch method in SymbolicExecutionLab.
+It contains two sets of constraints, the `z3model` and `z3branches`. Do not forget to add the branches you
+encounter to `z3branches`! Use the given methods `addToModel` and `addToBranches` to add new contraints to the model and branches respectively. A good place to do add a new branch to `z3branches` would be in the encounteredNewBranch method in SymbolicExecutionLab.
 
 When you call solve, z3 will try to solve for the inputs considering your current path constraint. If successful,
 it will tell you the inputs needed to satisfy the constraint. You should use this to augment your fuzzer by trying to solve
