@@ -32,7 +32,7 @@ public class SymbolicExecutionLab {
          * obtain a path constraint.
          */
         Expr z3var = c.mkConst(c.mkSymbol(name + "_" + PathTracker.z3counter++), s);
-        PathTracker.z3model = c.mkAnd(c.mkEq(z3var, value), PathTracker.z3model);
+        PathTracker.addToModel(c.mkEq(z3var, value));
         return new MyVar(z3var, name);
     }
 

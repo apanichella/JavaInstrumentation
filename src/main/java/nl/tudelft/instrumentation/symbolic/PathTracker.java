@@ -15,8 +15,10 @@ public class PathTracker {
     public static Context ctx = new Context(cfg);
 
     public static int z3counter = 1; // used to give an ID to each variable.
-    public static BoolExpr z3model= ctx.mkTrue();
-    public static BoolExpr z3branches = ctx.mkTrue();
+    private static BoolExpr z3model= ctx.mkTrue();
+    private static BoolExpr z3branches = ctx.mkTrue();
+
+    public static Solver solver = ctx.mkSolver();
 
     public static LinkedList<MyVar> inputs = new LinkedList<MyVar>();
     static ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
@@ -33,6 +35,18 @@ public class PathTracker {
         z3model    = ctx.mkTrue();
         z3branches = ctx.mkTrue();
         inputs.clear();
+        solver = ctx.mkSolver();
+    }
+
+
+    public static void addToModel(BoolExpr expr) {
+        z3model = ctx.mkAnd(expr, z3model);
+        solver.add(expr);
+    }
+
+    public static void addToBranches(BoolExpr expr) {
+        z3branches = ctx.mkAnd(expr, z3branches);
+        solver.add(expr);
     }
 
     /**
@@ -45,11 +59,9 @@ public class PathTracker {
      *                   be printed in the terminal or not.
      */
     public static void solve(BoolExpr new_branch, boolean printModel){
-        Solver s = PathTracker.ctx.mkSolver();
-
-        s.add(PathTracker.z3model);
-        s.add(PathTracker.z3branches);
-        s.add(new_branch);
+        // Save the state of the solver before adding the branch constraint
+        solver.push();
+        solver.add(new_branch);
 
         if(printModel){
             System.out.print("Model: ");
@@ -60,9 +72,9 @@ public class PathTracker {
             System.out.println(new_branch);
         }
 
-        if(s.check() == Status.SATISFIABLE){
+        if(solver.check() == Status.SATISFIABLE){
             //System.out.println("satisfiable");
-            Model m = s.getModel();
+            Model m = solver.getModel();
             LinkedList<String> new_inputs = new LinkedList<String>();
             for(MyVar v : PathTracker.inputs){
                 new_inputs.add(m.evaluate(v.z3var, true).toString());
@@ -71,6 +83,8 @@ public class PathTracker {
         } else {
             //System.out.println("unsatisfiable");
         }
+        // Restore the state of the solver to remove the branch constraint
+        solver.pop();
     }
 
     // Making temporary variables, i.e., within if-conditions
