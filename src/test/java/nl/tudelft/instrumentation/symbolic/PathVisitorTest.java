@@ -331,6 +331,26 @@ public class PathVisitorTest {
     }
 
     @Test
+    public void testIncrementShouldCreateIncrementCallForSingleStatement(){
+        String increment= "PathTracker.increment";
+        StringBuilder builder = new StringBuilder();
+        builder.append("public class Test {\n")
+                .append("    public static void main(String[] args) {\n")
+                .append("        a++;\n")
+                .append("    }\n")
+                .append("\n")
+                .append("}");
+
+        String code = builder.toString();
+        CompilationUnit unit = instrument(code);
+        System.out.println(unit.toString());
+
+        int count = StringUtils.countMatches(unit.toString(), increment);
+        assertTrue(unit.toString().contains(increment));
+        assertEquals(1, count);
+    }
+
+    @Test
     public void testConditionalShoudlCreateMyAssignAndConditionalCall(){
         String conditional = "nl.tudelft.instrumentation.symbolic.PathTracker.conditional";
         String myAssign = "nl.tudelft.instrumentation.symbolic.PathTracker.myAssign";
