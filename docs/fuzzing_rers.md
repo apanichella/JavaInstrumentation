@@ -621,6 +621,8 @@ You should see AFL starting, perhaps with some warnings due to useless input fil
 
 Keep on fuzzing.
 
+
+## Retrieving results
 Then after some time, you can investigate the findings directory. You will find for instance the crashes found in the crashes directory, and interesting test cases (which it uses to trigger new paths) in queue. You can run the crashes found in the fuzzed program in order to answer the reachability problems:
 
 ```C++
@@ -638,6 +640,20 @@ Abort trap: 6
 ```
 
 **Note**: In the newer version of RERS problems, you will not see `Abort trap: 6` but you will see `Aborted` instead.
+
+We have create a python script to get a summary of all the errors AFL finds. The script is located in `scripts/analyze_afl.py`. The script needs the afl findings directory and the binary to run the crash files with: `./scripts/analyze_afl AFL_FINDINGS_DIRECTORY PROBLEM_BINARY`. If you have the files and folders in line with the examples above, you can run `./scripts/analyze_afl findings Problem11` to get all the errors.
+Running the script gives the following summary:
+
+```
+Summary:
+error_0 found in 9.47s
+error_60 found in 1.01s
+error_62 found in 4.53s
+error_95 found in 4.03s
+Found 4 unique errors in "./afl/afl/11/findings"
+```
+
+
 
 In this way, and some extra tricks, we obtained third place in the reachability category of the RERS 2016 challenge: http://rers-challenge.org/2016/index.php?page=results. We are team Radboud (together with PhD students from Radboud university), for some reason they still did not update the names. We wrote a paper describing our approach (including learning which you will learn later in this course), which is available at https://arxiv.org/pdf/1611.02429.pdf. Please take a look if you are interested.
 AFL can reach quite some errors, but to compete in the 2020 challenge we expect combinations will be required with learning, mutation, tainting, and concolic execution.
