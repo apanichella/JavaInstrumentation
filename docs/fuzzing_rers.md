@@ -641,7 +641,7 @@ Abort trap: 6
 
 **Note**: In the newer version of RERS problems, you will not see `Abort trap: 6` but you will see `Aborted` instead.
 
-We have create a python script to get a summary of all the errors AFL finds. The script is located in `scripts/analyze_afl.py`. The script needs the afl findings directory and the binary to run the crash files with: `./scripts/analyze_afl AFL_FINDINGS_DIRECTORY PROBLEM_BINARY`. If you have the files and folders in line with the examples above, you can run `./scripts/analyze_afl findings Problem11` to get all the errors.
+We created a Python script that computes the summary of the errors that were found by AFL. The script is located in `scripts/analyze_afl.py`. The script requires the AFL finding directory and the binary to run the crash files with: `./scripts/analyze_afl AFL_FINDINGS_DIRECTORY PROBLEM_BINARY`. If you have the files and folders in line with the examples above, you can run `./scripts/analyze_afl findings Problem11` to get all the errors.
 Running the script gives the following summary:
 
 ```
