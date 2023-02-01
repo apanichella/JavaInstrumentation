@@ -18,6 +18,10 @@ public class MealyState {
     }
 
     public void addEdge(String symbol, MealyTransition transition) {
+        if (edges.containsKey(symbol)) {
+            assert transition.equals(edges.get(symbol))
+                    : "The same edge has already been defined with a different transition";
+        }
         edges.put(symbol, transition);
     }
 

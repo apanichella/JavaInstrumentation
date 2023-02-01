@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.Random;
 
 /**
- * 
+ * @author Bram Verboom
  */
 
 public class RandomWalkEquivalenceChecker extends EquivalenceChecker {

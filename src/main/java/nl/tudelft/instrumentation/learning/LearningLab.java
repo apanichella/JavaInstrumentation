@@ -1,7 +1,6 @@
 package nl.tudelft.instrumentation.learning;
 
 import java.util.*;
-import java.util.Random;
 
 /**
  * You should write your own solution using this class.
@@ -68,27 +67,10 @@ public class LearningLab {
         }
     }
 
-    static boolean isConsistent(ObservationTable ot) {
-        return false;
-    }
-
-    static boolean isClosed(ObservationTable ot) {
-        return false;
-    }
-
     static void learn() {
-        // while (true) {
-        //     MealyMachine hypothesis = observationTable.toHypothesis();
-        // }
         SystemUnderLearn sul = new RersSUL();
         observationTable = new ObservationTable(LearningTracker.inputSymbols, sul);
-        equivalenceChecker = new RandomWalkEquivalenceChecker(sul, LearningTracker.inputSymbols, 10, 10);
-        observationTable.print();
-        observationTable.addToS("iB");
-        // observationTable.addToS("iA");
-        observationTable.addToE("iE");
-        // observationTable.addToE("C");
-        observationTable.print();
+        equivalenceChecker = new RandomWalkEquivalenceChecker(sul, LearningTracker.inputSymbols, 100, 100000);
     }
 
     /**
