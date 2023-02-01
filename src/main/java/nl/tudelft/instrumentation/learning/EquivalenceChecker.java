@@ -17,6 +17,11 @@ public abstract class EquivalenceChecker {
 
     }
 
-    public abstract Optional<String[]> verify(MealyMachine hyp);
+    /**
+     * Method for verifying a hypothesis against the SUL.
+     * @param hypothesis The hypothesis to verify
+     * @return A counterexample or an empty option if no counterexample was found
+     */
+    public abstract Optional<String[]> verify(MealyMachine hypothesis);
 
 }

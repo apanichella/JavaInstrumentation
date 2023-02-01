@@ -7,17 +7,11 @@ import java.util.*;
  */
 public class LearningLab {
     static Random r = new Random();
-    static List<String> currentTrace;
     static int traceLength = 10;
     static boolean isFinished = false;
 
     static ObservationTable observationTable;
     static EquivalenceChecker equivalenceChecker;
-
-    static void initialize(String[] inputSymbols) {
-        // Initialise a random trace from the input symbols of the problem.
-        currentTrace = generateRandomTrace(inputSymbols);
-    }
 
     /**
      * Method for fuzzing new inputs for a program.
@@ -50,11 +44,14 @@ public class LearningLab {
     }
 
     static void run() {
-        initialize(LearningTracker.inputSymbols);
-        // LearningTracker.runNextTrace(currentTrace.toArray(new String[0]));
-        learn();
 
-        // Place here your code to guide your fuzzer with its search.
+        SystemUnderLearn sul = new RersSUL();
+        observationTable = new ObservationTable(LearningTracker.inputSymbols, sul);
+        equivalenceChecker = new RandomWalkEquivalenceChecker(sul, LearningTracker.inputSymbols, 100, 1000);
+
+        // Place here your code to learn a model of the problem.
+        // Implement the checks for  for consistent and closed in the observation table.
+        // Use the observation table and the equivalence checker to implement the L* learning algorithm.
         while (!isFinished) {
             // Do things!
             try {
@@ -67,15 +64,9 @@ public class LearningLab {
         }
     }
 
-    static void learn() {
-        SystemUnderLearn sul = new RersSUL();
-        observationTable = new ObservationTable(LearningTracker.inputSymbols, sul);
-        equivalenceChecker = new RandomWalkEquivalenceChecker(sul, LearningTracker.inputSymbols, 100, 1000);
-    }
 
     /**
      * Method that is used for catching the output from standard out.
-     * You should write your own logic here.
      * 
      * @param out the string that has been outputted in the standard out.
      */

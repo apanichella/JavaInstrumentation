@@ -22,10 +22,21 @@ public class RandomWalkEquivalenceChecker extends EquivalenceChecker {
         this.rng = new Random();
     }
 
+    /**
+     * Method for verifying a hypothesis against the SUL.
+     *
+     * Does up to 'numberOfSamples' queries of 'depth' random symbols to the SUL and
+     * compares its result with the hypothesis. If any incosistency is found, the
+     * counterexample will be returned.
+     * 
+     * @param hypothesis The hypothesis to verify
+     * @return A counterexample or an empty option if no counterexample was found
+     */
     @Override
     public Optional<String[]> verify(MealyMachine hyp) {
         String[] inputs = new String[depth];
         for (int i = 0; i < numberOfSamples; i++) {
+            // Generate random input
             for (int j = 0; j < depth; j++) {
                 inputs[j] = alphabet[rng.nextInt(alphabet.length)];
             }
