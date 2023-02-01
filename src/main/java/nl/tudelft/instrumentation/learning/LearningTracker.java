@@ -56,7 +56,7 @@ public class LearningTracker {
      * start running the sequence through the problem.
      * @param sequence the fuzzed sequence that needs top be run.
      */
-    public static void runNextTrace(String[] sequence) {
+    public static String runNextTrace(String[] sequence) {
         currentOutput = "";
         problem.setSequence(sequence);
         currentInput = sequence;
@@ -68,6 +68,7 @@ public class LearningTracker {
         // Wait for it to be completed
         try {
             handler.get();
+            // System.out.println("Result is" + outputs.get(outputs.size() -1));
         } catch (CancellationException e) {
             System.out.println("TIMEOUT!");
             System.exit(-1);
@@ -75,12 +76,13 @@ public class LearningTracker {
             e.printStackTrace();
             System.exit(-1);
         }
+        return currentOutput;
 
     }
 
     public static void processedInput(){
-        System.out.printf("after input %s: %d: output '%s'\n", currentInput[current_index], current_index, currentOutput);
+        // System.out.printf("after input %s: %d: output '%s'\n", currentInput[current_index], current_index, currentOutput);
         current_index++;
-        currentOutput = "";
+        // currentOutput = "";
     }
 }

@@ -51,7 +51,8 @@ public class LearningLab {
 
     static void run() {
         initialize(LearningTracker.inputSymbols);
-        LearningTracker.runNextTrace(currentTrace.toArray(new String[0]));
+        // LearningTracker.runNextTrace(currentTrace.toArray(new String[0]));
+        learn();
 
         // Place here your code to guide your fuzzer with its search.
         while (!isFinished) {
@@ -75,9 +76,11 @@ public class LearningLab {
     }
 
     static void learn() {
-        while (true) {
-            MealyMachine hypothesis = observationTable.toHypothesis();
-        }
+        // while (true) {
+        //     MealyMachine hypothesis = observationTable.toHypothesis();
+        // }
+        observationTable = new ObservationTable(LearningTracker.inputSymbols);
+        observationTable.print();
     }
 
     /**
