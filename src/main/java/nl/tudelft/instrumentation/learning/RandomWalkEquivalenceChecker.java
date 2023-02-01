@@ -27,7 +27,7 @@ public class RandomWalkEquivalenceChecker extends EquivalenceChecker {
         String[] inputs = new String[depth];
         for (int i = 0; i < numberOfSamples; i++) {
             for (int j = 0; j < depth; j++) {
-                inputs[i] = alphabet[rng.nextInt(alphabet.length)];
+                inputs[j] = alphabet[rng.nextInt(alphabet.length)];
             }
             String[] modelOutput = hyp.getOutput(inputs);
             String[] realOutput = sul.getOutput(inputs);
