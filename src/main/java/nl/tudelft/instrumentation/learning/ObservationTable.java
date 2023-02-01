@@ -3,8 +3,11 @@ package nl.tudelft.instrumentation.learning;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -17,38 +20,37 @@ public class ObservationTable {
     private static final String SEPERATOR = ",";
     private static final String LAMBDA = "λ";
 
-    private LinkedHashSet<String> S;
-    private LinkedHashSet<String> E;
     private String[] alphabet;
+
+    private List<String> S;
+    private List<String> E;
 
     private Map<String, ArrayList<String>> table;
     private SystemUnderLearn sul;
 
     public ObservationTable(String[] alphabet, SystemUnderLearn sul) {
         this.sul = sul;
-        this.S = new LinkedHashSet<>();
-        this.E = new LinkedHashSet<>();
+        this.S = new ArrayList<>();
+        this.E = new ArrayList<>();
         this.alphabet = alphabet;
         table = new HashMap<>();
-        this.E.add(LAMBDA);
-        // this.S.add(LAMBDA);
-        //
+        this.addToE(LAMBDA);
         this.addToS(LAMBDA);
-        // fillMissing();
     }
 
     public String join(String... symbols) {
         // Join the symbols with the SEPERATOR, but removing any empty strings
-        return String.join(SEPERATOR,
-                Arrays.stream(symbols).filter(
-                        item -> !item.isEmpty() && !item.equals(LAMBDA)).collect(Collectors.toList()));
+        return String.join(SEPERATOR, Arrays.stream(symbols)
+                .filter(item -> !item.isEmpty() && !item.equals(LAMBDA))
+                .collect(Collectors.toList()));
         // return String.join(SEPERATOR, symbols);
     }
 
     public String[] toArrayTrace(String trace) {
         // Join the symbols with the SEPERATOR, but removing any empty strings
         return Arrays.stream(trace.split(SEPERATOR))
-                .filter(item -> !item.isEmpty() && !item.equals(LAMBDA)).toArray(String[]::new);
+                .filter(item -> !item.isEmpty() && !item.equals(LAMBDA))
+                .toArray(String[]::new);
     }
 
     private String getResult(String trace) {
@@ -58,7 +60,9 @@ public class ObservationTable {
     }
 
     public void addToS(String s) {
-        if (S.add(s)) {
+        System.out.printf("Adding %s to S\n", s);
+        if (!S.contains(s)) {
+            S.add(s);
             addRow(s);
             for (String symbol : alphabet) {
                 addRow(join(s, symbol));
@@ -67,7 +71,9 @@ public class ObservationTable {
     }
 
     public void addToE(String e) {
-        if (E.add(e)) {
+        System.out.printf("Adding %s to E\n", e);
+        if (!E.contains(e)) {
+            E.add(e);
             for (Entry<String, ArrayList<String>> entry : table.entrySet()) {
                 String joined = join(entry.getKey(), e);
                 entry.getValue().add(getResult(joined));
@@ -86,6 +92,36 @@ public class ObservationTable {
             }
             table.put(base, row);
         }
+    }
+
+    public MealyMachine generateHypothesis() {
+        Map<String, MealyState> states = new HashMap<>();
+        for (String s : S) {
+            states.put(rowToKey(table.get(s)), new MealyState());
+        }
+        for (String s : S) {
+            MealyState from = states.get(rowToKey(table.get(s)));
+            for (String sym : alphabet) {
+                String base = join(s, sym);
+                ArrayList<String> row = table.get(base);
+                String toKey = rowToKey(row);
+                assert states.containsKey(toKey) : "Observation table is not closed";
+                String output = row.get(0);
+
+                MealyTransition newTransition = new MealyTransition(output, states.get(toKey));
+                MealyTransition t = from.next(sym);
+                if (t != null) {
+                    assert t.equals(newTransition) : "Observation table is not consistent";
+                }
+                from.addEdge(sym, newTransition);
+            }
+        }
+        MealyState initialState = states.get(rowToKey(table.get(LAMBDA)));
+        return new MealyMachine(initialState);
+    }
+
+    private String rowToKey(ArrayList<String> input) {
+        return String.join(",", input);
     }
 
     public void print() {
@@ -145,6 +181,6 @@ public class ObservationTable {
             }
             System.out.printf("│%s│\n", String.join("│", row));
         }
-    };
+    }
 
 }
