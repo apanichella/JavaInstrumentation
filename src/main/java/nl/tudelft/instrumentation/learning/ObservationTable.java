@@ -3,53 +3,73 @@ package nl.tudelft.instrumentation.learning;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * A
+ * The observation of the L* algorithm for learning mealy machines.
  */
 
 public class ObservationTable {
     private static final String SEPERATOR = ",";
+    private static final String LAMBDA = "λ";
 
-    private SortedSet<String> S;
-    private SortedSet<String> E;
+    private LinkedHashSet<String> S;
+    private LinkedHashSet<String> E;
     private String[] alphabet;
 
     private Map<String, ArrayList<String>> table;
 
     public ObservationTable(String[] alphabet) {
-        this.S = new TreeSet<>();
-        this.E = new TreeSet<>();
-        String lambda = ""; // The empty string
-        this.S.add(lambda);
-        this.E.add(lambda);
-
+        this.S = new LinkedHashSet<>();
+        this.E = new LinkedHashSet<>();
         this.alphabet = alphabet;
         table = new HashMap<>();
-        fillMissing();
+        this.E.add(LAMBDA);
+        // this.S.add(LAMBDA);
+        //
+        this.addToS(LAMBDA);
+        // fillMissing();
     }
 
     public String join(String... symbols) {
         // Join the symbols with the SEPERATOR, but removing any empty strings
         return String.join(SEPERATOR,
-                Arrays.stream(symbols).filter(item -> !item.isEmpty()).collect(Collectors.toList()));
+                Arrays.stream(symbols).filter(
+                        item -> !item.isEmpty() && !item.equals(LAMBDA)).collect(Collectors.toList()));
         // return String.join(SEPERATOR, symbols);
     }
 
     public String[] toArrayTrace(String trace) {
         // Join the symbols with the SEPERATOR, but removing any empty strings
         return Arrays.stream(trace.split(SEPERATOR))
-                .filter(item -> !item.isEmpty()).toArray(String[]::new);
+                .filter(item -> !item.isEmpty() && !item.equals(LAMBDA)).toArray(String[]::new);
     }
 
     public String getResult(String trace) {
-        return LearningTracker.runNextTrace(toArrayTrace(trace));
+        String res = LearningTracker.runNextTrace(toArrayTrace(trace));
+        // System.out.printf("Output for trace %s is %s\n", trace, res);
+        return res;
+    }
+
+    public void addToS(String s) {
+        if (S.add(s)) {
+            addRow(s);
+            for (String symbol : alphabet) {
+                addRow(join(s, symbol));
+            }
+        }
+    }
+
+    public void addToE(String e) {
+        if (E.add(e)) {
+            for(Entry<String, ArrayList<String>> entry : table.entrySet()) {
+                String joined = join(entry.getKey(), e);
+                entry.getValue().add(getResult(joined));
+            }
+        }
     }
 
     public void addRow(String base) {
@@ -58,22 +78,10 @@ public class ObservationTable {
         } else {
             ArrayList<String> row = new ArrayList<>();
             for (String e : E) {
-                System.out.printf("base: %s, e: %s, joined: %s\n", base, e, join(base, e));
+                // System.out.printf("base: %s, e: %s, joined: %s\n", base, e, join(base, e));
                 row.add(getResult(join(base, e)));
             }
             table.put(base, row);
-        }
-    }
-
-    private void fillMissing() {
-        for (String e : E) {
-            for (String s : S) {
-                String toCheck = join(e, s);
-                addRow(toCheck);
-                for (String symbol : alphabet) {
-                    addRow(join(toCheck, symbol));
-                }
-            }
         }
     }
 
@@ -82,7 +90,7 @@ public class ObservationTable {
         ArrayList<String> header = new ArrayList<>();
         rows.add(null);
         header.add("T");
-        for (String e: E){
+        for (String e : E) {
             header.add(e);
         }
         rows.add(header);
@@ -106,30 +114,29 @@ public class ObservationTable {
         rows.add(null);
         int[] minSizes = new int[rows.get(1).size()];
         Arrays.fill(minSizes, 1);
-        int total = 0;
-		for (ArrayList<String> row : rows) {
+        for (ArrayList<String> row : rows) {
             if (row == null) {
                 continue;
             }
-            total = 0;
             for (int i = 0; i < minSizes.length; i++) {
                 minSizes[i] = Math.max(minSizes[i], row.get(i).length());
-                total += minSizes[i];
             }
         }
-        String empty = "├";
-        for (int i = 0; i < total+rows.get(1).size()-1; i++) {
-            empty += "─";
-        };
-        empty += "┤";
-		for (ArrayList<String> row : rows) {
+        String empty = "▪";
+        for (int i = 0; i < minSizes.length; i++) {
+            for (int j = 0; j < minSizes[i]; j++) {
+                empty += "─";
+            }
+            empty += "▪";
+        }
+        for (ArrayList<String> row : rows) {
             if (row == null) {
                 System.out.println(empty);
                 continue;
             }
             for (int i = 0; i < minSizes.length; i++) {
                 int l = minSizes[i];
-                String f = "%-"+l+"s";
+                String f = "%-" + l + "s";
                 // System.out.println(f);
                 row.set(i, String.format(f, row.get(i)));
             }

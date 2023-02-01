@@ -81,6 +81,10 @@ public class LearningLab {
         // }
         observationTable = new ObservationTable(LearningTracker.inputSymbols);
         observationTable.print();
+        observationTable.addToS("B");
+        observationTable.addToS("A");
+        observationTable.addToE("E");
+        observationTable.print();
     }
 
     /**
