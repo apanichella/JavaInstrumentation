@@ -25,6 +25,8 @@ public class ObservationTable {
     private List<String> S;
     private List<String> E;
 
+    // The actual observations: a map with (S ∪ S • A) as keys where each value
+    // (row) represents the observations corresponding to (S ∪ S • A) • E.
     private Map<String, ArrayList<String>> table;
     private SystemUnderLearn sul;
 
@@ -34,11 +36,14 @@ public class ObservationTable {
         this.E = new ArrayList<>();
         this.alphabet = alphabet;
         table = new HashMap<>();
-        this.addToE(LAMBDA);
-        this.addToS(LAMBDA);
+        this.addToE(new String[] {});
+        this.addToS(new String[] {});
     }
 
     public String join(String... symbols) {
+        if (symbols.length == 0) {
+            return LAMBDA;
+        }
         // Join the symbols with the SEPERATOR, but removing any empty strings
         return String.join(SEPERATOR, Arrays.stream(symbols)
                 .filter(item -> !item.isEmpty() && !item.equals(LAMBDA))
@@ -59,7 +64,14 @@ public class ObservationTable {
         return res;
     }
 
-    public void addToS(String s) {
+    /**
+     * Method that is used for adding a new prefix to S
+     * 
+     * @param prefix the prefix to add to S, must be an array of symbols in the
+     *               alphabet
+     */
+    public void addToS(String[] prefix) {
+        String s = join(prefix);
         System.out.printf("Adding %s to S\n", s);
         if (!S.contains(s)) {
             S.add(s);
@@ -70,7 +82,14 @@ public class ObservationTable {
         }
     }
 
-    public void addToE(String e) {
+    /**
+     * Method that is used for adding a new suffix to E
+     *
+     * @param suffix the suffix to add to E, must be an array of symbols in the
+     *               alphabet
+     */
+    public void addToE(String[] suffix) {
+        String e = join(suffix);
         System.out.printf("Adding %s to E\n", e);
         if (!E.contains(e)) {
             E.add(e);
@@ -81,7 +100,13 @@ public class ObservationTable {
         }
     }
 
-    public void addRow(String base) {
+    /**
+     * Method for adding a row to the observation table.
+     *
+     * Adds a row to the observation table and fills it with the correct
+     * observations.
+     */
+    private void addRow(String base) {
         if (table.containsKey(base)) {
             return;
         } else {
@@ -94,6 +119,14 @@ public class ObservationTable {
         }
     }
 
+    /**
+     * Method to generate a {@link MealyMachine} from this observation table.
+     *
+     * Note: in order to generate a MealyMachine the observation table must be
+     * consistent and closed.
+     *
+     * @return an MealyMachine that reflects the observations
+     */
     public MealyMachine generateHypothesis() {
         Map<String, MealyState> states = new HashMap<>();
         for (String s : S) {
@@ -120,10 +153,39 @@ public class ObservationTable {
         return new MealyMachine(initialState);
     }
 
+    /**
+     * Method that is used for checking whether the observation table is closed
+     *
+     * You should write your own logic here.
+     *
+     * @return an Optional.empty() if the table is consistent, or an Optional.of(_)
+     *         with something usefull to extend the observation table with.
+     */
+    public Optional<String[]> checkForClosed() {
+        // TODO
+        return Optional.empty();
+    }
+
     private String rowToKey(ArrayList<String> input) {
         return String.join(",", input);
     }
 
+    /**
+     * Method that is used for checking whether the observation table is consistent
+     *
+     * You should write your own logic here.
+     *
+     * @return an Optional.empty() if the table is consistent, or an Optional.of(_)
+     *         with something usefull to extend the observation table with.
+     */
+    public Optional<String[]> checkForConsistent() {
+        // TODO
+        return Optional.empty();
+    }
+
+    /**
+     * Method to print the observation table in a nice way.
+     */
     public void print() {
         ArrayList<ArrayList<String>> rows = new ArrayList<>();
         ArrayList<String> header = new ArrayList<>();

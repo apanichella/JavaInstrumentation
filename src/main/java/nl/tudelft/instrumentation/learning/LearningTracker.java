@@ -59,6 +59,7 @@ public class LearningTracker {
         LearningTracker.inputSymbols = inputSymbols;
         LearningLab.run();
     }
+
     public static void reset() {
         currentOutput = "";
         outputs.clear();
