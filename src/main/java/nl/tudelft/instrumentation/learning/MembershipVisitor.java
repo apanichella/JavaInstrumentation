@@ -40,7 +40,7 @@ public class MembershipVisitor extends BaseVisitor {
         this.class_name = node.getName().toString();
         BodyDeclaration bd1 = StaticJavaParser.parseBodyDeclaration("public Void call(){ " + class_name + " cp = new "
                 + class_name
-                + "(); for(String s : sequence){ LearningTracker.nextInput(); try { cp.calculateOutput(s); } catch (Exception e) { nl.tudelft.instrumentation.learning.LearningTracker.output(\"Invalid input: \" + e.getMessage()); } } return null;}");
+                + "(); for(String s : sequence){ try { cp.calculateOutput(s); } catch (Exception e) { nl.tudelft.instrumentation.learning.LearningTracker.output(\"Invalid input: \" + e.getMessage()); } LearningTracker.processedInput(); } return null;}");
         BodyDeclaration bd2 = StaticJavaParser
                 .parseBodyDeclaration(" public void setSequence(String[] trace){ sequence = trace; } ");
         BodyDeclaration fd = StaticJavaParser.parseBodyDeclaration("public String[] sequence;");

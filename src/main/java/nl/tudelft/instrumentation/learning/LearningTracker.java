@@ -11,6 +11,7 @@ import java.util.stream.*;
  * @author Clinton Cao, Sicco Verwer
  */
 public class LearningTracker {
+    static String[] currentInput;
     static String[] inputSymbols;
     static String currentOutput = "";
     static int current_index = 0;
@@ -28,7 +29,7 @@ public class LearningTracker {
      */
     public static void output(String out){
         LearningLab.output(out);
-        currentOutput = currentOutput + out;
+        currentOutput = out;
     }
 
     /**
@@ -55,8 +56,10 @@ public class LearningTracker {
      * start running the sequence through the problem.
      * @param sequence the fuzzed sequence that needs top be run.
      */
-    public static void runNextFuzzedSequence(String[] sequence) {
+    public static void runNextTrace(String[] sequence) {
+        currentOutput = "";
         problem.setSequence(sequence);
+        currentInput = sequence;
         final Future handler = executor.submit(problem);
         executor.schedule(() -> {
             handler.cancel(true);
@@ -75,11 +78,9 @@ public class LearningTracker {
 
     }
 
-    public static void nextInput(){
-        if(current_index++ > 0) {
-            outputs.add(currentOutput);
-        }
-        System.out.printf("next input: for output '%s'\n", currentOutput);
+    public static void processedInput(){
+        System.out.printf("after input %s: %d: output '%s'\n", currentInput[current_index], current_index, currentOutput);
+        current_index++;
         currentOutput = "";
     }
 }
