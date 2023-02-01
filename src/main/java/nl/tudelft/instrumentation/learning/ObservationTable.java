@@ -44,15 +44,14 @@ public class ObservationTable {
         if (symbols.length == 0) {
             return LAMBDA;
         }
-        // Join the symbols with the SEPERATOR, but removing any empty strings
+        // Join the symbols with the SEPERATOR, but remove any empty strings
         return String.join(SEPERATOR, Arrays.stream(symbols)
                 .filter(item -> !item.isEmpty() && !item.equals(LAMBDA))
                 .collect(Collectors.toList()));
-        // return String.join(SEPERATOR, symbols);
     }
 
     public String[] toArrayTrace(String trace) {
-        // Join the symbols with the SEPERATOR, but removing any empty strings
+        // Split the symbols on the SEPERATOR and removing any empty strings
         return Arrays.stream(trace.split(SEPERATOR))
                 .filter(item -> !item.isEmpty() && !item.equals(LAMBDA))
                 .toArray(String[]::new);
@@ -112,13 +111,35 @@ public class ObservationTable {
         } else {
             ArrayList<String> row = new ArrayList<>();
             for (String e : E) {
-                // System.out.printf("base: %s, e: %s, joined: %s\n", base, e, join(base, e));
                 row.add(getResult(join(base, e)));
             }
             table.put(base, row);
         }
     }
 
+    /**
+     * Method that is used for checking whether the observation table is closed
+     *
+     * You should write your own logic here.
+     *
+     * @return an Optional.empty() if the table is consistent, or an Optional.of(_)
+     *         with something usefull to extend the observation table with.
+     */
+    public Optional<String[]> checkForClosed() {
+        // TODO
+        return Optional.empty();
+    }
+
+    /**
+     * Method that is used for checking whether the observation table is consistent
+     *
+     * You should write your own logic here.
+     *
+     * @return an Optional.empty() if the table is consistent, or an Optional.of(_)
+     *         with something usefull to extend the observation table with.
+     */
+    public Optional<String[]> checkForConsistent() {
+        // TODO
     /**
      * Method to generate a {@link MealyMachine} from this observation table.
      *
@@ -153,35 +174,6 @@ public class ObservationTable {
         return new MealyMachine(initialState);
     }
 
-    /**
-     * Method that is used for checking whether the observation table is closed
-     *
-     * You should write your own logic here.
-     *
-     * @return an Optional.empty() if the table is consistent, or an Optional.of(_)
-     *         with something usefull to extend the observation table with.
-     */
-    public Optional<String[]> checkForClosed() {
-        // TODO
-        return Optional.empty();
-    }
-
-    private String rowToKey(ArrayList<String> input) {
-        return String.join(",", input);
-    }
-
-    /**
-     * Method that is used for checking whether the observation table is consistent
-     *
-     * You should write your own logic here.
-     *
-     * @return an Optional.empty() if the table is consistent, or an Optional.of(_)
-     *         with something usefull to extend the observation table with.
-     */
-    public Optional<String[]> checkForConsistent() {
-        // TODO
-        return Optional.empty();
-    }
 
     /**
      * Method to print the observation table in a nice way.
