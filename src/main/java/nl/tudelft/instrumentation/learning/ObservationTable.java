@@ -9,7 +9,8 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * The observation of the L* algorithm for learning mealy machines.
+ * @author Bram Verboom
+ *         The observation of the L* algorithm for learning mealy machines.
  */
 
 public class ObservationTable {
@@ -21,8 +22,10 @@ public class ObservationTable {
     private String[] alphabet;
 
     private Map<String, ArrayList<String>> table;
+    private SystemUnderLearn sul;
 
-    public ObservationTable(String[] alphabet) {
+    public ObservationTable(String[] alphabet, SystemUnderLearn sul) {
+        this.sul = sul;
         this.S = new LinkedHashSet<>();
         this.E = new LinkedHashSet<>();
         this.alphabet = alphabet;
@@ -48,8 +51,8 @@ public class ObservationTable {
                 .filter(item -> !item.isEmpty() && !item.equals(LAMBDA)).toArray(String[]::new);
     }
 
-    public String getResult(String trace) {
-        String res = LearningTracker.runNextTrace(toArrayTrace(trace));
+    private String getResult(String trace) {
+        String res = sul.getLastOutput(toArrayTrace(trace));
         // System.out.printf("Output for trace %s is %s\n", trace, res);
         return res;
     }
@@ -65,7 +68,7 @@ public class ObservationTable {
 
     public void addToE(String e) {
         if (E.add(e)) {
-            for(Entry<String, ArrayList<String>> entry : table.entrySet()) {
+            for (Entry<String, ArrayList<String>> entry : table.entrySet()) {
                 String joined = join(entry.getKey(), e);
                 entry.getValue().add(getResult(joined));
             }

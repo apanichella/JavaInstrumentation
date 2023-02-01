@@ -1,14 +1,15 @@
 package nl.tudelft.instrumentation.learning;
+
 import nl.tudelft.instrumentation.runner.CallableTraceRunner;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.*;
+
 /**
  * This class is used to start and run the tests for the algorithm that you
  * will build to do automated code patching.
  *
- * @author Clinton Cao, Sicco Verwer
+ * @author Bram Verboom, Clinton Cao, Sicco Verwer
  */
 public class LearningTracker {
     static String[] currentInput;
@@ -22,42 +23,49 @@ public class LearningTracker {
     // Longest a single testcase is allowed to run
     static final int timeoutMS = 1000;
 
-
     /**
      * Append the output of the program to a list containing all outputs.
+     * 
      * @param out
      */
-    public static void output(String out){
+    public static void output(String out) {
         LearningLab.output(out);
         currentOutput = out;
     }
 
     /**
      * Initialize some of the fields in this class.
+     * 
      * @param o the list of operators.
      */
-    public static void initialize(String[] o){
+    public static void initialize(String[] o) {
     }
 
     /**
      * Initialize and hand over control to PatchingLab
+     * 
      * @param inputSymbols The input symbols of the problem
-     * @param eca The current problem instance
+     * @param eca          The current problem instance
      */
     public static void run(String[] inputSymbols, CallableTraceRunner<Void> eca) {
         problem = eca;
         LearningTracker.inputSymbols = inputSymbols;
         LearningLab.run();
     }
+    public static void reset() {
+        currentOutput = "";
+        outputs.clear();
+    }
 
     /**
-`     * This method is used for running the fuzzed input. It first assigns the
+     * ` * This method is used for running the fuzzed input. It first assigns the
      * fuzzed sequence that needs to be run and then user a handler to
      * start running the sequence through the problem.
+     * 
      * @param sequence the fuzzed sequence that needs top be run.
      */
-    public static String runNextTrace(String[] sequence) {
-        currentOutput = "";
+    public static String[] runNextTrace(String[] sequence) {
+        reset();
         problem.setSequence(sequence);
         currentInput = sequence;
         final Future handler = executor.submit(problem);
@@ -76,13 +84,16 @@ public class LearningTracker {
             e.printStackTrace();
             System.exit(-1);
         }
-        return currentOutput;
+        assert outputs.size() == sequence.length;
+        return outputs.toArray(String[]::new);
 
     }
 
-    public static void processedInput(){
-        // System.out.printf("after input %s: %d: output '%s'\n", currentInput[current_index], current_index, currentOutput);
+    public static void processedInput() {
+        // System.out.printf("after input %s: %d: output '%s'\n",
+        // currentInput[current_index], current_index, currentOutput);
         current_index++;
         // currentOutput = "";
+        outputs.add(currentOutput);
     }
 }

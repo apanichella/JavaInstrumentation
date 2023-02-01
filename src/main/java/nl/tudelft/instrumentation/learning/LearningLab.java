@@ -13,6 +13,7 @@ public class LearningLab {
     static boolean isFinished = false;
 
     static ObservationTable observationTable;
+    static EquivalenceChecker equivalenceChecker;
 
     static void initialize(String[] inputSymbols) {
         // Initialise a random trace from the input symbols of the problem.
@@ -79,11 +80,14 @@ public class LearningLab {
         // while (true) {
         //     MealyMachine hypothesis = observationTable.toHypothesis();
         // }
-        observationTable = new ObservationTable(LearningTracker.inputSymbols);
+        SystemUnderLearn sul = new RersSUL();
+        observationTable = new ObservationTable(LearningTracker.inputSymbols, sul);
+        equivalenceChecker = new RandomWalkEquivalenceChecker(sul, LearningTracker.inputSymbols, 10, 10);
         observationTable.print();
-        observationTable.addToS("B");
-        observationTable.addToS("A");
-        observationTable.addToE("E");
+        observationTable.addToS("iB");
+        // observationTable.addToS("iA");
+        observationTable.addToE("iE");
+        // observationTable.addToE("C");
         observationTable.print();
     }
 
