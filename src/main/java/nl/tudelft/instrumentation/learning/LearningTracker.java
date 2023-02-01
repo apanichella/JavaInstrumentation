@@ -30,6 +30,13 @@ public class LearningTracker {
      */
     public static void output(String out) {
         LearningLab.output(out);
+        if (out.startsWith("Invalid input: ")) {
+            if (out.startsWith("Invalid input: Current state has no transition for this input!")) {
+                out = "invalid";
+            } else {
+                out = out.replace("Invalid input: ", "");
+            }
+        }
         currentOutput = out;
     }
 
