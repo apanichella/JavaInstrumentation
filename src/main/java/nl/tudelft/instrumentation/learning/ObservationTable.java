@@ -140,6 +140,13 @@ public class ObservationTable {
      */
     public Optional<String[]> checkForConsistent() {
         // TODO
+        return Optional.empty();
+    }
+
+    private String rowToKey(ArrayList<String> input) {
+        return String.join(",", input);
+    }
+
     /**
      * Method to generate a {@link MealyMachine} from this observation table.
      *
