@@ -23,4 +23,10 @@ public class MealyTransition {
         return false;
 
     }
+
+    public MealyState getToState() {
+        return to;
+    }
+
+
 }

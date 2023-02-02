@@ -157,8 +157,12 @@ public class ObservationTable {
      */
     public MealyMachine generateHypothesis() {
         Map<String, MealyState> states = new HashMap<>();
+        int numStates = 0;
         for (String s : S) {
-            states.put(rowToKey(table.get(s)), new MealyState());
+            String key =rowToKey(table.get(s)); 
+            if (!states.containsKey(key)) {
+                states.put(key, new MealyState(String.format("s%s", numStates++)));
+            }
         }
         for (String s : S) {
             MealyState from = states.get(rowToKey(table.get(s)));
@@ -166,6 +170,7 @@ public class ObservationTable {
                 String base = join(s, sym);
                 ArrayList<String> row = table.get(base);
                 String toKey = rowToKey(row);
+                // Make states with "?" transitions
                 assert states.containsKey(toKey) : "Observation table is not closed";
                 String output = row.get(0);
 
@@ -222,12 +227,12 @@ public class ObservationTable {
                 minSizes[i] = Math.max(minSizes[i], row.get(i).length());
             }
         }
-        String empty = "▪";
+        String empty = "·";
         for (int i = 0; i < minSizes.length; i++) {
             for (int j = 0; j < minSizes[i]; j++) {
                 empty += "─";
             }
-            empty += "▪";
+            empty += "·";
         }
         for (ArrayList<String> row : rows) {
             if (row == null) {
