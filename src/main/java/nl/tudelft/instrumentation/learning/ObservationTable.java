@@ -161,33 +161,50 @@ public class ObservationTable {
         Map<String, MealyState> states = new HashMap<>();
         int numStates = 0;
         for (String s : S) {
-            String key =rowToKey(table.get(s)); 
+            String key = rowToKey(table.get(s));
             if (!states.containsKey(key)) {
                 states.put(key, new MealyState(String.format("s%s", numStates++)));
             }
         }
         for (String s : S) {
-            MealyState from = states.get(rowToKey(table.get(s)));
+            ArrayList<String> baseRow = table.get(s);
+            MealyState from = states.get(rowToKey(baseRow));
+            int index_in_alphabet = 0;
             for (String sym : alphabet) {
                 String base = join(s, sym);
                 ArrayList<String> row = table.get(base);
                 String toKey = rowToKey(row);
-                // Make states with "?" transitions
-                assert states.containsKey(toKey) : "Observation table is not closed";
-                String output = row.get(0);
+                String output = baseRow.get(index_in_alphabet++);
 
-                MealyTransition newTransition = new MealyTransition(output, states.get(toKey));
-                MealyTransition t = from.next(sym);
-                if (t != null) {
-                    assert t.equals(newTransition) : "Observation table is not consistent";
+                if (states.containsKey(toKey)) {
+                    MealyTransition newTransition = new MealyTransition(output, states.get(toKey));
+                    MealyTransition t = from.next(sym);
+                    if (t != null && !t.equals(newTransition)) {
+                        // assert false: "Observation table is not consistent";
+                        MealyState unknownState = new MealyState(String.format("\"s%s?\"", numStates++));
+                        newTransition = new MealyTransition(output, unknownState);
+                        for (String sym2 : alphabet) {
+                            unknownState.addEdge(sym2, new MealyTransition("?", unknownState));
+                        }
+                        from.addEdge(sym, new MealyTransition("?", unknownState));
+                    } else {
+                        from.addEdge(sym, newTransition);
+                    }
+                } else {
+                    // assert false : "Observation table is not closed";
+                    MealyState unknownState = new MealyState(String.format("\"s%s?\"", numStates++));
+                    MealyTransition newTransition = new MealyTransition(output, unknownState);
+                    for (String sym2 : alphabet) {
+                        MealyTransition newTransition2 = new MealyTransition("?", unknownState);
+                        unknownState.addEdge(sym2, newTransition2);
+                    }
+                    from.addEdge(sym, newTransition);
                 }
-                from.addEdge(sym, newTransition);
             }
         }
         MealyState initialState = states.get(rowToKey(table.get(LAMBDA)));
         return new MealyMachine(initialState);
     }
-
 
     /**
      * Method to print the observation table in a nice way.
