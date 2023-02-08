@@ -36,8 +36,10 @@ public class ObservationTable {
         this.E = new ArrayList<>();
         this.alphabet = alphabet;
         table = new HashMap<>();
-        this.addToE(new String[] {});
         this.addToS(new String[] {});
+        for(String s : this.alphabet) {
+            this.addToE(new String[] {s});
+        }
     }
 
     public String join(String... symbols) {
