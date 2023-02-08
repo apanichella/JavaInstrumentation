@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * @author Bram Verboom
@@ -19,15 +18,16 @@ import java.util.stream.Collectors;
 public class ObservationTable {
     private static final String SEPERATOR = ",";
     private static final String LAMBDA = "λ";
+    private static final List<String> EMPTY = new ArrayList<>();
 
     private String[] alphabet;
 
-    private List<String> S;
-    private List<String> E;
+    private List<List<String>> S;
+    private List<List<String>> E;
 
     // The actual observations: a map with (S ∪ S • A) as keys where each value
     // (row) represents the observations corresponding to (S ∪ S • A) • E.
-    private Map<String, ArrayList<String>> table;
+    private Map<List<String>, ArrayList<String>> table;
     private SystemUnderLearn sul;
 
     public ObservationTable(String[] alphabet, SystemUnderLearn sul) {
@@ -36,30 +36,38 @@ public class ObservationTable {
         this.E = new ArrayList<>();
         this.alphabet = alphabet;
         table = new HashMap<>();
-        this.addToS(new String[] {});
+        this.addToS(new ArrayList<>());
         for (String s : this.alphabet) {
-            this.addToE(new String[] { s });
+            ArrayList<String> sym = new ArrayList<>();
+            sym.add(s);
+            this.addToE(sym);
         }
     }
 
-    public String join(String... symbols) {
-        if (symbols.length == 0) {
-            return LAMBDA;
-        }
-        // Join the symbols with the SEPERATOR, but remove any empty strings
-        return String.join(SEPERATOR, Arrays.stream(symbols)
-                .filter(item -> !item.isEmpty() && !item.equals(LAMBDA))
-                .collect(Collectors.toList()));
+    public List<String> join(List<String> a, List<String> b) {
+        List<String> joined = new ArrayList<>(a);
+        joined.addAll(b);
+        return joined;
     }
 
-    public String[] toArrayTrace(String trace) {
-        // Split the symbols on the SEPERATOR and removing any empty strings
-        return Arrays.stream(trace.split(SEPERATOR))
-                .filter(item -> !item.isEmpty() && !item.equals(LAMBDA))
-                .toArray(String[]::new);
+    public List<String> join(List<String> a, String b) {
+        List<String> joined = new ArrayList<>(a);
+        joined.add(b);
+        return joined;
     }
 
-    private String getResult(String trace) {
+    public List<String> join(String a, List<String> b) {
+        List<String> joined = new ArrayList<>(b.size()+1);
+        joined.add(a);
+        joined.addAll(b);
+        return joined;
+    }
+
+    public String[] toArrayTrace(List<String> trace) {
+        return trace.toArray(String[]::new);
+    }
+
+    private String getResult(List<String> trace) {
         String res = sul.getLastOutput(toArrayTrace(trace));
         // System.out.printf("Output for trace %s is %s\n", trace, res);
         return res;
@@ -68,17 +76,16 @@ public class ObservationTable {
     /**
      * Method that is used for adding a new prefix to S
      * 
-     * @param prefix the prefix to add to S, must be an array of symbols in the
+     * @param prefix the prefix to add to S, must be a list of symbols in the
      *               alphabet
      */
-    public void addToS(String[] prefix) {
-        String s = join(prefix);
-        System.out.printf("Adding %s to S\n", s);
-        if (!S.contains(s)) {
-            S.add(s);
-            addRow(s);
+    public void addToS(List<String> prefix) {
+        System.out.printf("Adding %s to S\n", String.join(",", prefix));
+        if (!S.contains(prefix)) {
+            S.add(prefix);
+            addRow(prefix);
             for (String symbol : alphabet) {
-                addRow(join(s, symbol));
+                addRow(join(prefix, symbol));
             }
         }
     }
@@ -86,16 +93,15 @@ public class ObservationTable {
     /**
      * Method that is used for adding a new suffix to E
      *
-     * @param suffix the suffix to add to E, must be an array of symbols in the
+     * @param suffix the suffix to add to E, must be a list of symbols in the
      *               alphabet
      */
-    public void addToE(String[] suffix) {
-        String e = join(suffix);
-        System.out.printf("Adding %s to E\n", e);
-        if (!E.contains(e)) {
-            E.add(e);
-            for (Entry<String, ArrayList<String>> entry : table.entrySet()) {
-                String joined = join(entry.getKey(), e);
+    public void addToE(List<String> suffix) {
+        System.out.printf("Adding %s to E\n", String.join(",", suffix));
+        if (!E.contains(suffix)) {
+            E.add(suffix);
+            for (Entry<List<String>, ArrayList<String>> entry : table.entrySet()) {
+                List<String> joined = join(entry.getKey(), suffix);
                 entry.getValue().add(getResult(joined));
             }
         }
@@ -107,12 +113,12 @@ public class ObservationTable {
      * Adds a row to the observation table and fills it with the correct
      * observations.
      */
-    private void addRow(String base) {
+    private void addRow(List<String> base) {
         if (table.containsKey(base)) {
             return;
         } else {
             ArrayList<String> row = new ArrayList<>();
-            for (String e : E) {
+            for (List<String> e : E) {
                 row.add(getResult(join(base, e)));
             }
             table.put(base, row);
@@ -127,7 +133,7 @@ public class ObservationTable {
      * @return an Optional.empty() if the table is consistent, or an Optional.of(_)
      *         with something usefull to extend the observation table with.
      */
-    public Optional<String[]> checkForClosed() {
+    public Optional<List<String>> checkForClosed() {
         // TODO
         return Optional.empty();
     }
@@ -140,7 +146,7 @@ public class ObservationTable {
      * @return an Optional.empty() if the table is consistent, or an Optional.of(_)
      *         with something usefull to extend the observation table with.
      */
-    public Optional<String[]> checkForConsistent() {
+    public Optional<List<String>> checkForConsistent() {
         // TODO
         return Optional.empty();
     }
@@ -160,18 +166,18 @@ public class ObservationTable {
     public MealyMachine generateHypothesis() {
         Map<String, MealyState> states = new HashMap<>();
         int numStates = 0;
-        for (String s : S) {
+        for (List<String> s : S) {
             String key = rowToKey(table.get(s));
             if (!states.containsKey(key)) {
                 states.put(key, new MealyState(String.format("s%s", numStates++)));
             }
         }
-        for (String s : S) {
+        for (List<String> s : S) {
             ArrayList<String> baseRow = table.get(s);
             MealyState from = states.get(rowToKey(baseRow));
             int index_in_alphabet = 0;
             for (String sym : alphabet) {
-                String base = join(s, sym);
+                List<String> base = join(s, sym);
                 ArrayList<String> row = table.get(base);
                 String toKey = rowToKey(row);
                 String output = baseRow.get(index_in_alphabet++);
@@ -202,8 +208,16 @@ public class ObservationTable {
                 }
             }
         }
-        MealyState initialState = states.get(rowToKey(table.get(LAMBDA)));
+        MealyState initialState = states.get(rowToKey(table.get(EMPTY)));
         return new MealyMachine(initialState);
+    }
+
+    public static String pretty(List<String> trace) {
+        if(trace.size() == 0)  {
+            return LAMBDA;
+        }
+        return String.join(SEPERATOR, trace);
+
     }
 
     /**
@@ -214,23 +228,23 @@ public class ObservationTable {
         ArrayList<String> header = new ArrayList<>();
         rows.add(null);
         header.add("T");
-        for (String e : E) {
-            header.add(e);
+        for (List<String> e : E) {
+            header.add(pretty(e));
         }
         rows.add(header);
         rows.add(null);
-        for (String s : S) {
+        for (List<String> s : S) {
             ArrayList<String> row = new ArrayList<>();
-            row.add(s);
+            row.add(pretty(s));
             row.addAll(table.get(s));
             rows.add(row);
         }
         rows.add(null);
-        for (String s : S) {
+        for (List<String> s : S) {
             for (String symbol : alphabet) {
-                String joined = join(s, symbol);
+                List<String> joined = join(s, symbol);
                 ArrayList<String> row = new ArrayList<>();
-                row.add(joined);
+                row.add(pretty(joined));
                 row.addAll(table.get(joined));
                 rows.add(row);
             }
