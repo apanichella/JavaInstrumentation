@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -33,8 +34,8 @@ public class MealyMachine extends SystemUnderLearn {
         return output.toArray(String[]::new);
     }
 
-    public Set<MealyState> getStates() {
-        Set<MealyState> states = new HashSet<>();
+    public MealyState[] getStates() {
+        Set<MealyState> states = new LinkedHashSet<>(); // Use LinkedHashSet to maintain insertion order
         List<MealyState> q = new ArrayList<>();
         q.add(initialState);
         states.add(initialState);
@@ -47,7 +48,7 @@ public class MealyMachine extends SystemUnderLearn {
             }
         }
 
-        return states;
+        return states.toArray(MealyState[]::new);
     }
 
     public String getColor(String s) {
@@ -58,7 +59,7 @@ public class MealyMachine extends SystemUnderLearn {
     }
 
     public void writeToDot(String filename) {
-        Set<MealyState> states = getStates();
+        MealyState[] states = getStates();
         try (BufferedWriter out = new BufferedWriter(new FileWriter(filename))) {
             out.write("digraph {\nrankdir=LR\n");
             for (MealyState state : states) {
@@ -66,7 +67,8 @@ public class MealyMachine extends SystemUnderLearn {
                         String.format("\t%s [color=\"%s\"]\n", state.name, getColor(state.name)));
                 for (Entry<String, MealyTransition> edge : state.getTransitions()) {
                     String label = edge.getValue().output;
-                    out.write(String.format("\t%s -> %s [ label=\"%s/%s\" color=\"%s\"]\n", state.name, edge.getValue().to.name,
+                    out.write(String.format("\t%s -> %s [ label=\"%s/%s\" color=\"%s\"]\n", state.name,
+                            edge.getValue().to.name,
                             edge.getKey(), label, getColor(label)));
                 }
             }
