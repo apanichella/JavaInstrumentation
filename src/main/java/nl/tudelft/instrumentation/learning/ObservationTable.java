@@ -37,8 +37,8 @@ public class ObservationTable {
         this.alphabet = alphabet;
         table = new HashMap<>();
         this.addToS(new String[] {});
-        for(String s : this.alphabet) {
-            this.addToE(new String[] {s});
+        for (String s : this.alphabet) {
+            this.addToE(new String[] { s });
         }
     }
 
