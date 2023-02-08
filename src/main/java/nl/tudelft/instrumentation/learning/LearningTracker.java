@@ -14,7 +14,7 @@ import java.util.concurrent.*;
 public class LearningTracker {
     static String[] currentInput;
     static String[] inputSymbols;
-    static String currentOutput = "";
+    static String currentOutput = "λ";
     static int current_index = 0;
     static List<String> outputs = new ArrayList<>();
     static ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
@@ -61,7 +61,7 @@ public class LearningTracker {
     }
 
     public static void reset() {
-        currentOutput = "";
+        currentOutput = "λ";
         outputs.clear();
     }
 
@@ -101,7 +101,7 @@ public class LearningTracker {
         // System.out.printf("after input %s: %d: output '%s'\n",
         // currentInput[current_index], current_index, currentOutput);
         current_index++;
-        // currentOutput = "";
         outputs.add(currentOutput);
+        currentOutput = "λ";
     }
 }
