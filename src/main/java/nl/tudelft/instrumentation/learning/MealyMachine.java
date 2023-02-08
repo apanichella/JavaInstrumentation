@@ -50,15 +50,24 @@ public class MealyMachine extends SystemUnderLearn {
         return states;
     }
 
+    public String getColor(String s) {
+        if (s.contains("?")) {
+            return "red";
+        }
+        return "black";
+    }
+
     public void writeToDot(String filename) {
         Set<MealyState> states = getStates();
         try (BufferedWriter out = new BufferedWriter(new FileWriter(filename))) {
             out.write("digraph {\nrankdir=LR\n");
             for (MealyState state : states) {
-                out.write(String.format("\t%s\n", state.name));
+                out.write(
+                        String.format("\t%s [color=\"%s\"]\n", state.name, getColor(state.name)));
                 for (Entry<String, MealyTransition> edge : state.getTransitions()) {
-                    out.write(String.format("\t%s -> %s [ label=\"%s/%s\" ]\n", state.name, edge.getValue().to.name,
-                            edge.getKey(), edge.getValue().output));
+                    String label = edge.getValue().output;
+                    out.write(String.format("\t%s -> %s [ label=\"%s/%s\" color=\"%s\"]\n", state.name, edge.getValue().to.name,
+                            edge.getKey(), label, getColor(label)));
                 }
             }
             out.write("}\n");
