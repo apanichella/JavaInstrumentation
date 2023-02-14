@@ -23,7 +23,7 @@ public class OperatorVisitor extends ModifierVisitor<Object> {
     /** Name of the source file to instrument */
     private String filename;
 
-    private String pathFile = "nl.tudelft.instrumentation.patching.OperatorTracker";
+    private String pathFile = "OperatorTracker";
 
     private String class_name = "";
 

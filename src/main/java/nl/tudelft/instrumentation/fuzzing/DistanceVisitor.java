@@ -24,7 +24,7 @@ public class DistanceVisitor extends ModifierVisitor<Object> {
     /** Name of the source file to instrument */
     private String filename;
 
-    private String pathFile = "nl.tudelft.instrumentation.fuzzing.DistanceTracker";
+    private String pathFile = "DistanceTracker";
 
     private String class_name = "";
 

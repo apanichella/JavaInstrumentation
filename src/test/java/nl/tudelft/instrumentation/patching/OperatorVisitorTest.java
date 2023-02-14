@@ -137,7 +137,7 @@ public class OperatorVisitorTest {
 
     @Test
     public void testEqualsOperatorShouldCreateMyOperatorCall(){
-        String myOperator = "nl.tudelft.instrumentation.patching.OperatorTracker.myOperator(\"==\", a, b, 0)";
+        String myOperator = "OperatorTracker.myOperator(\"==\", a, b, 0)";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -158,7 +158,7 @@ public class OperatorVisitorTest {
 
     @Test
     public void testNotEqualsOperatorShouldCreateMyOperatorCall(){
-        String myOperator = "nl.tudelft.instrumentation.patching.OperatorTracker.myOperator(\"!=\", a, b, 0)";
+        String myOperator = "OperatorTracker.myOperator(\"!=\", a, b, 0)";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -179,7 +179,7 @@ public class OperatorVisitorTest {
 
     @Test
     public void testGTOperatorShouldCreateMyOperatorCall(){
-        String myOperator = "nl.tudelft.instrumentation.patching.OperatorTracker.myOperator(\">\", a, b, 0)";
+        String myOperator = "OperatorTracker.myOperator(\">\", a, b, 0)";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -200,7 +200,7 @@ public class OperatorVisitorTest {
 
     @Test
     public void testGEOperatorShouldCreateMyOperatorCall(){
-        String myOperator = "nl.tudelft.instrumentation.patching.OperatorTracker.myOperator(\">=\", a, b, 0)";
+        String myOperator = "OperatorTracker.myOperator(\">=\", a, b, 0)";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -221,7 +221,7 @@ public class OperatorVisitorTest {
 
     @Test
     public void testLTOperatorShouldCreateMyOperatorCall(){
-        String myOperator = "nl.tudelft.instrumentation.patching.OperatorTracker.myOperator(\"<\", a, b, 0)";
+        String myOperator = "OperatorTracker.myOperator(\"<\", a, b, 0)";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -242,7 +242,7 @@ public class OperatorVisitorTest {
 
     @Test
     public void testLEOperatorShouldCreateMyOperatorCall(){
-        String myOperator = "nl.tudelft.instrumentation.patching.OperatorTracker.myOperator(\"<=\", a, b, 0)";
+        String myOperator = "OperatorTracker.myOperator(\"<=\", a, b, 0)";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -383,7 +383,7 @@ public class OperatorVisitorTest {
 
     @Test
     public void testInstrumentationShouldCreateRunCall(){
-        String runCall = "nl.tudelft.instrumentation.patching.OperatorTracker.run(operators, eca);";
+        String runCall = "OperatorTracker.run(operators, eca);";
 
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")

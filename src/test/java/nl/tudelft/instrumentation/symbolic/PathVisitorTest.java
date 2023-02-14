@@ -29,7 +29,7 @@ public class PathVisitorTest {
 
     @Test
     public void testSimpleIntGlobalShouldCreateMyVar(){
-        String createMyVar = "MyVar my_a = nl.tudelft.instrumentation.symbolic.PathTracker.myVar(55, \"my_a\");";
+        String createMyVar = "MyVar my_a = PathTracker.myVar(55, \"my_a\");";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    int a = 55;\n")
@@ -51,7 +51,7 @@ public class PathVisitorTest {
 
     @Test
     public void testSimpleBoolGlobalShouldCreateMyVar(){
-        String createMyVar = "MyVar my_bool = nl.tudelft.instrumentation.symbolic.PathTracker.myVar(true, \"my_bool\");";
+        String createMyVar = "MyVar my_bool = PathTracker.myVar(true, \"my_bool\");";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    boolean bool = true;\n")
@@ -73,7 +73,7 @@ public class PathVisitorTest {
 
     @Test
     public void testSimpleArrayGlobalShouldCreateMyVar(){
-        String createMyVar = "MyVar[] my_arr = { nl.tudelft.instrumentation.symbolic.PathTracker.myVar(1, \"my_arr0\"), nl.tudelft.instrumentation.symbolic.PathTracker.myVar(2, \"my_arr1\"), nl.tudelft.instrumentation.symbolic.PathTracker.myVar(3, \"my_arr2\") };";
+        String createMyVar = "MyVar[] my_arr = { PathTracker.myVar(1, \"my_arr0\"), PathTracker.myVar(2, \"my_arr1\"), PathTracker.myVar(3, \"my_arr2\") };";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    int[] arr = {1, 2 ,3};\n")
@@ -95,7 +95,7 @@ public class PathVisitorTest {
 
     @Test
     public void testSimpleStringGlobalShouldCreateMyVar(){
-        String createMyVar = "MyVar my_s = nl.tudelft.instrumentation.symbolic.PathTracker.myVar(\"test\", \"my_s\");";
+        String createMyVar = "MyVar my_s = PathTracker.myVar(\"test\", \"my_s\");";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    String s = \"test\";\n")
@@ -117,7 +117,7 @@ public class PathVisitorTest {
 
     @Test
     public void testArrayAssignmentToVarGlobalShouldCreateMyVar(){
-        String createMyVar = "MyVar[] my_arrB = nl.tudelft.instrumentation.symbolic.PathTracker.myVar(my_arrA, \"my_arrB\");";
+        String createMyVar = "MyVar[] my_arrB = PathTracker.myVar(my_arrA, \"my_arrB\");";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    int[] arrA = {1, 2 ,3};\n")
@@ -140,7 +140,7 @@ public class PathVisitorTest {
 
     @Test
     public void testSimpleIfShouldCreateOneBinaryExpression(){
-        String binExpr = "nl.tudelft.instrumentation.symbolic.PathTracker.binaryExpr";
+        String binExpr = "PathTracker.binaryExpr";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -161,7 +161,7 @@ public class PathVisitorTest {
 
     @Test
     public void testSimpleIfShouldCreateOneMyIfMethodCall(){
-        String myIfCall = "nl.tudelft.instrumentation.symbolic.PathTracker.myIf";
+        String myIfCall = "PathTracker.myIf";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -182,7 +182,7 @@ public class PathVisitorTest {
 
     @Test
     public void testSimpleIfShouldCreateTempVar(){
-        String myVar = "nl.tudelft.instrumentation.symbolic.PathTracker.tempVar";
+        String myVar = "PathTracker.tempVar";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -203,7 +203,7 @@ public class PathVisitorTest {
 
     @Test
     public void testNestedIfShouldCreateTwoMyIfCalls(){
-        String myIf = "nl.tudelft.instrumentation.symbolic.PathTracker.myIf";
+        String myIf = "PathTracker.myIf";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -226,7 +226,7 @@ public class PathVisitorTest {
 
     @Test
     public void testSimpleIfShouldCreateOneUnaryExpression(){
-        String unExpr = "nl.tudelft.instrumentation.symbolic.PathTracker.unaryExpr";
+        String unExpr = "PathTracker.unaryExpr";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -247,7 +247,7 @@ public class PathVisitorTest {
 
     @Test
     public void testEqualsShouldConvertToMyVarEquals(){
-        String myVarEquals = "nl.tudelft.instrumentation.symbolic.PathTracker.equals";
+        String myVarEquals = "PathTracker.equals";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -268,7 +268,7 @@ public class PathVisitorTest {
 
     @Test
     public void testInstrumentationShouldAddImport(){
-        String imprt = "import nl.tudelft.instrumentation.symbolic.*;";
+        String imprt = "import nl.tudelft.instrumentation.symbolic.*";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -289,7 +289,7 @@ public class PathVisitorTest {
 
     @Test
     public void testManyComparisonsInIfCreatesManyBinaryExpressions(){
-        String binExpr = "nl.tudelft.instrumentation.symbolic.PathTracker.binaryExpr";
+        String binExpr = "PathTracker.binaryExpr";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -310,7 +310,7 @@ public class PathVisitorTest {
 
     @Test
     public void testIncrementShouldCreateIncrementCall(){
-        String increment= "nl.tudelft.instrumentation.symbolic.PathTracker.increment";
+        String increment= "PathTracker.increment";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -352,8 +352,8 @@ public class PathVisitorTest {
 
     @Test
     public void testConditionalShoudlCreateMyAssignAndConditionalCall(){
-        String conditional = "nl.tudelft.instrumentation.symbolic.PathTracker.conditional";
-        String myAssign = "nl.tudelft.instrumentation.symbolic.PathTracker.myAssign";
+        String conditional = "PathTracker.conditional";
+        String myAssign = "PathTracker.myAssign";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -378,7 +378,7 @@ public class PathVisitorTest {
 
     @Test
     public void testArrayAccessShouldCreateArrayIndCall(){
-        String arrayInd = "nl.tudelft.instrumentation.symbolic.PathTracker.arrayInd";
+        String arrayInd = "PathTracker.arrayInd";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -400,7 +400,7 @@ public class PathVisitorTest {
 
     @Test
     public void testDecrementShouldCreateIncrementCall(){
-        String decrement = "nl.tudelft.instrumentation.symbolic.PathTracker.increment";
+        String decrement = "PathTracker.increment";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -468,10 +468,10 @@ public class PathVisitorTest {
                 "        Test cp = new Test();\n" +
                 "        for (String s : sequence) {\n" +
                 "            try {\n" +
-                "                MyVar my_s = nl.tudelft.instrumentation.symbolic.PathTracker.myInputVar(s, \"input\");\n" +
+                "                MyVar my_s = PathTracker.myInputVar(s, \"input\");\n" +
                 "                cp.calculateOutput(s, my_s);\n" +
                 "            } catch (IllegalArgumentException | IllegalStateException e) {\n" +
-                "                nl.tudelft.instrumentation.symbolic.SymbolicExecutionLab.output(\"Invalid input: \" + e.getMessage());\n" +
+                "                SymbolicExecutionLab.output(\"Invalid input: \" + e.getMessage());\n" +
                 "            }\n" +
                 "        }\n" +
                 "        return null;\n" +
@@ -543,7 +543,7 @@ public class PathVisitorTest {
 
     @Test
     public void testInstrumentationShouldCreateRunCall(){
-        String runCall = "nl.tudelft.instrumentation.symbolic.PathTracker.run(eca.inputs, eca);";
+        String runCall = "PathTracker.run(eca.inputs, eca);";
 
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
