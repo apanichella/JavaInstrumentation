@@ -247,7 +247,7 @@ public class DistanceVisitorTest {
                 "            try {\n" +
                 "                cp.calculateOutput(s);\n" +
                 "            } catch (Exception e) {\n" +
-                "                nl.tudelft.instrumentation.fuzzing.FuzzingLab.output(\"Invalid input: \" + e.getMessage());\n" +
+                "                FuzzingLab.output(\"Invalid input: \" + e.getMessage());\n" +
                 "            }\n" +
                 "        }\n" +
                 "        return null;\n" +

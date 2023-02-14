@@ -311,7 +311,7 @@ public class OperatorVisitorTest {
                 "            try {\n" +
                 "                cp.calculateOutput(s);\n" +
                 "            } catch (Exception e) {\n" +
-                "                nl.tudelft.instrumentation.patching.PatchingLab.output(\"Invalid input: \" + e.getMessage());\n" +
+                "                PatchingLab.output(\"Invalid input: \" + e.getMessage());\n" +
                 "            }\n" +
                 "        }\n" +
                 "        return null;\n" +
