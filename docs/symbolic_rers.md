@@ -297,6 +297,26 @@ and send it to the SMT solver, although I am not yet sure on how to get the outp
 (again, all binaries of KLEE are located in `/home/str/klee/build/bin/`)
 
 
+We created a Python script that computes the summary of the errors that were found by KLEE. The script is located in `scripts/analyze_klee_live.py`. The script requires the output of KLEE to be its input. To run KLEE while collecting the summary, run the command listed below. This pipes the output of KLEE on stderr to the `analyze_klee_live.py`.
+
+```
+./path/to/klee/binary/klee /path/to/instrumented/Problem10.bc 2>&1 | python3 ./path/to/analyze_klee_live.py
+```
+
+Running this command gives the following summary:
+```
+...
+
+Summary:
+error_8 found in 13.299s
+error_77 found in 11.550s
+error_79 found in 13.261s
+Found 3 unique errors
+
+...
+```
+
+
 Read more on the features of KLEE at: http://klee.github.io/docs/. Happy bug hunting.
 
 https://feliam.wordpress.com/2010/10/07/the-symbolic-maze/ is also well-worth checking out.

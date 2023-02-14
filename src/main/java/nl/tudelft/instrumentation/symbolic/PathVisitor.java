@@ -367,7 +367,7 @@ public class PathVisitor extends ModifierVisitor<Object> {
         // Catch the output from the standard out.
         if (node.getExpression() instanceof MethodCallExpr) {
             MethodCallExpr mce = (MethodCallExpr)node.getExpression();
-            if (node.toString().contains("System.out")) {
+            if (mce.toString().contains("System.out")) {
                 node.setExpression(
                         new MethodCallExpr(
                                 new NameExpr(pathFile),"output",mce.getArguments()
