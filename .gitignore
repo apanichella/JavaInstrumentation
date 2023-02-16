@@ -22,11 +22,17 @@ Thumbs.db
 ############
 *.idea
 *.iml
+
 target/
+
+
+# Lab specific
 instrumented/
 instrumented_fuzzing/
 instrumented_symbolic/
 RERS/
 scripts/
-*.class
 *.zip
+.classpath
+.project
+.settings/
