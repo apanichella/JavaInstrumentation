@@ -1,21 +1,21 @@
 {
   "name": "AISTR",
   "image": "clintoncao/aistr:latest",
-
   "features": {
     "ghcr.io/devcontainers/features/java:1": {
-			"version": "none",
-			"installMaven": "false",
-			"installGradle": "false"
-		}
+      "version": "none",
+      "installMaven": "false",
+      "installGradle": "false"
+    }
   },
   "customizations": {
     "vscode": {
-      "extensions": ["streetsidesoftware.code-spell-checker"]
-      
+      "extensions": [
+        "streetsidesoftware.code-spell-checker",
+        "vscjava.vscode-java-pack"
+      ]
     }
   },
   "workspaceMount": "source=${localWorkspaceFolder},target=/home/str/JavaInstrumentation,type=bind",
   "workspaceFolder": "/home/str/JavaInstrumentation"
-//   "forwardPorts": [3000]
 }
