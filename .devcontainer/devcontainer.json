@@ -15,5 +15,7 @@
       
     }
   },
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/str/JavaInstrumentation,type=bind",
+  "workspaceFolder": "/home/str/JavaInstrumentation"
 //   "forwardPorts": [3000]
 }
