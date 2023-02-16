@@ -22,3 +22,11 @@ Thumbs.db
 ############
 *.idea
 *.iml
+target/
+instrumented/
+instrumented_fuzzing/
+instrumented_symbolic/
+RERS/
+scripts/
+*.class
+*.zip
