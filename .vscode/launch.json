@@ -1,0 +1,52 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Launch Problem",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "classPaths": [
+        "$Auto",
+        // "${workspaceFolder}/target/classes/", // Already included in $Auto
+        // "${workspaceFolder}/lib/com.microsoft.z3.jar", // Already included in $Auto
+        "${workspaceFolder}/instrumented",
+        "${workspaceFolder}",
+      ],
+      "mainClass": "${input:filePick}",
+      "projectName": "JavaInstrumentation",
+    },
+
+    {
+      "type": "java",
+      "name": "Launch Problem 11",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "classPaths": [
+        "$Auto",
+        "${workspaceFolder}/instrumented",
+        "${workspaceFolder}",
+      ],
+      "mainClass": "Problem11",
+      "projectName": "JavaInstrumentation",
+    },
+  ],
+  "inputs": [
+    {
+      "id": "filePick",
+      "type": "command",
+      "command": "extension.commandvariable.file.pickFile",
+      "args": {
+        "include": "**/instrumented/*.class",
+        "description": "Select Problem",
+        "display": "fileName",
+        "transform": { // Remove the .class extensions
+          "text": "${fileBasenameNoExtension}",
+        }
+      }
+    },
+  ]
+}

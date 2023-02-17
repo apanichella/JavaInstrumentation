@@ -31,7 +31,6 @@ instrumented/
 instrumented_fuzzing/
 instrumented_symbolic/
 RERS/
-scripts/
 *.zip
 .classpath
 .project

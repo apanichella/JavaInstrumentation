@@ -4,8 +4,8 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "streetsidesoftware.code-spell-checker",
-        "vscjava.vscode-java-pack"
+        "vscjava.vscode-java-pack",
+        "rioj7.command-variable"
       ]
     }
   },
