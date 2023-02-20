@@ -27,7 +27,7 @@ if [ -z $2 ]; then
     temp=${i#Problem}
     instrument ${temp%.java} $1
   done
-  for i in $(ls $DATASET |  grep -v "Problem16" | grep -v "Problem18" | grep -v "Problem19"); do
+  for i in $(ls $DATASET | sed -E "/Problem(9|16|18|19)$/d"); do
     instrument ${i#Problem} $1
   done
 else
