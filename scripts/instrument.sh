@@ -2,18 +2,18 @@
 # cd /home/str/JavaInstrumentation
 mkdir -p instrumented
 DATASET="../RERS"
-CUSTOM_DATASET="./custom_problems"
+CUSTOM_DATASET=${2:-"./custom_problems"}
 
 # If the target is not built yet:
 # mvn clean package
 
 instrument () {
-    FILE="$DATASET/Problem$1/Problem$1.java"
+    FILE="$CUSTOM_DATASET/Problem$1.java"
     if [ -f "$FILE" ]; then
-      echo "Normal problem: $1"
-    else 
       echo "Custom problem: $1"
-      FILE="$CUSTOM_DATASET/Problem$1.java"
+    else 
+      echo "Normal problem: $1"
+      FILE="$DATASET/Problem$1/Problem$1.java"
     fi
     echo "Instrumenting $1";
     java -XX:+UseG1GC -Xmx4g -cp target/aistr.jar nl.tudelft.instrumentation.Main --type=$2 --file="$FILE" > "instrumented/Problem$1.java" &&
@@ -22,15 +22,10 @@ instrument () {
 }
 
 echo $2
-if [ -z $2 ]; then
-  for i in $(ls $CUSTOM_DATASET | grep .java); do
-    temp=${i#Problem}
-    instrument ${temp%.java} $1
-  done
-  for i in $(ls $DATASET | sed -E "/Problem(9|16|18|19)$/d"); do
-    instrument ${i#Problem} $1
-  done
-else
-  # mvn clean package
-  instrument $2 $1
-fi
+for i in $(ls $CUSTOM_DATASET | grep .java); do
+  temp=${i#Problem}
+  instrument ${temp%.java} $1
+done
+for i in $(ls $DATASET | sed -E "/Problem(3|5|6|8|9|16|18|19)$/d"); do
+  instrument ${i#Problem} $1
+done
