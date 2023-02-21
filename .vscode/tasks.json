@@ -5,8 +5,14 @@
       "label": "Instrument all",
       "type": "shell",
       "command": "mvn clean package && ./scripts/instrument.sh ${input:instrumentation_type}",
-      "problemMatcher": []
-    }
+      "problemMatcher": [],
+    },
+    {
+      "label": "Instrument buggy",
+      "type": "shell",
+      "command": "mvn clean package && ./scripts/instrument.sh ${input:instrumentation_type} ./RERS2020Buggy",
+      "problemMatcher": [],
+    },
   ],
   "inputs": [
     {
