@@ -9,6 +9,7 @@
       "name": "Launch Problem",
       "request": "launch",
       "cwd": "${workspaceFolder}",
+      "vmArgs": "-enableassertions",
       "classPaths": [
         "$Auto",
         // "${workspaceFolder}/target/classes/", // Already included in $Auto
@@ -25,6 +26,7 @@
       "name": "Launch Problem 11",
       "request": "launch",
       "cwd": "${workspaceFolder}",
+      "vmArgs": "-enableassertions",
       "classPaths": [
         "$Auto",
         "${workspaceFolder}/instrumented",
