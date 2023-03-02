@@ -131,7 +131,7 @@ Second of all, we need to add the Z3 library to the classpath to be able to do s
 
 Finally, we also need to add the Z3 library to the classpath when running an instrumented Java file for the second lab:
 
-`java -cp target/aistr.jar:lib/com.microsoft.z3.jar:./instrumented Problem1`
+`java -cp target/aistr.jar:lib/com.microsoft.z3.jar:./instrumented:. Problem1`
 
 ## Lab 3 - Automated Patching with Genetic Algorithms
 For Lab 3, it is almost identical to the steps shown for Lab 1. The only change is to use the `patching` type when instrumenting the file:
