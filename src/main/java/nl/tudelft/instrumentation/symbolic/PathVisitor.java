@@ -26,7 +26,8 @@ public class PathVisitor extends BaseVisitor {
     int var_count = 1;
 
     /** Name of the source file to instrument */
-    private String pathFile = "nl.tudelft.instrumentation.symbolic.PathTracker";
+    private String filename;
+    private String pathFile = "PathTracker";
 
     private String class_name = "";
 
@@ -253,7 +254,7 @@ public class PathVisitor extends BaseVisitor {
     @Override
     public Node visit(ClassOrInterfaceDeclaration node, Object arg){
         this.class_name = node.getName().toString();
-        BodyDeclaration bd1 = StaticJavaParser.parseBodyDeclaration("public Void call(){ " + class_name + " cp = new " + class_name + "(); for(String s : sequence){ try { MyVar my_s = nl.tudelft.instrumentation.symbolic.PathTracker.myInputVar(s, \"input\"); cp.calculateOutput(s); } catch (IllegalArgumentException | IllegalStateException e) { nl.tudelft.instrumentation.symbolic.SymbolicExecutionLab.output(\"Invalid input: \" + e.getMessage()); } } return null;}");
+        BodyDeclaration bd1 = StaticJavaParser.parseBodyDeclaration("public Void call(){ " + class_name + " cp = new " + class_name + "(); for(String s : sequence){ try { MyVar my_s = PathTracker.myInputVar(s, \"input\"); cp.calculateOutput(s); } catch (IllegalArgumentException | IllegalStateException e) { SymbolicExecutionLab.output(\"Invalid input: \" + e.getMessage()); } } return null;}");
         BodyDeclaration bd2 = StaticJavaParser.parseBodyDeclaration(" public void setSequence(String[] trace){ sequence = trace; } ");
         BodyDeclaration fd = StaticJavaParser.parseBodyDeclaration("public String[] sequence;");
         node.getMembers().add(fd);
@@ -305,7 +306,7 @@ public class PathVisitor extends BaseVisitor {
         // Catch the output from the standard out.
         if (node.getExpression() instanceof MethodCallExpr) {
             MethodCallExpr mce = (MethodCallExpr)node.getExpression();
-            if (node.toString().contains("System.out")) {
+            if (mce.toString().contains("System.out")) {
                 node.setExpression(
                         new MethodCallExpr(
                                 new NameExpr(pathFile),"output",mce.getArguments()

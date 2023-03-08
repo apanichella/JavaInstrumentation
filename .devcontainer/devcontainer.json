@@ -1,0 +1,14 @@
+{
+  "name": "AISTR",
+  "image": "clintoncao/aistr:latest",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "rioj7.command-variable"
+      ]
+    }
+  },
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/str/JavaInstrumentation,type=bind",
+  "workspaceFolder": "/home/str/JavaInstrumentation"
+}

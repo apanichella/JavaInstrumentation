@@ -29,7 +29,7 @@ public class DistanceVisitorTest {
 
     @Test
     public void testSimpleIfShouldCreateOneBinaryExpression(){
-        String binExpr = "nl.tudelft.instrumentation.fuzzing.DistanceTracker.binaryExpr";
+        String binExpr = "DistanceTracker.binaryExpr";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -50,7 +50,7 @@ public class DistanceVisitorTest {
 
     @Test
     public void testSimpleIfShouldCreateOneMyIfMethodCall(){
-        String myIfCall = "nl.tudelft.instrumentation.fuzzing.DistanceTracker.myIf";
+        String myIfCall = "DistanceTracker.myIf";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -71,7 +71,7 @@ public class DistanceVisitorTest {
 
     @Test
     public void testSimpleIfShouldCreateTwoMyVars(){
-        String myVar = "nl.tudelft.instrumentation.fuzzing.DistanceTracker.MyVar";
+        String myVar = "DistanceTracker.MyVar";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -92,7 +92,7 @@ public class DistanceVisitorTest {
 
     @Test
     public void testNestedIfShouldCreateTwoMyIfCalls(){
-        String myIf = "nl.tudelft.instrumentation.fuzzing.DistanceTracker.myIf";
+        String myIf = "DistanceTracker.myIf";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -115,7 +115,7 @@ public class DistanceVisitorTest {
 
     @Test
     public void testSimpleIfShouldCreateOneUnaryExpression(){
-        String unExpr = "nl.tudelft.instrumentation.fuzzing.DistanceTracker.unaryExpr";
+        String unExpr = "DistanceTracker.unaryExpr";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -136,7 +136,7 @@ public class DistanceVisitorTest {
 
     @Test
     public void testEqualsShouldConvertToMyVarEquals(){
-        String myVarEquals = "nl.tudelft.instrumentation.fuzzing.DistanceTracker.equals";
+        String myVarEquals = "DistanceTracker.equals";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -178,7 +178,7 @@ public class DistanceVisitorTest {
 
     @Test
     public void testManyComparisonsInIfCreatesManyBinaryExpressions(){
-        String binExpr = "nl.tudelft.instrumentation.fuzzing.DistanceTracker.binaryExpr";
+        String binExpr = "DistanceTracker.binaryExpr";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -247,7 +247,7 @@ public class DistanceVisitorTest {
                 "            try {\n" +
                 "                cp.calculateOutput(s);\n" +
                 "            } catch (Exception e) {\n" +
-                "                nl.tudelft.instrumentation.fuzzing.FuzzingLab.output(\"Invalid input: \" + e.getMessage());\n" +
+                "                FuzzingLab.output(\"Invalid input: \" + e.getMessage());\n" +
                 "            }\n" +
                 "        }\n" +
                 "        return null;\n" +
@@ -319,7 +319,7 @@ public class DistanceVisitorTest {
 
     @Test
     public void testInstrumentationShouldCreateRunCall(){
-        String runCall = "nl.tudelft.instrumentation.fuzzing.DistanceTracker.run(eca.inputs, eca);";
+        String runCall = "DistanceTracker.run(eca.inputs, eca);";
 
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")

@@ -1,0 +1,30 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Instrument all",
+      "type": "shell",
+      "command": "mvn clean package && ./scripts/instrument.sh ${input:instrumentation_type}",
+      "problemMatcher": [],
+    },
+    {
+      "label": "Instrument buggy",
+      "type": "shell",
+      "command": "mvn clean package && ./scripts/instrument.sh ${input:instrumentation_type} ./RERS2020Buggy",
+      "problemMatcher": [],
+    },
+  ],
+  "inputs": [
+    {
+      "type": "pickString",
+      "id": "instrumentation_type",
+      "description": "Which instrumentation do you want",
+      "options": [
+        "fuzzing",
+        "symbolic",
+        "patching"
+      ],
+      "default": "fuzzing"
+    }
+  ]
+}

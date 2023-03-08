@@ -38,7 +38,9 @@ public class PatchingLab {
 
                 // Place the code here you want to run once:
                 // You want to change this of course, this is just an example
-                // Tests are loaded from resources/tests.txt, make sure you put in the right tests for the right problem!
+                // Tests are loaded from resources/rers2020_test_cases. If you are you are using
+                // your own tests, make sure you put them in the same folder with the same
+                // naming convention.
                 OperatorTracker.runAllTests();
                 System.out.println("Entered run");
 

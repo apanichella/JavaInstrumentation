@@ -22,3 +22,19 @@ Thumbs.db
 ############
 *.idea
 *.iml
+
+target/
+
+
+# Lab specific
+instrumented/
+instrumented_fuzzing/
+instrumented_symbolic/
+RERS/
+*.zip
+.classpath
+.project
+.settings/
+.vscode/
+RERS2020Buggy/
+scripts/

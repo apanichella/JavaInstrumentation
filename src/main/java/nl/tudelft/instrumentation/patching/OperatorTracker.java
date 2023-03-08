@@ -83,8 +83,9 @@ public class OperatorTracker {
      * from "tests.txt"
      */
     public static void readTests(){
+        String testCaseFile = String.format("/rers2020_test_cases/%sTestcases.txt", problem.getClass().getSimpleName());
         try (Stream<String> stream = new BufferedReader(
-                new InputStreamReader(OperatorTracker.class.getResourceAsStream("/tests.txt"))).lines()
+                new InputStreamReader(OperatorTracker.class.getResourceAsStream(testCaseFile))).lines()
         )
         {
             stream.forEach(s -> {
