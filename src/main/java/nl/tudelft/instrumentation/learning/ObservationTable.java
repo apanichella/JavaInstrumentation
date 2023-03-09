@@ -3,11 +3,9 @@ package nl.tudelft.instrumentation.learning;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.Map.Entry;
 
 /**
@@ -16,18 +14,21 @@ import java.util.Map.Entry;
  */
 
 public class ObservationTable {
+
+    public static Word<String> word;
+
     private static final String SEPERATOR = ",";
     private static final String LAMBDA = " ";
-    private static final List<String> EMPTY = new ArrayList<>();
+    private static final Word<String> EMPTY = new Word<>();
 
     private String[] alphabet;
 
-    private List<List<String>> S;
-    private List<List<String>> E;
+    private List<Word<String>> S;
+    private List<Word<String>> E;
 
     // The actual observations: a map with (S u S A) as keys where each value
     // (row) represents the observations corresponding to (S u S A) E.
-    private Map<List<String>, ArrayList<String>> table;
+    private Map<Word<String>, ArrayList<String>> table;
     private SystemUnderLearn sul;
 
     public ObservationTable(String[] alphabet, SystemUnderLearn sul) {
@@ -36,18 +37,15 @@ public class ObservationTable {
         this.E = new ArrayList<>();
         this.alphabet = alphabet;
         table = new HashMap<>();
-        this.addToS(new ArrayList<>());
+        this.addToS(EMPTY);
         for (String s : this.alphabet) {
-            ArrayList<String> sym = new ArrayList<>();
-            sym.add(s);
+            Word<String> sym = new Word<>(s);
             this.addToE(sym);
         }
     }
 
-    public List<String> join(List<String> a, List<String> b) {
-        List<String> joined = new ArrayList<>(a);
-        joined.addAll(b);
-        return joined;
+    public Word<String> join(Word<String> a, Word<String> b) {
+        return a.append(b);
     }
 
     public List<String> join(List<String> a, String b) {
@@ -67,7 +65,11 @@ public class ObservationTable {
         return trace.toArray(new String[0]);
     }
 
-    private String getResult(List<String> trace) {
+    public String[] toArrayTrace(Word<String> trace) {
+        return trace.asList().toArray(new String[0]);
+    }
+
+    private String getResult(Word<String> trace) {
         String res = sul.getLastOutput(toArrayTrace(trace));
         // System.out.printf("Output for trace %s is %s\n", trace, res);
         return res;
@@ -79,13 +81,13 @@ public class ObservationTable {
      * @param prefix the prefix to add to S, must be a list of symbols in the
      *               alphabet
      */
-    public void addToS(List<String> prefix) {
-        System.out.printf("Adding %s to S\n", String.join(",", prefix));
+    public void addToS(Word<String> prefix) {
+        System.out.printf("Adding %s to S\n", prefix);
         if (!S.contains(prefix)) {
             S.add(prefix);
             addRow(prefix);
             for (String symbol : alphabet) {
-                addRow(join(prefix, symbol));
+                addRow(prefix.append(symbol));
             }
         }
     }
@@ -96,12 +98,12 @@ public class ObservationTable {
      * @param suffix the suffix to add to E, must be a list of symbols in the
      *               alphabet
      */
-    public void addToE(List<String> suffix) {
-        System.out.printf("Adding %s to E\n", String.join(",", suffix));
+    public void addToE(Word<String> suffix) {
+        System.out.printf("Adding %s to E\n", suffix);
         if (!E.contains(suffix)) {
             E.add(suffix);
-            for (Entry<List<String>, ArrayList<String>> entry : table.entrySet()) {
-                List<String> joined = join(entry.getKey(), suffix);
+            for (Entry<Word<String>, ArrayList<String>> entry : table.entrySet()) {
+                Word<String> joined = entry.getKey().append(suffix);
                 entry.getValue().add(getResult(joined));
             }
         }
@@ -113,12 +115,13 @@ public class ObservationTable {
      * Adds a row to the observation table and fills it with the correct
      * observations.
      */
-    private void addRow(List<String> base) {
+    private void addRow(Word<String> base) {
+        
         if (table.containsKey(base)) {
             return;
         } else {
             ArrayList<String> row = new ArrayList<>();
-            for (List<String> e : E) {
+            for (Word<String> e : E) {
                 row.add(getResult(join(base, e)));
             }
             table.put(base, row);
@@ -133,7 +136,7 @@ public class ObservationTable {
      * @return an Optional.empty() if the table is consistent, or an Optional.of(_)
      *         with something usefull to extend the observation table with.
      */
-    public Optional<List<String>> checkForClosed() {
+    public Optional<Word<String>> checkForClosed() {
         // TODO
         return Optional.empty();
     }
@@ -146,7 +149,7 @@ public class ObservationTable {
      * @return an Optional.empty() if the table is consistent, or an Optional.of(_)
      *         with something usefull to extend the observation table with.
      */
-    public Optional<List<String>> checkForConsistent() {
+    public Optional<Word<String>> checkForConsistent() {
         // TODO
         return Optional.empty();
     }
@@ -166,18 +169,18 @@ public class ObservationTable {
     public MealyMachine generateHypothesis() {
         Map<String, MealyState> states = new HashMap<>();
         int numStates = 0;
-        for (List<String> s : S) {
+        for (Word<String> s : S) {
             String key = rowToKey(table.get(s));
             if (!states.containsKey(key)) {
                 states.put(key, new MealyState(String.format("s%s", numStates++)));
             }
         }
-        for (List<String> s : S) {
+        for (Word<String> s : S) {
             ArrayList<String> baseRow = table.get(s);
             MealyState from = states.get(rowToKey(baseRow));
             int index_in_alphabet = 0;
             for (String sym : alphabet) {
-                List<String> base = join(s, sym);
+                Word<String> base = s.append(sym);
                 ArrayList<String> row = table.get(base);
                 String toKey = rowToKey(row);
                 String output = baseRow.get(index_in_alphabet++);
@@ -212,12 +215,11 @@ public class ObservationTable {
         return new MealyMachine(initialState);
     }
 
-    public static String pretty(List<String> trace) {
+    public static String pretty(ArrayList<String> trace) {
         if(trace.size() == 0)  {
             return LAMBDA;
         }
         return String.join(SEPERATOR, trace);
-
     }
 
     /**
@@ -228,23 +230,23 @@ public class ObservationTable {
         ArrayList<String> header = new ArrayList<>();
         rows.add(null);
         header.add("T");
-        for (List<String> e : E) {
-            header.add(pretty(e));
+        for (Word<String> e : E) {
+            header.add(e.toString());
         }
         rows.add(header);
         rows.add(null);
-        for (List<String> s : S) {
+        for (Word<String> s : S) {
             ArrayList<String> row = new ArrayList<>();
-            row.add(pretty(s));
+            row.add(s.toString());
             row.addAll(table.get(s));
             rows.add(row);
         }
         rows.add(null);
-        for (List<String> s : S) {
+        for (Word<String> s : S) {
             for (String symbol : alphabet) {
-                List<String> joined = join(s, symbol);
+                Word<String> joined = s.append(symbol);
                 ArrayList<String> row = new ArrayList<>();
-                row.add(pretty(joined));
+                row.add(joined.toString());
                 row.addAll(table.get(joined));
                 rows.add(row);
             }
@@ -260,12 +262,12 @@ public class ObservationTable {
                 minSizes[i] = Math.max(minSizes[i], row.get(i).length());
             }
         }
-        String empty = "·";
+        String empty = "-";
         for (int i = 0; i < minSizes.length; i++) {
             for (int j = 0; j < minSizes[i]; j++) {
-                empty += "─";
+                empty += "-";
             }
-            empty += "·";
+            empty += "-";
         }
         for (ArrayList<String> row : rows) {
             if (row == null) {
@@ -278,7 +280,7 @@ public class ObservationTable {
                 // System.out.println(f);
                 row.set(i, String.format(f, row.get(i)));
             }
-            System.out.printf("│%s│\n", String.join("│", row));
+            System.out.printf("|%s|\n", String.join("|", row));
         }
     }
 
