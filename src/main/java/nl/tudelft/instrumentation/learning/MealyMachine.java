@@ -31,7 +31,7 @@ public class MealyMachine extends SystemUnderLearn {
             s = t.to;
         }
         assert output.size() == trace.length;
-        return output.toArray(String[]::new);
+        return output.toArray(new String[0]);
     }
 
     public MealyState[] getStates() {
@@ -48,7 +48,7 @@ public class MealyMachine extends SystemUnderLearn {
             }
         }
 
-        return states.toArray(MealyState[]::new);
+        return states.toArray(new MealyState[0]);
     }
 
     public String getColor(String s) {

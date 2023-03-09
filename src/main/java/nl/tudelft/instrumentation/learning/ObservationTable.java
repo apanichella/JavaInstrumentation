@@ -17,7 +17,7 @@ import java.util.Map.Entry;
 
 public class ObservationTable {
     private static final String SEPERATOR = ",";
-    private static final String LAMBDA = "λ";
+    private static final String LAMBDA = " ";
     private static final List<String> EMPTY = new ArrayList<>();
 
     private String[] alphabet;
@@ -25,8 +25,8 @@ public class ObservationTable {
     private List<List<String>> S;
     private List<List<String>> E;
 
-    // The actual observations: a map with (S ∪ S • A) as keys where each value
-    // (row) represents the observations corresponding to (S ∪ S • A) • E.
+    // The actual observations: a map with (S u S A) as keys where each value
+    // (row) represents the observations corresponding to (S u S A) E.
     private Map<List<String>, ArrayList<String>> table;
     private SystemUnderLearn sul;
 
@@ -64,7 +64,7 @@ public class ObservationTable {
     }
 
     public String[] toArrayTrace(List<String> trace) {
-        return trace.toArray(String[]::new);
+        return trace.toArray(new String[0]);
     }
 
     private String getResult(List<String> trace) {

@@ -46,7 +46,7 @@ public class RandomWalkEquivalenceChecker extends EquivalenceChecker {
                 // If the model output does not match the real output
                 if (!modelOutput[j].equals(realOutput[j])) {
                     // Construct counterexample
-                    return Optional.of(Arrays.asList(inputs).subList(0, j + 1).toArray(String[]::new));
+                    return Optional.of(Arrays.asList(inputs).subList(0, j + 1).toArray(new String[0]));
                 }
             }
         }
