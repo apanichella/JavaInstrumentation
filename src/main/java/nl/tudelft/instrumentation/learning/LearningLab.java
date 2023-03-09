@@ -18,6 +18,7 @@ public class LearningLab {
         SystemUnderLearn sul = new RersSUL();
         observationTable = new ObservationTable(LearningTracker.inputSymbols, sul);
         equivalenceChecker = new RandomWalkEquivalenceChecker(sul, LearningTracker.inputSymbols, 100, 1000);
+        // equivalenceChecker = new WMethodEquivalenceChecker(sul, LearningTracker.inputSymbols, 10, observationTable, observationTable);
 
         // Place here your code to learn a model of the RERS problem.
         // Implement the checks for consistent and closed in the observation table.

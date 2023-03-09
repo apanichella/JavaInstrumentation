@@ -15,8 +15,8 @@ public class RandomWalkEquivalenceChecker extends EquivalenceChecker {
 
     private Random rng;
 
-    public RandomWalkEquivalenceChecker(SystemUnderLearn sul, String[] alphabet, int depth, int numberOfSamples) {
-        super(sul, alphabet);
+    public RandomWalkEquivalenceChecker(SystemUnderLearn sul, String[] inputSymbols, int depth, int numberOfSamples) {
+        super(sul, inputSymbols);
         this.depth = depth;
         this.numberOfSamples = numberOfSamples;
         this.rng = new Random();
@@ -33,12 +33,12 @@ public class RandomWalkEquivalenceChecker extends EquivalenceChecker {
      * @return A counterexample or an empty option if no counterexample was found
      */
     @Override
-    public Optional<String[]> verify(MealyMachine hyp) {
+    public Optional<Word<String>> verify(MealyMachine hyp) {
         String[] inputs = new String[depth];
         for (int i = 0; i < numberOfSamples; i++) {
             // Generate random input
             for (int j = 0; j < depth; j++) {
-                inputs[j] = alphabet[rng.nextInt(alphabet.length)];
+                inputs[j] = inputSymbols[rng.nextInt(inputSymbols.length)];
             }
             String[] modelOutput = hyp.getOutput(inputs);
             String[] realOutput = sul.getOutput(inputs);
@@ -46,7 +46,7 @@ public class RandomWalkEquivalenceChecker extends EquivalenceChecker {
                 // If the model output does not match the real output
                 if (!modelOutput[j].equals(realOutput[j])) {
                     // Construct counterexample
-                    return Optional.of(Arrays.asList(inputs).subList(0, j + 1).toArray(new String[0]));
+                    return Optional.of(new Word<>(Arrays.asList(inputs).subList(0, j + 1)));
                 }
             }
         }

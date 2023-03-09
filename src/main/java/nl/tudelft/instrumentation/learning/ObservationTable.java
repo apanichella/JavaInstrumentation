@@ -13,7 +13,7 @@ import java.util.Map.Entry;
  *         The observation of the L* algorithm for learning mealy machines.
  */
 
-public class ObservationTable {
+public class ObservationTable implements DistinguishingSequenceGenerator, AccessSequenceGenerator {
 
     public static Word<String> word;
 
@@ -21,7 +21,7 @@ public class ObservationTable {
     private static final String LAMBDA = " ";
     private static final Word<String> EMPTY = new Word<>();
 
-    private String[] alphabet;
+    private String[] inputSymbols;
 
     private List<Word<String>> S;
     private List<Word<String>> E;
@@ -31,46 +31,48 @@ public class ObservationTable {
     private Map<Word<String>, ArrayList<String>> table;
     private SystemUnderLearn sul;
 
-    public ObservationTable(String[] alphabet, SystemUnderLearn sul) {
+    public ObservationTable(String[] inputSymbols, SystemUnderLearn sul) {
         this.sul = sul;
         this.S = new ArrayList<>();
         this.E = new ArrayList<>();
-        this.alphabet = alphabet;
+        this.inputSymbols = inputSymbols;
         table = new HashMap<>();
         this.addToS(EMPTY);
-        for (String s : this.alphabet) {
+        for (String s : this.inputSymbols) {
             Word<String> sym = new Word<>(s);
             this.addToE(sym);
         }
     }
 
-    public Word<String> join(Word<String> a, Word<String> b) {
-        return a.append(b);
+
+    /**
+     * Method that is used for checking whether the observation table is closed
+     *
+     * You should write your own logic here.
+     *
+     * @return an Optional.empty() if the table is consistent, or an Optional.of(_)
+     *         with something usefull to extend the observation table with.
+     */
+    public Optional<Word<String>> checkForClosed() {
+        // TODO implement the check for closedness of the observation table.
+        return Optional.empty();
     }
 
-    public List<String> join(List<String> a, String b) {
-        List<String> joined = new ArrayList<>(a);
-        joined.add(b);
-        return joined;
+    /**
+     * Method that is used for checking whether the observation table is consistent
+     *
+     * You should write your own logic here.
+     *
+     * @return an Optional.empty() if the table is consistent, or an Optional.of(_)
+     *         with something usefull to extend the observation table with.
+     */
+    public Optional<Word<String>> checkForConsistent() {
+        // TODO implement the consistency check.
+        return Optional.empty();
     }
 
-    public List<String> join(String a, List<String> b) {
-        List<String> joined = new ArrayList<>(b.size()+1);
-        joined.add(a);
-        joined.addAll(b);
-        return joined;
-    }
-
-    public String[] toArrayTrace(List<String> trace) {
-        return trace.toArray(new String[0]);
-    }
-
-    public String[] toArrayTrace(Word<String> trace) {
-        return trace.asList().toArray(new String[0]);
-    }
-
-    private String getResult(Word<String> trace) {
-        String res = sul.getLastOutput(toArrayTrace(trace));
+    private String getResultFromSul(Word<String> trace) {
+        String res = sul.getLastOutput(trace);
         // System.out.printf("Output for trace %s is %s\n", trace, res);
         return res;
     }
@@ -86,7 +88,7 @@ public class ObservationTable {
         if (!S.contains(prefix)) {
             S.add(prefix);
             addRow(prefix);
-            for (String symbol : alphabet) {
+            for (String symbol : inputSymbols) {
                 addRow(prefix.append(symbol));
             }
         }
@@ -104,7 +106,7 @@ public class ObservationTable {
             E.add(suffix);
             for (Entry<Word<String>, ArrayList<String>> entry : table.entrySet()) {
                 Word<String> joined = entry.getKey().append(suffix);
-                entry.getValue().add(getResult(joined));
+                entry.getValue().add(getResultFromSul(joined));
             }
         }
     }
@@ -122,37 +124,12 @@ public class ObservationTable {
         } else {
             ArrayList<String> row = new ArrayList<>();
             for (Word<String> e : E) {
-                row.add(getResult(join(base, e)));
+                row.add(getResultFromSul(base.append(e)));
             }
             table.put(base, row);
         }
     }
 
-    /**
-     * Method that is used for checking whether the observation table is closed
-     *
-     * You should write your own logic here.
-     *
-     * @return an Optional.empty() if the table is consistent, or an Optional.of(_)
-     *         with something usefull to extend the observation table with.
-     */
-    public Optional<Word<String>> checkForClosed() {
-        // TODO
-        return Optional.empty();
-    }
-
-    /**
-     * Method that is used for checking whether the observation table is consistent
-     *
-     * You should write your own logic here.
-     *
-     * @return an Optional.empty() if the table is consistent, or an Optional.of(_)
-     *         with something usefull to extend the observation table with.
-     */
-    public Optional<Word<String>> checkForConsistent() {
-        // TODO
-        return Optional.empty();
-    }
 
     private String rowToKey(ArrayList<String> input) {
         return String.join(",", input);
@@ -162,7 +139,7 @@ public class ObservationTable {
      * Method to generate a {@link MealyMachine} from this observation table.
      *
      * Note: in order to generate a MealyMachine the observation table must be
-     * consistent and closed.
+     * consistent and closed. For any inconstistencies the model will create dummy states.
      *
      * @return an MealyMachine that reflects the observations
      */
@@ -179,7 +156,7 @@ public class ObservationTable {
             ArrayList<String> baseRow = table.get(s);
             MealyState from = states.get(rowToKey(baseRow));
             int index_in_alphabet = 0;
-            for (String sym : alphabet) {
+            for (String sym : inputSymbols) {
                 Word<String> base = s.append(sym);
                 ArrayList<String> row = table.get(base);
                 String toKey = rowToKey(row);
@@ -192,7 +169,7 @@ public class ObservationTable {
                         // assert false: "Observation table is not consistent";
                         MealyState unknownState = new MealyState(String.format("\"s%s?\"", numStates++));
                         newTransition = new MealyTransition(output, unknownState);
-                        for (String sym2 : alphabet) {
+                        for (String sym2 : inputSymbols) {
                             unknownState.addEdge(sym2, new MealyTransition("?", unknownState));
                         }
                         from.addEdge(sym, new MealyTransition("?", unknownState));
@@ -203,7 +180,7 @@ public class ObservationTable {
                     // assert false : "Observation table is not closed";
                     MealyState unknownState = new MealyState(String.format("\"s%s?\"", numStates++));
                     MealyTransition newTransition = new MealyTransition(output, unknownState);
-                    for (String sym2 : alphabet) {
+                    for (String sym2 : inputSymbols) {
                         MealyTransition newTransition2 = new MealyTransition("?", unknownState);
                         unknownState.addEdge(sym2, newTransition2);
                     }
@@ -229,23 +206,28 @@ public class ObservationTable {
         ArrayList<ArrayList<String>> rows = new ArrayList<>();
         ArrayList<String> header = new ArrayList<>();
         rows.add(null);
-        header.add("T");
+        header.add("E");
+        header.add(" ");
         for (Word<String> e : E) {
             header.add(e.toString());
         }
         rows.add(header);
         rows.add(null);
+        int index = 0;
         for (Word<String> s : S) {
             ArrayList<String> row = new ArrayList<>();
+            row.add(index++ == 0 ? "S" : "");
             row.add(s.toString());
             row.addAll(table.get(s));
             rows.add(row);
         }
         rows.add(null);
+        index = 0;
         for (Word<String> s : S) {
-            for (String symbol : alphabet) {
+            for (String symbol : inputSymbols) {
                 Word<String> joined = s.append(symbol);
                 ArrayList<String> row = new ArrayList<>();
+                row.add(index++ == 0 ? "SA" : "");
                 row.add(joined.toString());
                 row.addAll(table.get(joined));
                 rows.add(row);
@@ -259,12 +241,12 @@ public class ObservationTable {
                 continue;
             }
             for (int i = 0; i < minSizes.length; i++) {
-                minSizes[i] = Math.max(minSizes[i], row.get(i).length());
+                minSizes[i] = Math.max(minSizes[i], row.get(i).length()+1);
             }
         }
         String empty = "-";
         for (int i = 0; i < minSizes.length; i++) {
-            for (int j = 0; j < minSizes[i]; j++) {
+            for (int j = 0; j < minSizes[i]+1; j++) {
                 empty += "-";
             }
             empty += "-";
@@ -277,11 +259,20 @@ public class ObservationTable {
             for (int i = 0; i < minSizes.length; i++) {
                 int l = minSizes[i];
                 String f = "%-" + l + "s";
-                // System.out.println(f);
                 row.set(i, String.format(f, row.get(i)));
             }
-            System.out.printf("|%s|\n", String.join("|", row));
+            System.out.printf("| %s|\n", String.join("| ", row));
         }
+    }
+
+    @Override
+    public List<Word<String>> getAccessSequences() {
+        return new ArrayList<>(S);
+    }
+
+    @Override
+    public List<Word<String>> getDistinguishingSequences() {
+        return new ArrayList<>(E);
     }
 
 }

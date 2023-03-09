@@ -8,12 +8,12 @@ import java.util.Optional;
 
 public abstract class EquivalenceChecker {
 
-    SystemUnderLearn sul;
-    String[] alphabet;
+    final SystemUnderLearn sul;
+    final String[] inputSymbols;
 
-    public EquivalenceChecker(SystemUnderLearn sul, String[] alphabet) {
+    public EquivalenceChecker(SystemUnderLearn sul, String[] inputSymbols) {
         this.sul = sul;
-        this.alphabet = alphabet;
+        this.inputSymbols = inputSymbols;
 
     }
 
@@ -22,6 +22,6 @@ public abstract class EquivalenceChecker {
      * @param hypothesis The hypothesis to verify
      * @return A counterexample or an empty option if no counterexample was found
      */
-    public abstract Optional<String[]> verify(MealyMachine hypothesis);
+    public abstract Optional<Word<String>> verify(MealyMachine hypothesis);
 
 }
