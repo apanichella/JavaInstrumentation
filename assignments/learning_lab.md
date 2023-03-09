@@ -35,8 +35,6 @@ hypothesis.writeToDot("hypothesis.dot");
 ```
 To convert this to a pdf, you need you to have graphviz installed: `apt install graphviz`. You can then use `dot -Tpdf -O hypothesis.dot` to create a pdf. For any inconsistencies, the hypothesis will create dummy states or edges ending with a `?`. The dummy states and edges are also colored red in the pdf.
 
-![Rendered version of the mealy machine from observation table shown above](../hypothesis.dot.png)
-
 Your task is to implement the two methods
 `ObservationTable.checkForClosed` and `ObservationTable.checkForConsistent`. To get a row of the observation table for a specific word from `S` and compare it to another row, you can use the following example:
 ```java
