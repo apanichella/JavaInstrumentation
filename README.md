@@ -45,10 +45,8 @@ Say we want to instrument `Problem1.java` of the RERS 2020 problem. We move the 
 ```
 JavaInstrumentation
   |- docs
-  |- lib
   |- src
   |- .gitignore
-  |- libz3java.dylib
   |- pom.xml
   |- Problem1.java
   |- README.md
@@ -64,10 +62,8 @@ JavaInstrumentation
   |- docs
   |- instrumented
     |- Problem1.java
-  |- lib
   |- src
   |- .gitignore
-  |- libz3java.dylib
   |- pom.xml
   |- Problem1.java
   |- README.md
@@ -125,13 +121,13 @@ First of all, we need to use the following command to instrument a java file:
 
 `java -cp target/aistr.jar nl.tudelft.instrumentation.Main --type=symbolic --file=Problem1.java > instrumented/Problem1.java`
 
-Second of all, we need to add the Z3 library to the classpath to be able to do symbolic execution. We would then compile  using the following command:
+Second of all, we need to compile using the following command:
 
-`javac -cp target/aistr.jar:lib/com.microsoft.z3.jar:. instrumented/Problem1.java `
+`javac -cp target/aistr.jar:. instrumented/Problem1.java `
 
-Finally, we also need to add the Z3 library to the classpath when running an instrumented Java file for the second lab:
+Finally, we can run an instrumented Java file for the second lab:
 
-`java -cp target/aistr.jar:lib/com.microsoft.z3.jar:./instrumented:. Problem1`
+`java -cp target/aistr.jar:./instrumented:. Problem1`
 
 ## Lab 3 - Automated Patching with Genetic Algorithms
 For Lab 3, it is almost identical to the steps shown for Lab 1. The only change is to use the `patching` type when instrumenting the file:

@@ -50,11 +50,9 @@
         </dependency>
         <!-- Z3 -->
         <dependency>
-            <groupId>com.microsoft.z3</groupId>
-            <artifactId>libz3.osx</artifactId>
-            <version>4.8.8</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/com.microsoft.z3.jar</systemPath>
+            <groupId>tools.aqua</groupId>
+            <artifactId>z3-turnkey</artifactId>
+            <version>4.8.17</version>
         </dependency>
     </dependencies>
 
