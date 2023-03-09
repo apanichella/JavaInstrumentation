@@ -20,11 +20,14 @@ public class LearningLab {
         equivalenceChecker = new RandomWalkEquivalenceChecker(sul, LearningTracker.inputSymbols, 100, 1000);
         // equivalenceChecker = new WMethodEquivalenceChecker(sul, LearningTracker.inputSymbols, 10, observationTable, observationTable);
 
+        observationTable.print();
+        MealyMachine hypothesis = observationTable.generateHypothesis();
+        hypothesis.writeToDot("hypothesis.dot");
+
         // Place here your code to learn a model of the RERS problem.
         // Implement the checks for consistent and closed in the observation table.
         // Use the observation table and the equivalence checker to implement the L* learning algorithm.
         while (!isFinished) {
-            observationTable.print();
             // Do things!
             try {
                 System.out.println("Woohoo, looping!");

@@ -44,7 +44,6 @@ public class ObservationTable implements DistinguishingSequenceGenerator, Access
         }
     }
 
-
     /**
      * Method that is used for checking whether the observation table is closed
      *
@@ -118,7 +117,7 @@ public class ObservationTable implements DistinguishingSequenceGenerator, Access
      * observations.
      */
     private void addRow(Word<String> base) {
-        
+
         if (table.containsKey(base)) {
             return;
         } else {
@@ -130,7 +129,6 @@ public class ObservationTable implements DistinguishingSequenceGenerator, Access
         }
     }
 
-
     private String rowToKey(ArrayList<String> input) {
         return String.join(",", input);
     }
@@ -139,7 +137,8 @@ public class ObservationTable implements DistinguishingSequenceGenerator, Access
      * Method to generate a {@link MealyMachine} from this observation table.
      *
      * Note: in order to generate a MealyMachine the observation table must be
-     * consistent and closed. For any inconstistencies the model will create dummy states.
+     * consistent and closed. For any inconstistencies the model will create dummy
+     * states.
      *
      * @return an MealyMachine that reflects the observations
      */
@@ -193,7 +192,7 @@ public class ObservationTable implements DistinguishingSequenceGenerator, Access
     }
 
     public static String pretty(ArrayList<String> trace) {
-        if(trace.size() == 0)  {
+        if (trace.size() == 0) {
             return LAMBDA;
         }
         return String.join(SEPERATOR, trace);
@@ -241,12 +240,12 @@ public class ObservationTable implements DistinguishingSequenceGenerator, Access
                 continue;
             }
             for (int i = 0; i < minSizes.length; i++) {
-                minSizes[i] = Math.max(minSizes[i], row.get(i).length()+1);
+                minSizes[i] = Math.max(minSizes[i], row.get(i).length() + 1);
             }
         }
         String empty = "-";
         for (int i = 0; i < minSizes.length; i++) {
-            for (int j = 0; j < minSizes[i]+1; j++) {
+            for (int j = 0; j < minSizes[i] + 1; j++) {
                 empty += "-";
             }
             empty += "-";
