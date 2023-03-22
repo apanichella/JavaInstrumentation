@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.checkerframework.checker.units.qual.A;
-
 import de.learnlib.algorithms.lstar.mealy.ExtensibleLStarMealy;
 import de.learnlib.algorithms.lstar.mealy.ExtensibleLStarMealyBuilder;
 import de.learnlib.algorithms.ttt.mealy.TTTLearnerMealy;
@@ -15,10 +13,7 @@ import de.learnlib.algorithms.ttt.mealy.TTTLearnerMealyBuilder;
 import de.learnlib.api.algorithm.LearningAlgorithm.MealyLearner;
 import de.learnlib.api.oracle.MembershipOracle.MealyMembershipOracle;
 import de.learnlib.api.query.Query;
-import de.learnlib.datastructure.observationtable.writer.ObservationTableASCIIWriter;
-import de.learnlib.filter.cache.mealy.MealyCacheOracle;
 import de.learnlib.filter.statistic.oracle.MealyCounterOracle;
-import de.learnlib.oracle.equivalence.EQOracleChain;
 import de.learnlib.oracle.equivalence.MealyWMethodEQOracle;
 import de.learnlib.util.Experiment.MealyExperiment;
 import de.learnlib.util.statistics.SimpleProfiler;
@@ -28,7 +23,6 @@ import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import net.automatalib.words.WordBuilder;
 import net.automatalib.words.impl.Alphabets;
-import nl.tudelft.instrumentation.symbolic.PathTracker;
 
 
 
@@ -65,26 +59,19 @@ public class LearnLibRunner {
                 .withAlphabet(inputs) // input
                 .withOracle(m)
                 .create();
-        // TTTLearnerMealyBuilder<String, String>
+        
+        // construct TTT instance
         TTTLearnerMealy<String, String> ttt = new TTTLearnerMealyBuilder<String, String>()
                 .withAlphabet(inputs)
                 .withOracle(m)
                 .create();
 
         MealyLearner<String, String> learner = lstar;
-        MealyLearner<String, String> learner = ttt;
+        // MealyLearner<String, String> learner = ttt;
 
         // construct a W-method conformance test exploring the system up to depth
         // EXPLORATION_DEPTH from every state of a hypothesis
         MealyWMethodEQOracle<String, String> wMethod = new MealyWMethodEQOracle<String, String>(m, EXPLORATION_DEPTH);
-
-        // Combine the loopMethod with the wMethod
-        // EQOracleChain<MealyMachine<?, String, ?, String>, String, Word<String>> chain = new EQOracleChain<>(
-        //         stats,
-        //         wMethod,
-        //         stats,
-        //         loopMethod,
-        //         stats);
 
         MealyExperiment<String, String> experiment = new MealyExperiment<String, String>(learner, wMethod, inputs);
 
@@ -112,19 +99,15 @@ public class LearnLibRunner {
         try {
             GraphDOT.write(result, inputs, new BufferedWriter(new FileWriter("learnlib-final.dot")));
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
-        } // may throw IOException!
+        }
         System.out.println("-------------------------------------------------------");
         if (learner.equals(lstar)) {
-            System.out.println("Final observation table:");
-            new ObservationTableASCIIWriter<>().write(lstar.getObservationTable(), System.out);
+            // System.out.println("Final observation table:");
+            // new ObservationTableASCIIWriter<>().write(lstar.getObservationTable(), System.out);
+            // OTUtils.displayHTMLInBrowser(lstar.getObservationTable());
+            // OTUtils.displayHTMLInBrowser(lstar.getHypothesisModel());
         }
-
-        // OTUtils.displayHTMLInBrowser(lstar.getObservationTable());
-        // OTUtils.displayHTMLInBrowser(lstar.getHypothesisModel());
-        System.exit(0);
-
     }
     
 
