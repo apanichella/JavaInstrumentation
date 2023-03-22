@@ -56,6 +56,28 @@
             <scope>system</scope>
             <systemPath>${basedir}/lib/com.microsoft.z3.jar</systemPath>
         </dependency>
+
+        
+        <dependency>
+            <groupId>de.learnlib.distribution</groupId>
+            <artifactId>learnlib-distribution</artifactId>
+            <version>0.16.0</version>
+            <type>pom</type>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.automatalib.distribution</groupId>
+            <artifactId>automata-distribution</artifactId>
+            <version>0.10.0</version>
+            <type>pom</type>
+        </dependency>
+
     </dependencies>
 
     <build>
