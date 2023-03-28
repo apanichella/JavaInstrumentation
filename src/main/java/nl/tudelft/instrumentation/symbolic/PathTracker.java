@@ -35,7 +35,10 @@ public class PathTracker {
         z3model    = ctx.mkTrue();
         z3branches = ctx.mkTrue();
         inputs.clear();
-        solver = ctx.mkSolver();
+        solver.reset();
+        Params params = ctx.mkParams();
+        params.add("timeout", timeoutMS);
+        solver.setParameters(params);
     }
 
 
@@ -261,10 +264,9 @@ public class PathTracker {
     public static void runNextFuzzedSequence(String[] sequence) {
         problem.setSequence(sequence);
         final Future handler = executor.submit(problem);
-        executor.schedule(() -> {
-            handler.cancel(true);
-        }, timeoutMS, TimeUnit.MILLISECONDS);
-
+        // executor.schedule(() -> {
+        //     handler.cancel(true);
+        // }, timeoutMS, TimeUnit.MILLISECONDS);
         // Wait for it to be completed
         try {
             handler.get();
