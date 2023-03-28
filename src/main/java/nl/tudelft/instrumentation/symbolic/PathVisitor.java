@@ -8,7 +8,9 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.*;
-import com.github.javaparser.ast.visitor.ModifierVisitor;
+
+import nl.tudelft.instrumentation.general.BaseVisitor;
+
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.type.*;
 
@@ -18,7 +20,7 @@ import com.github.javaparser.ast.type.*;
  *
  * @author Clinton Cao, Sicco Verwer
  */
-public class PathVisitor extends ModifierVisitor<Object> {
+public class PathVisitor extends BaseVisitor {
 
     /** Used to give each variable an ID */
     int var_count = 1;
@@ -34,70 +36,7 @@ public class PathVisitor extends ModifierVisitor<Object> {
      * @param filename the name of the source file that we want to parse.
      */
     public PathVisitor(String filename) {
-        this.filename = filename;
-    }
-
-    /** This method adds a new line in the source file under analysis to instrument the code
-     * to do symbolic excecution.
-     * @param node {@code Statement} to instrument
-     * @param args additional arguments of JavaParser
-     * @return {@code BlockStmt} that includes the {@code node} (statement in input) and the instrumented
-     *         code for symbolic execution.
-     */
-    public Node addCode(Statement node, Statement new_statement, Object args){
-        if (node.getParentNode().isPresent()){
-        
-            Node parent = node.getParentNode().get();
-
-            if (parent instanceof BlockStmt) {
-                // if {@code node} is within a BlockStmt (i.e., withing a block with
-                // open-close curly brackets), we just add the new line for coverage tracking
-                BlockStmt block = (BlockStmt) parent;
-                int line = node.getBegin().get().line;
-                int position = block.getStatements().indexOf(node);
-                block.addStatement(position, new_statement);
-            } else {
-                // if {@code node} is not within a BlockStmt (e.g., true branch of an if condition
-                // with no curly brackets), we need to create a BlockStmt first
-                BlockStmt block = new BlockStmt();
-                block.addStatement(new_statement);
-                block.addStatement(node);
-                return block;
-            }
-        }
-        return node;
-    }
-
-    /**
-     * This method is used to insert a statement after a given statement. Used to insert additional statement
-     * in the main method (right after "String input = stdin.readLine();"
-     * @param node the node that represents the statement for which we want to add a statement after.
-     * @param new_statement the new statement that needs to be inserted
-     * @param args additional arguments that were given to the JavaParser
-     * @return a node containing our instrumented code.
-     */
-    public Node addCodeAfter(Statement node, Statement new_statement, Object args){
-        if (node.getParentNode().isPresent()){
-        
-            Node parent = node.getParentNode().get();
-
-            if (parent instanceof BlockStmt) {
-                // if {@code node} is within a BlockStmt (i.e., withing a block with
-                // open-close curly brackets), we just add the new line for coverage tracking
-                BlockStmt block = (BlockStmt) parent;
-                int line = node.getBegin().get().line;
-                int position = block.getStatements().indexOf(node) + 1;
-                block.addStatement(position, new_statement);
-            } else {
-                // if {@code node} is not within a BlockStmt (e.g., true branch of an if condition
-                // with no curly brackets), we need to create a BlockStmt first
-                BlockStmt block = new BlockStmt();
-                block.addStatement(node);
-                block.addStatement(new_statement);
-                return block;
-            }
-        }
-        return node;
+        super();
     }
 
     /**

@@ -8,7 +8,9 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.*;
-import com.github.javaparser.ast.visitor.ModifierVisitor;
+
+import nl.tudelft.instrumentation.general.BaseVisitor;
+
 import com.github.javaparser.ast.body.*;
 
 /**
@@ -17,7 +19,7 @@ import com.github.javaparser.ast.body.*;
  *
  * @author Clinton Cao, Sicco Verwer
  */
-public class DistanceVisitor extends ModifierVisitor<Object> {
+public class DistanceVisitor extends BaseVisitor {
 
     int var_count = 1;
 
@@ -29,70 +31,7 @@ public class DistanceVisitor extends ModifierVisitor<Object> {
     private String class_name = "";
 
     public DistanceVisitor(String filename) {
-        this.filename = filename;
-    }
-
-    /**
-     * This method is used to insert a statement above a given statement.
-     * @param node the statement for which we want to insert statement above.
-     * @param new_statement the statement that we want to insert.
-     * @param args the additional arguments that were given to the JavaParser.
-     * @return a node containing the instrumented code.
-     */
-    public Node addCode(Statement node, Statement new_statement, Object args){
-        if (node.getParentNode().isPresent()){
-
-            Node parent = node.getParentNode().get();
-
-            if (parent instanceof BlockStmt) {
-                // if {@code node} is within a BlockStmt (i.e., withing a block with
-                // open-close curly brackets), we just add the new line for coverage tracking
-                BlockStmt block = (BlockStmt) parent;
-                int line = node.getBegin().get().line;
-                int position = block.getStatements().indexOf(node);
-                block.addStatement(position, new_statement);
-            } else {
-                // if {@code node} is not within a BlockStmt (e.g., true branch of an if condition
-                // with no curly brackets), we need to create a BlockStmt first
-                BlockStmt block = new BlockStmt();
-                block.addStatement(new_statement);
-                block.addStatement(node);
-                return block;
-            }
-        }
-        return node;
-    }
-
-    /**
-     * This method is used to insert a statement after a given statement. Used to insert additional statement
-     * in the main method (right after "String input = stdin.readLine();"
-     * @param node the node that represents the statement for which we want to add a statement after.
-     * @param new_statement the new statement that needs to be inserted
-     * @param args additional arguments that were given to the JavaParser
-     * @return a node containing our instrumented code.
-     */
-    public Node addCodeAfter(Statement node, Statement new_statement, Object args){
-        if (node.getParentNode().isPresent()){
-
-            Node parent = node.getParentNode().get();
-
-            if (parent instanceof BlockStmt) {
-                // if {@code node} is within a BlockStmt (i.e., withing a block with
-                // open-close curly brackets), we just add the new line for coverage tracking
-                BlockStmt block = (BlockStmt) parent;
-                int line = node.getBegin().get().line;
-                int position = block.getStatements().indexOf(node) + 1;
-                block.addStatement(position, new_statement);
-            } else {
-                // if {@code node} is not within a BlockStmt (e.g., true branch of an if condition
-                // with no curly brackets), we need to create a BlockStmt first
-                BlockStmt block = new BlockStmt();
-                block.addStatement(node);
-                block.addStatement(new_statement);
-                return block;
-            }
-        }
-        return node;
+        super();
     }
 
     /**

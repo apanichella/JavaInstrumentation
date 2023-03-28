@@ -6,6 +6,8 @@ import nl.tudelft.instrumentation.line.LineCoverageVisitor;
 import nl.tudelft.instrumentation.patching.OperatorVisitor;
 import nl.tudelft.instrumentation.symbolic.PathVisitor;
 import nl.tudelft.instrumentation.fuzzing.DistanceVisitor;
+import nl.tudelft.instrumentation.learning.MembershipVisitor;
+
 import org.apache.commons.cli.*;
 
 import java.io.File;
@@ -91,8 +93,11 @@ public class CommandLineParser {
             case "patching":
                 visitor = new OperatorVisitor(file.getAbsolutePath());
                 break;
+            case "learning":
+                visitor = new MembershipVisitor();
+                break;
             default:
-                throw new IllegalArgumentException("Only five available types: \"branch\" , \"line\" , \"fuzzing\" , \"symbolic\", \"patching\"");
+                throw new IllegalArgumentException("Only six available types: \"branch\" , \"line\" , \"fuzzing\" , \"symbolic\", \"patching\", \"learning\"");
         }
     }
 

@@ -22,7 +22,8 @@
       "options": [
         "fuzzing",
         "symbolic",
-        "patching"
+        "patching",
+        "learning"
       ],
       "default": "fuzzing"
     }

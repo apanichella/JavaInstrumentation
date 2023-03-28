@@ -38,3 +38,4 @@ RERS/
 .vscode/
 RERS2020Buggy/
 scripts/
+*.dot
