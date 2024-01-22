@@ -1,17 +1,15 @@
-package nl.tudelft.instrumentation.symbolic;
+package nl.tudelft.instrumentation.concolic;
 
 import java.util.*;
 import com.microsoft.z3.*;
 import nl.tudelft.instrumentation.fuzzing.DistanceTracker;
 
 import java.util.Random;
-import java.io.FileWriter;
-import java.io.IOException;
 
 /**
  * You should write your solution using this class.
  */
-public class SymbolicExecutionLab {
+public class ConcolicExecutionLab {
 
     static Random r = new Random();
     static Boolean isFinished = false;
@@ -91,7 +89,7 @@ public class SymbolicExecutionLab {
         /*
          * Add here your code for fuzzing a new sequence for the RERS problem.
          * You can guide your fuzzer to fuzz "smart" input sequences to cover
-         * more branches using symbolic execution. Right now we just generate
+         * more branches using concolic execution. Right now we just generate
          * a complete random sequence using the given input symbols. Please
          * change it to your own code.
          */
@@ -114,7 +112,7 @@ public class SymbolicExecutionLab {
     static void run() {
         initialize(PathTracker.inputSymbols);
         PathTracker.runNextFuzzedSequence(currentTrace.toArray(new String[0]));
-        // Place here your code to guide your fuzzer with its search using Symbolic Execution.
+        // Place here your code to guide your fuzzer with its search using Concolic Execution.
         while(!isFinished) {
             // Do things!
             try {

@@ -1,4 +1,4 @@
-package nl.tudelft.instrumentation.symbolic;
+package nl.tudelft.instrumentation.concolic;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -7,7 +7,7 @@ import com.microsoft.z3.*;
 import nl.tudelft.instrumentation.runner.CallableTraceRunner;
 
 /**
- * This class is used for the symbolic execution lab.
+ * This class is used for the Concolic execution lab.
  * @author Clinton Cao, Sicco Verwer
  */
 public class PathTracker {
@@ -82,7 +82,7 @@ public class PathTracker {
             for(MyVar v : PathTracker.inputs){
                 new_inputs.add(m.evaluate(v.z3var, true).toString());
             }
-            SymbolicExecutionLab.newSatisfiableInput(new_inputs);
+            ConcolicExecutionLab.newSatisfiableInput(new_inputs);
         } else {
             //System.out.println("unsatisfiable");
         }
@@ -103,21 +103,21 @@ public class PathTracker {
 
     // Making new stored variables
     public static MyVar myVar(boolean value, String name){
-        return SymbolicExecutionLab.createVar(name, ctx.mkBool(value), ctx.getBoolSort());
+        return ConcolicExecutionLab.createVar(name, ctx.mkBool(value), ctx.getBoolSort());
     }
     public static MyVar myVar(int value, String name){
-        return SymbolicExecutionLab.createVar(name, ctx.mkInt(value), ctx.getIntSort());
+        return ConcolicExecutionLab.createVar(name, ctx.mkInt(value), ctx.getIntSort());
     }
     public static MyVar myVar(String value, String name){
-        return SymbolicExecutionLab.createVar(name, ctx.mkString(value), ctx.getStringSort());
+        return ConcolicExecutionLab.createVar(name, ctx.mkString(value), ctx.getStringSort());
     }
     public static MyVar myVar(MyVar value, String name){
-        return SymbolicExecutionLab.createVar(name, value.z3var, value.z3var.getSort());
+        return ConcolicExecutionLab.createVar(name, value.z3var, value.z3var.getSort());
     }
 
     // Making a new input variable
     public static MyVar myInputVar(String value, String name){
-        return SymbolicExecutionLab.createInput(name, ctx.mkString(value), ctx.getStringSort());
+        return ConcolicExecutionLab.createInput(name, ctx.mkString(value), ctx.getStringSort());
     }
 
     // for assigning an array to a variable.
@@ -147,24 +147,24 @@ public class PathTracker {
      */
     public static MyVar unaryExpr(MyVar i, String operator){
         if(i.z3var instanceof BoolExpr){
-            return SymbolicExecutionLab.createBoolExpr((BoolExpr)i.z3var, operator);
+            return ConcolicExecutionLab.createBoolExpr((BoolExpr)i.z3var, operator);
         }
         if(i.z3var instanceof IntExpr || i.z3var instanceof ArithExpr){
-            return SymbolicExecutionLab.createIntExpr((IntExpr)i.z3var, operator);
+            return ConcolicExecutionLab.createIntExpr((IntExpr)i.z3var, operator);
         }
         return new MyVar(ctx.mkFalse());
     }
     public static MyVar binaryExpr( MyVar i, MyVar j, String operator ){
         if(i.z3var instanceof BoolExpr){
-            return SymbolicExecutionLab.createBoolExpr((BoolExpr)i.z3var, (BoolExpr)j.z3var, operator);
+            return ConcolicExecutionLab.createBoolExpr((BoolExpr)i.z3var, (BoolExpr)j.z3var, operator);
         }
         if(i.z3var instanceof IntExpr){
-            return SymbolicExecutionLab.createIntExpr((IntExpr)i.z3var, (IntExpr)j.z3var, operator);
+            return ConcolicExecutionLab.createIntExpr((IntExpr)i.z3var, (IntExpr)j.z3var, operator);
         }
         return new MyVar(ctx.mkFalse());
     }
     public static MyVar equals(MyVar i, MyVar j){
-        return SymbolicExecutionLab.createStringExpr((SeqExpr)i.z3var, (SeqExpr)j.z3var, "==");
+        return ConcolicExecutionLab.createStringExpr((SeqExpr)i.z3var, (SeqExpr)j.z3var, "==");
     }
 
     // We handle arrays, which needs an iterated if-then-else.
@@ -202,7 +202,7 @@ public class PathTracker {
         if(operator.equals("-=")) new_value = ctx.mkSub((IntExpr)target.z3var,(IntExpr)value.z3var);
         if(operator.equals("+=")) new_value = ctx.mkAdd((IntExpr)target.z3var,(IntExpr)value.z3var);
 
-        SymbolicExecutionLab.assign(target, target.name, new_value, target.z3var.getSort());
+        ConcolicExecutionLab.assign(target, target.name, new_value, target.z3var.getSort());
     }
 
     // We handle arrays, again using if-then-else and call standard variable assignment for all indices.
@@ -213,7 +213,7 @@ public class PathTracker {
             if(operator.equals("-=")) new_value = ctx.mkSub((IntExpr)old_expr,(IntExpr)value.z3var);
             if(operator.equals("+=")) new_value = ctx.mkAdd((IntExpr)old_expr,(IntExpr)value.z3var);
 
-            SymbolicExecutionLab.assign(name[i], name[i].name, ctx.mkITE(ctx.mkEq(ctx.mkInt(i),index.z3var), new_value, old_expr), name[i].z3var.getSort());
+            ConcolicExecutionLab.assign(name[i], name[i].name, ctx.mkITE(ctx.mkEq(ctx.mkInt(i),index.z3var), new_value, old_expr), name[i].z3var.getSort());
         }
     }
 
@@ -233,7 +233,7 @@ public class PathTracker {
      * @param line_nr the line number of the if-statement.
      */
     public static void myIf(MyVar condition, boolean value, int line_nr){
-        SymbolicExecutionLab.encounteredNewBranch(condition, value, line_nr);
+        ConcolicExecutionLab.encounteredNewBranch(condition, value, line_nr);
     }
 
     /**
@@ -241,7 +241,7 @@ public class PathTracker {
      * @param out the string that has been outputted in the standard out.
      */
     public static void output(String out){
-        SymbolicExecutionLab.output(out);
+        ConcolicExecutionLab.output(out);
     }
 
     /**
@@ -252,7 +252,7 @@ public class PathTracker {
     public static void run(String[] s, CallableTraceRunner<Void> eca) {
         problem = eca;
         inputSymbols = s;
-        SymbolicExecutionLab.run();
+        ConcolicExecutionLab.run();
     }
 
     /**

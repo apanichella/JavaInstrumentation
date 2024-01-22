@@ -1,10 +1,10 @@
-# Symbolic lab
+# Concolic lab
 
-In this lab, you will use symbolic execution to find as many paths through the RERS code as possible.
+In this lab, you will use concolic execution to find as many paths through the RERS code as possible.
 
-You will again need to modify the SymbolicExecutionLab.java file provided in this repository.
+You will again need to modify the ConcolicExecutionLab.java file provided in this repository.
 Once you have instrumented the RERS code, the instrumentation will make sure the appropriate methods in
-SymbolicExecutionLab are called to build the path constraints for the current trace.
+ConcolicExecutionLab are called to build the path constraints for the current trace.
 
 ### createVar example
 As an example, variable definitions are handled the following way:
@@ -38,7 +38,7 @@ You will need to fill in the rest of the methods in a similar way.
 ### PathTracker
 The pathtracker class is there to help you build your path constraints and call the solver.
 It contains two sets of constraints, the `z3model` and `z3branches`. Do not forget to add the branches you
-encounter to `z3branches`! Use the given methods `addToModel` and `addToBranches` to add new contraints to the model and branches respectively. A good place to do add a new branch to `z3branches` would be in the encounteredNewBranch method in SymbolicExecutionLab.
+encounter to `z3branches`! Use the given methods `addToModel` and `addToBranches` to add new contraints to the model and branches respectively. A good place to do add a new branch to `z3branches` would be in the encounteredNewBranch method in ConcolicExecutionLab.
 
 When you call solve, z3 will try to solve for the inputs considering your current path constraint. If successful,
 it will tell you the inputs needed to satisfy the constraint. You should use this to augment your fuzzer by trying to solve
@@ -72,7 +72,7 @@ New branch: (= false false)
 This shows us the constraints for the global variables in problem 1.
 It is up to you to put in more constraints as you encounter them going through the code.
 
-Once you have implemented the required functionality in SymbolicExecutionLab, it will start looking more like this (somewhere during the run):
+Once you have implemented the required functionality in ConcolicExecutionLab, it will start looking more like this (somewhere during the run):
 ```
 Model: (and (= my_cf_19 true)
      (= my_a547336540_17 "g")

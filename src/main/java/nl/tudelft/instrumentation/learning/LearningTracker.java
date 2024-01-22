@@ -7,7 +7,7 @@ import java.util.concurrent.*;
 
 /**
  * This class is used to start and run the tests for the algorithm that you
- * will build to do automated code patching.
+ * will build to do automated model learning.
  *
  * @author Bram Verboom, Clinton Cao, Sicco Verwer
  */
@@ -49,7 +49,7 @@ public class LearningTracker {
     }
 
     /**
-     * Initialize and hand over control to PatchingLab
+     * Initialize and hand over control to LearningLab
      * 
      * @param inputSymbols The input symbols of the problem
      * @param eca          The current problem instance

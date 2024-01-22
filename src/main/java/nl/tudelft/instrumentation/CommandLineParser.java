@@ -4,7 +4,7 @@ import com.github.javaparser.ast.visitor.GenericVisitor;
 import nl.tudelft.instrumentation.branch.BranchCoverageVisitor;
 import nl.tudelft.instrumentation.line.LineCoverageVisitor;
 import nl.tudelft.instrumentation.patching.OperatorVisitor;
-import nl.tudelft.instrumentation.symbolic.PathVisitor;
+import nl.tudelft.instrumentation.concolic.PathVisitor;
 import nl.tudelft.instrumentation.fuzzing.DistanceVisitor;
 import nl.tudelft.instrumentation.learning.MembershipVisitor;
 
@@ -87,7 +87,7 @@ public class CommandLineParser {
             case "fuzzing":
                 visitor = new DistanceVisitor(file.getAbsolutePath());
                 break;
-            case "symbolic":
+            case "concolic":
                 visitor = new PathVisitor(file.getAbsolutePath());
                 break;
             case "patching":
@@ -97,7 +97,7 @@ public class CommandLineParser {
                 visitor = new MembershipVisitor();
                 break;
             default:
-                throw new IllegalArgumentException("Only six available types: \"branch\" , \"line\" , \"fuzzing\" , \"symbolic\", \"patching\", \"learning\"");
+                throw new IllegalArgumentException("Only six available types: \"branch\" , \"line\" , \"fuzzing\" , \"concolic\", \"patching\", \"learning\"");
         }
     }
 

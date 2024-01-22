@@ -1,10 +1,6 @@
-package nl.tudelft.instrumentation.symbolic;
+package nl.tudelft.instrumentation.concolic;
 
-import java.util.*;
 import com.microsoft.z3.*;
-import java.util.Random;
-import java.io.FileWriter;
-import java.io.IOException;
 
 /**
  * This class serves as a wrapper object for each of the java primitive

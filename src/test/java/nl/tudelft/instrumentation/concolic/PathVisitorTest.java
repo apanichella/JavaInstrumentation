@@ -1,4 +1,4 @@
-package nl.tudelft.instrumentation.symbolic;
+package nl.tudelft.instrumentation.concolic;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ast.CompilationUnit;
@@ -268,7 +268,7 @@ public class PathVisitorTest {
 
     @Test
     public void testInstrumentationShouldAddImport(){
-        String imprt = "import nl.tudelft.instrumentation.symbolic.*";
+        String imprt = "import nl.tudelft.instrumentation.concolic.*";
         StringBuilder builder = new StringBuilder();
         builder.append("public class Test {\n")
                 .append("    public static void main(String[] args) {\n")
@@ -471,7 +471,7 @@ public class PathVisitorTest {
                 "                MyVar my_s = PathTracker.myInputVar(s, \"input\");\n" +
                 "                cp.calculateOutput(s, my_s);\n" +
                 "            } catch (IllegalArgumentException | IllegalStateException e) {\n" +
-                "                SymbolicExecutionLab.output(\"Invalid input: \" + e.getMessage());\n" +
+                "                ConcolicExecutionLab.output(\"Invalid input: \" + e.getMessage());\n" +
                 "            }\n" +
                 "        }\n" +
                 "        return null;\n" +

@@ -2,14 +2,9 @@ package nl.tudelft.instrumentation.learning;
 
 import com.github.javaparser.*;
 import com.github.javaparser.ast.*;
-import com.github.javaparser.ast.expr.*;
-import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.*;
-import com.github.javaparser.ast.visitor.ModifierVisitor;
-
 import nl.tudelft.instrumentation.general.BaseVisitor;
 
 import com.github.javaparser.ast.body.*;
@@ -23,7 +18,7 @@ import com.github.javaparser.ast.body.*;
  */
 public class MembershipVisitor extends BaseVisitor {
 
-    private String pathFile = "nl.tudelft.instrumentation.learning.LearningTracker";
+    private String pathFile = "LearningTracker";
 
     private String class_name = "";
 
@@ -40,7 +35,7 @@ public class MembershipVisitor extends BaseVisitor {
         this.class_name = node.getName().toString();
         BodyDeclaration bd1 = StaticJavaParser.parseBodyDeclaration("public Void call(){ " + class_name + " cp = new "
                 + class_name
-                + "(); for(String s : sequence){ try { cp.calculateOutput(s); } catch (Exception e) { nl.tudelft.instrumentation.learning.LearningTracker.output(\"Invalid input: \" + e.getMessage()); } LearningTracker.processedInput(); } return null;}");
+                + "(); for(String s : sequence){ try { cp.calculateOutput(s); } catch (Exception e) { LearningTracker.output(\"Invalid input: \" + e.getMessage()); } LearningTracker.processedInput(); } return null;}");
         BodyDeclaration bd2 = StaticJavaParser
                 .parseBodyDeclaration(" public void setSequence(String[] trace){ sequence = trace; } ");
         BodyDeclaration fd = StaticJavaParser.parseBodyDeclaration("public String[] sequence;");

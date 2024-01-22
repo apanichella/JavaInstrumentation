@@ -1,4 +1,4 @@
-package nl.tudelft.instrumentation.symbolic;
+package nl.tudelft.instrumentation.concolic;
 
 import com.github.javaparser.*;
 import com.github.javaparser.ast.*;
@@ -216,7 +216,7 @@ public class PathVisitor extends BaseVisitor {
         if(node.getParentNode().isPresent()){
             for(VariableDeclarator vard : node.getVariables()){
                 // For each field that is listed in the source file, create a copy of the field and give it the
-                // MyVar type so that we can use these fields in the symbolic execution.
+                // MyVar type so that we can use these fields in the concolic execution.
                 FieldDeclaration fd = new FieldDeclaration(node.getModifiers(), createMyField(vard.clone(), arg));
                 ClassOrInterfaceDeclaration decl = (ClassOrInterfaceDeclaration) node.getParentNode().get();
                 decl.getMembers().add(fd);
@@ -237,7 +237,7 @@ public class PathVisitor extends BaseVisitor {
         if(node.getName().toString().contains("calculate")){
             for(Parameter par : node.clone().getParameters()){
                 // For each parameter of the method, create a copy of the parameter and give it the MyVar type
-                // This makes sure that we can also use the parameters in the symbolic execution.
+                // This makes sure that we can also use the parameters in the concolic execution.
                 node.addParameter("MyVar", "my_" + par.getName().asString());
             }
         }
@@ -254,7 +254,7 @@ public class PathVisitor extends BaseVisitor {
     @Override
     public Node visit(ClassOrInterfaceDeclaration node, Object arg){
         this.class_name = node.getName().toString();
-        BodyDeclaration bd1 = StaticJavaParser.parseBodyDeclaration("public Void call(){ " + class_name + " cp = new " + class_name + "(); for(String s : sequence){ try { MyVar my_s = PathTracker.myInputVar(s, \"input\"); cp.calculateOutput(s); } catch (IllegalArgumentException | IllegalStateException e) { SymbolicExecutionLab.output(\"Invalid input: \" + e.getMessage()); } } return null;}");
+        BodyDeclaration bd1 = StaticJavaParser.parseBodyDeclaration("public Void call(){ " + class_name + " cp = new " + class_name + "(); for(String s : sequence){ try { MyVar my_s = PathTracker.myInputVar(s, \"input\"); cp.calculateOutput(s); } catch (IllegalArgumentException | IllegalStateException e) { ConcolicExecutionLab.output(\"Invalid input: \" + e.getMessage()); } } return null;}");
         BodyDeclaration bd2 = StaticJavaParser.parseBodyDeclaration(" public void setSequence(String[] trace){ sequence = trace; } ");
         BodyDeclaration fd = StaticJavaParser.parseBodyDeclaration("public String[] sequence;");
         node.getMembers().add(fd);
@@ -340,7 +340,7 @@ public class PathVisitor extends BaseVisitor {
      */
     @Override
     public Node visit(CompilationUnit node, Object arg) {
-        node.addImport("nl.tudelft.instrumentation.symbolic.*");
+        node.addImport("nl.tudelft.instrumentation.concolic.*");
         node.addImport("nl.tudelft.instrumentation.runner.CallableTraceRunner");
         return (Node) super.visit(node, arg);
     }
