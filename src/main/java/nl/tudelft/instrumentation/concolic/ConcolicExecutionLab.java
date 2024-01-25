@@ -1,13 +1,14 @@
 package nl.tudelft.instrumentation.concolic;
 
 import java.util.*;
-import com.microsoft.z3.*;
-import nl.tudelft.instrumentation.fuzzing.DistanceTracker;
+import java.util.stream.Collectors;
 
-import java.util.Random;
+import com.microsoft.z3.*;
 
 /**
  * You should write your solution using this class.
+ * 
+ * Z3 API: https://z3prover.github.io/api/html/classcom_1_1microsoft_1_1z3_1_1_context.html
  */
 public class ConcolicExecutionLab {
 
@@ -36,28 +37,41 @@ public class ConcolicExecutionLab {
 
     static MyVar createInput(String name, Expr value, Sort s){
         // Create an input var, these should be free variables!
+        Context c = PathTracker.ctx;
+
+        Expr z3var = null; // change this line to the correct code for creating a z3var.
+        
+        // The following code is to add an additional constraint on the input variable.
+        // The input variable must have a value that is equal to one of the input symbols.
+        BoolExpr constraint = c.mkFalse();
+        for (String input: PathTracker.inputSymbols) {
+            constraint = c.mkOr(c.mkEq(z3var, c.mkString(input)), constraint);
+        }
+
+        PathTracker.addToModel(constraint);
+
         return new MyVar(PathTracker.ctx.mkString(""));
     }
 
     static MyVar createBoolExpr(BoolExpr var, String operator){
-        // Any unary expression (!)
+        // Handle the following unary operators: !
         return new MyVar(PathTracker.ctx.mkFalse());
     }
 
     static MyVar createBoolExpr(BoolExpr left_var, BoolExpr right_var, String operator){
-        // Any binary expression (&, &&, |, ||)
+        // Handle the following binary operators: &, &&, |, ||
         return new MyVar(PathTracker.ctx.mkFalse());
     }
 
     static MyVar createIntExpr(IntExpr var, String operator){
-        // Any unary expression (+, -)
+        // Handle the following unary operators for numerical operations: +, -
         if(operator.equals("+") || operator.equals("-"))
             return new MyVar(PathTracker.ctx.mkInt(0));
         return new MyVar(PathTracker.ctx.mkFalse());
     }
 
     static MyVar createIntExpr(IntExpr left_var, IntExpr right_var, String operator){
-        // Any binary expression (+, -, /, etc)
+        // Handle the following binary operators for numerical operations: +, -, /, *, %, ^, ==, <=, <, >= and >
         if(operator.equals("+") || operator.equals("-") || operator.equals("/") || operator.equals("*") || operator.equals("%") || operator.equals("^"))
             return new MyVar(PathTracker.ctx.mkInt(0));
         return new MyVar(PathTracker.ctx.mkFalse());
@@ -78,6 +92,11 @@ public class ConcolicExecutionLab {
 
     static void newSatisfiableInput(LinkedList<String> new_inputs) {
         // Hurray! found a new branch using these new inputs!
+        // Remove the extra quotes from the inputs that were find by the solver.
+        List<String> trimmed_new_inputs = new_inputs.stream()
+                .map(s -> s.replaceAll("\"", ""))
+                .collect(Collectors.toList());
+
     }
 
     /**
