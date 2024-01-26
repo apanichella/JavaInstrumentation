@@ -14,18 +14,31 @@ Instrumentation is implemented as follows:
 * **Branch Distance Computation** is implemented by the following classes:
   * `DistanceVisitor.java` visits the AST (obtained with JavaParsers) of the Java file under analysis and injects new statements for branch distance computation.
   * `DistanceTracker.java` wraps each variable/expression in an object. These objects are then used for the branch distance computation.
-* **Symbolic Execution** is implemented by the following classes:
+* **Concolic Execution** is implemented by the following classes:
   * `PathVisitor.java` visits the AST (obtained with JavaParsers) of the Java file under analysis and injects new statements for symbolic execution.
   * `PathTracker.java` converts the variables and expressions in the Java file to Z3 variables and expressions respectively. These will be used to do symbolic execution with Z3.
 * **Code Patching Using Genetic Algorithms** is implemented by the following classes:
   * `OperatorVisitor.java` visits the AST (obtained with JavaParsers) of the Java file under analysis and injects new statements for code patching.
   * `OperatorTracker.java` converts an operator to another operator in order to introduce faults in the original Java file.
+* **Model Inference using L* Algorithm** is implemented by the following classes:
+  * `MembershipVisitor.java` visits the AST (obtained with JavaParsers) of the Java file under analysis and injects new statements for automated model inference.
+  * `LearningTracker.java` makes minimal changes to a RERS problem file as this lab does not need to do a lot of instrumentation. We just need to change the program flow.
 * `Main.java` is the main file and can be used to generate the instrumented Java file
 * `CommandLineParser.java` is used to parse the arguments that were given to this tool in order to generate the corresponding instrumentation.
 
 **NOTE:** This tool instruments only one Java file at a time.
 
-# Build and run the tool
+
+# Using Dev Containers To Run The Tool
+We have included a `devcontainer.json` file in this repository. This file can be used to run the tool in a Docker container. THis is useful if you do not want to install all the dependencies on your machine. To use this file, you need to have the following installed on your machine:
+- Docker
+- Visual Studio Code
+- Remote Extension Pack for Visual Studio Code
+
+Once you have installed these dependencies, you can open this repository in VS Code and start a Dev Container. This will automatically install all the dependencies and build the project. You can then use the pre-configured tasks to instrument a Java file and run it. 
+
+
+# Manually build and run the tool 
 To build the project, make sure you have navigated to the root of this project and run the following Maven command:
 
 `mvn clean package`
@@ -34,7 +47,7 @@ To instrument a given Java file, use the following command:
 
 `java -cp target/aistr.jar nl.tudelft.instrumentation.Main --type=*TypeOfInstrumentation* --file=*PathToJavaFile* > *OutputPath*`
 
-Where `*PathToJavaFile*` is the path to the Java file to instrument, `*OutputPath*` is the file (file name and path) where you want to save the instrumented Java file. The `*TypeOfInstrumentation*` is the type of instrumentation that you want to do. You can choose between the following options: `line`, `branch`, `fuzzing`, `symbol` and `patching`
+Where `*PathToJavaFile*` is the path to the Java file to instrument, `*OutputPath*` is the file (file name and path) where you want to save the instrumented Java file. The `*TypeOfInstrumentation*` is the type of instrumentation that you want to do. You can choose between the following options: `line`, `branch`, `fuzzing`, `concolic`, `patching`, and `learning`.
 Note that the flags `--file` and `--type` are required for instrumenting a Java file.
 
 # Examples illustrating how to compile and run the instrumented files
