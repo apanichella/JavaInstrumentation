@@ -21,7 +21,7 @@
       "description": "Which instrumentation do you want",
       "options": [
         "fuzzing",
-        "symbolic",
+        "concolic",
         "patching",
         "learning"
       ],
