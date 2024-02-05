@@ -30,7 +30,7 @@ Instrumentation is implemented as follows:
 
 
 # Using Dev Containers To Run The Tool
-We have included a `devcontainer.json` file in this repository. This file can be used to run the tool in a Docker container. THis is useful if you do not want to install all the dependencies on your machine. To use this file, you need to have the following installed on your machine:
+We have included a `devcontainer.json` file in this repository. This file can be used to run the tool in a Docker container. This is useful if you do not want to install all the dependencies on your machine. To use this file, you need to have the following installed on your machine:
 - Docker
 - Visual Studio Code
 - Remote Extension Pack for Visual Studio Code
