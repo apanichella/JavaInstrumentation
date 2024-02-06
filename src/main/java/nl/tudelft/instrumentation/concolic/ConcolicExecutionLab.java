@@ -39,7 +39,7 @@ public class ConcolicExecutionLab {
         // Create an input var, these should be free variables!
         Context c = PathTracker.ctx;
 
-        Expr z3var = null; // change this line to the correct code for creating a z3var.
+        Expr z3var = c.mkString(""); // change this line to the correct code for creating a z3var.
         
         // The following code is to add an additional constraint on the input variable.
         // The input variable must have a value that is equal to one of the input symbols.
