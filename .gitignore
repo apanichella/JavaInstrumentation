@@ -35,7 +35,7 @@ RERS/
 .classpath
 .project
 .settings/
-.vscode/
+# .vscode/
 RERS2020Buggy/
 scripts/
 *.dot
